@@ -5,19 +5,15 @@
 ------------------------------------------------------------------------------------*/
 
 
-Librairy        Version     Author(s)               Licence Version Minor_Modif.    Website
+Librairy                Version     Author(s)               Licence     Minor_Modif.    Website
 /*------------------------------------------------------------------------------------------------------------------------------------
 
-bootstrap.js                Twitter, Inc.               MIT             https://github.com/twbs/bootstrap
-
-crossfilter.js              Square, Inc.                Apache  v2.0            https://github.com/square/crossfilter
-
-d3.js                       Mike Bostock                BSD v3          https://github.com/mbostock/d3
-
-d3-queue.js                 Mike Bostock                Unknown             https://github.com/d3/d3-queue
-
-datatables.js               SpryMedia Ltd.              MIT     x       https://github.com/DataTables/
-
+bootstrap.js            v3.3.6      Twitter, Inc.           MIT                         https://github.com/twbs/bootstrap
+crossfilter.js          v1.3.12     Square, Inc.            Apache v2                   https://github.com/square/crossfilter
+d3.js                   v3.5.17     Mike Bostock            BSD v3                      https://github.com/d3/d3
+d3-queue.js             v3.0.1      Mike Bostock            BSD v3                      https://github.com/d3/d3-queue
+datatables.js           v1.10.10    SpryMedia Ltd.          MIT         x               https://github.com/DataTables/DataTables
+datatables-buttons.js   v1.1.0      SpryMedia Ltd.          MIT                         https://github.com/DataTables/Buttons
 dc.js                       Nick Zhu & the dc.js Developers     Apache  v2.0            https://github.com/dc-js/dc.js
 
 dc.leaflet.js               Boyan Yurukov               Apache  v2.0    x       https://github.com/yurukov/
