@@ -25,7 +25,7 @@ The technical side of a MSF-Dashboard deployment is generally a 3-steps process:
 - 2) Configuring the MSF-Dashboard
 - 3) Hosting the MSF-Dashboard
 
-[Get last release!](http://braimbault.github.io/NA)
+[Get last release!](https://github.com/MSF-UK/MSF-Dashboard/releases)
 
 Templates and Examples
 ----------------------
@@ -92,9 +92,9 @@ index.html                           - Defines the layout of the dashboard (char
 For More Information
 --------------------
 
-+ Documentation is available at [Use MSF-Dashboard](https://MSF-UK.github.io/MSF-Dashboard).
++ Documentation is available at [Use MSF-Dashboard](https://MSF-UK.github.io/MSF-Dashboard_doc).
 + Report issues or ask for help  at [Issues MSF-Dashboard](https://github.com/MSF-UK/MSF-Dashboard/issues).
-+ Track last changes [Releases history MSF-Dashboard](https://github.com/MSF-UK/MSF-Dashboard/).
++ Track last changes [Releases history MSF-Dashboard](https://github.com/MSF-UK/MSF-Dashboard/releases).
 
 License
 -------
