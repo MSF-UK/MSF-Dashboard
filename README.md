@@ -25,7 +25,7 @@ The technical side of a MSF-Dashboard deployment is generally a 3-steps process:
 - 2) Configuring the MSF-Dashboard
 - 3) Hosting the MSF-Dashboard
 
-+ [Get last release!](http://braimbault.github.io/NA)
+[Get last release!](http://braimbault.github.io/NA)
 
 Templates and Examples
 ----------------------
