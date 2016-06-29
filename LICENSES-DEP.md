@@ -21,7 +21,7 @@ jquery.js                   |v2.2.0             |jQuery Foundation              
 jszip.js                    |v2.4.0             |S.Knightley, D.Duponchel, F.Buchinger, A.Afonso|MIT        |               |https://github.com/Stuk/jszip
 leaflet.js                  |v0.7.7             |CloudMade, Vladimir Agafonkin                  |Unknown    |               |https://github.com/Leaflet/Leaflet
 leaflet.sync.js             |v0.0.5             |Bjorn Sandvik                                  |Unknown    |               |https://github.com/turban/Leaflet.Sync
-nwjs                        |v0.12.3            |Intel Corp & The Chromium Authors              |MIT        |               |https://github.com/nwjs/nw.js
+nwjs                        |v0.14.6            |Intel Corp & The Chromium Authors              |MIT        |               |https://github.com/nwjs/nw.js
 sheetjs.js                  |v0.8.0             |SheetJS                                        |Apache v2  |               |https://github.com/SheetJS/js-xlsx
 terraformer.js              |v1.0.5             |Esri, Inc                                      |Unknown    |               |https://github.com/Esri/Terraformer
 terraformer-arcgisparser.js |v1.0.4             |Esri, Inc                                      |Unknown    |               |https://github.com/Esri/terraformer-arcgis-parser
