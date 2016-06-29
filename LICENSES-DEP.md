@@ -1,7 +1,8 @@
 ```
-MSF-Dashboard - LICENSES-DEP.md
-(c) 2015-2016, MSF-Dashboard contributors for MSF
-List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
+	MSF-Dashboard - LICENSES-DEP.md
+	(c) 2015-present, MSF-Dashboard contributors for MSF
+	List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
+	Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
 ```
 
 Librairy                    |Version            |Author(s)                                      |Licence    |Minor_Modif.   |Website
@@ -17,10 +18,11 @@ dc.leaflet.js               |Unknown            |Boyan Yurukov                  
 geostats.js                 |v1.5.0             |Simon Georget                                  |MIT        |               |https://github.com/simogeo/geostats
 intro.js                    |v2.0.0             |Afshin Mehrabani                               |MIT        |x              |https://github.com/usablica/intro.js
 jquery.js                   |v2.2.0             |jQuery Foundation                              |MIT        |               |https://github.com/jquery/jquery
-jszip.js                    |v2.4.0             |S.Knightley, D.Duponchel, F.Buchinger, A.Afonso|MIT        |               |https://github.com/Stuk/jszip                    
+jszip.js                    |v2.4.0             |S.Knightley, D.Duponchel, F.Buchinger, A.Afonso|MIT        |               |https://github.com/Stuk/jszip
 leaflet.js                  |v0.7.7             |CloudMade, Vladimir Agafonkin                  |Unknown    |               |https://github.com/Leaflet/Leaflet
 leaflet.sync.js             |v0.0.5             |Bjorn Sandvik                                  |Unknown    |               |https://github.com/turban/Leaflet.Sync
 nwjs                        |v0.12.3            |Intel Corp & The Chromium Authors              |MIT        |               |https://github.com/nwjs/nw.js
 sheetjs.js                  |v0.8.0             |SheetJS                                        |Apache v2  |               |https://github.com/SheetJS/js-xlsx
 terraformer.js              |v1.0.5             |Esri, Inc                                      |Unknown    |               |https://github.com/Esri/Terraformer
 terraformer-arcgisparser.js |v1.0.4             |Esri, Inc                                      |Unknown    |               |https://github.com/Esri/terraformer-arcgis-parser
+DejaVuSans.ttf		    |v2.35		|Bitstream, Inc. & Tavmjong Bah			|Unknown    |		    |http://dejavu-fonts.org/

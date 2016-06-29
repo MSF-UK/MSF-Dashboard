@@ -1,0 +1,36 @@
+/*------------------------------------------------------------------------------------
+	MSF Dashboard - module-charwarper.css
+    (c) 2015-present, MSF-Dashboard contributors for MSF
+    List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
+    Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
+------------------------------------------------------------------------------------*/
+
+/* Tabs styles */
+.active-cw {
+    border-left: 1px solid #bbb;
+    border-top: 1px solid #bbb;
+    border-right: 1px solid #bbb;
+    border-bottom: 0px solid #bbb;
+    display:inline-block;
+    border-radius: 5px 5px 0px 0px;
+}
+.inactive-cw {
+    display:inline-block;
+}
+.tab-cw {
+    width:210px;
+    height:30px;
+    cursor:pointer;
+    font-size:0.9em;
+    padding-top:5px;
+    padding-left: 10px;
+}
+
+.chart_container-cw {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    display: none;
+    right: 0;
+    bottom: 0;
+}

@@ -1,0 +1,19 @@
+/*------------------------------------------------------------------------------------
+	MSF Dashboard - module-colorscale.js
+    (c) 2015-present, MSF-Dashboard contributors for MSF
+    List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
+    Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
+------------------------------------------------------------------------------------*/
+
+.mcs_inp {
+  width: 4em;
+}
+.select-cs{
+    width:150px;
+    font-size:0.9em;
+}
+
+.stop-scrolling {
+  height: 100%;
+  overflow: hidden;
+}

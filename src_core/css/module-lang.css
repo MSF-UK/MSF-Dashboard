@@ -1,0 +1,17 @@
+/*------------------------------------------------------------------------------------
+	MSF Dashboard - module-lang.css
+    (c) 2015-present, MSF-Dashboard contributors for MSF
+    List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
+    Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
+------------------------------------------------------------------------------------*/
+
+.link{
+	cursor:pointer;
+}
+
+#langselect{
+	position: absolute;
+	right: 20px;
+	top: 20px;
+
+}

@@ -1,0 +1,16 @@
+/*------------------------------------------------------------------------------------
+	MSF Dashboard - module-datatable.css
+    (c) 2015-present, MSF-Dashboard contributors for MSF
+    List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
+    Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
+------------------------------------------------------------------------------------*/
+
+#copyBtn{
+    position: absolute;
+    right: 40px !important;
+    top: -10px;
+}
+
+#more-table{
+	cursor:pointer;
+}

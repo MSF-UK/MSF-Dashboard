@@ -1,0 +1,75 @@
+/*------------------------------------------------------------------------------------
+	MSF Dashboard - main-core.css
+    (c) 2015-present, MSF-Dashboard contributors for MSF
+    List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
+    Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
+------------------------------------------------------------------------------------*/
+
+/* Map styles */
+.map {
+    height:415px;
+    width: 90%;
+    position: absolute;
+    padding-bottom:10px;
+}
+#maptitle{
+    padding-bottom:12px;
+}
+/* Legend style */
+.legend {
+    line-height: 18px;
+    color: #555;
+}
+.legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+.info {
+    padding: 4px 4px;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    font-size:0.9em;
+}
+ /* Hover over map features style (bypass dc.leaflet.js) */
+.hdx-3w-info{
+    padding:5px;
+    background-color:white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    color:#ee0000;
+    font-size:1em;
+ }
+
+/* Charts styles */
+#chart-epiwk .x.axis text ,#chart-case_bar .x.axis text ,#chart-death_bar .x.axis text {
+    text-anchor: end !important;
+    transform: rotate(-45deg);
+    font-size:0.75em !important;
+}
+.x-axis-label {
+    font-size: 12px !important;
+}
+.dc-chart .pie-slice {
+    fill: #656F73;
+}
+.dc-chart g.row text {
+    fill: black;
+    font-size:0.8em;
+}
+.dc-chart g.selected path {
+    stroke-width:1px;
+}
+.bar-label{
+    cursor:pointer;
+}
+
+/* Prevent clicks */
+.noclick {
+    pointer-events: none;
+}

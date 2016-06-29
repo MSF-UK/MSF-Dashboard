@@ -1,0 +1,15 @@
+/*------------------------------------------------------------------------------------
+	MSF Dashboard - module-datacheck.css
+    (c) 2015-present, MSF-Dashboard contributors for MSF
+    List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
+    Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
+------------------------------------------------------------------------------------*/
+
+#more-datacheck{
+	cursor:pointer;
+}
+
+#datacheck_pre{
+	max-height: 180px;
+	overflow-y: scroll;
+}

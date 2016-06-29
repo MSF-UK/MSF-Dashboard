@@ -1,0 +1,32 @@
+/*------------------------------------------------------------------------------------
+	MSF Dashboard - index.css
+    (c) 2015-present, MSF-Dashboard contributors for MSF
+    List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
+    Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
+------------------------------------------------------------------------------------*/
+@font-face {
+    font-family: "dejavu";
+    src: url(font/DejaVuSans.ttf) format("truetype");
+}
+
+.ft{
+    font-family: "dejavu";
+}
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.container-fluid{
+    padding-left:15%;
+    padding-right:5%;
+    padding-bottom:20px;
+}
+    padding-bottom:20px;
+}
+
+.viz{
+    width:100%;
+    padding-bottom:10px;
+}
