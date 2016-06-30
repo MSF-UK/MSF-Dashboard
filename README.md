@@ -1,4 +1,4 @@
-MSF-Dashboard v0.9.0
+MSF-Dashboard v0.9.9
 ====================
 
 A lightweight and modular data visualization micro-website that can be offlined and adapted to various data-feeds.
