@@ -1,0 +1,127 @@
+ <!--
+	MSF Dashboard - index.html
+    (c) 2015-2016, MSF-Dashboard contributors for MSF
+    List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
+    Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
+-->
+
+<html>
+    <head>
+        <title>MSF Dashboard v1.0.0</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script>
+            // Librairies
+            var lib_folder = '../../src_core/lib/';
+            // Dashboard config and language files
+            var ver_folder = '';
+            // Dashboard librairy
+            var prg_folder = '../../src_core/';                
+        </script>
+        <script src="../../src_core/js/main-getlibs.js"></script>
+    </head>
+    <body>
+
+<!--**************************************************************************************
+        The part below defines the layout of the dashboard.
+**************************************************************************************-->
+
+        <div class="container-fluid">
+
+            <!-- Header -->
+            <div id="header" class="row">
+                <h2 id="main_title"></h2>
+                <div class="col-md-12">  
+                    <p id="main_description"></p>
+                </div>                 
+            </div>
+
+            <div class="row">
+
+		<!-- Maps -->
+                <div class="col-md-12">
+                    <div id="chart-multiadm" class = "row"></div>
+                </div>
+            </div>
+
+        <!-- Other Graphs -->                                                                              
+            <div class="row">
+                <div class="col-md-2">
+                    <div id="buttons-disease"></div>
+                    <div id="chart-disease" class="viz">
+                        <p style="height: 60px;"><span id="chart_disease_title"></span> <span class="filter"> </span></p>
+                    </div>
+                </div>  
+                <div id="containter_bar-lin" class="col-md-10">
+                    <div id="containter_bar-lin_tabs"></div>
+                    <div id="containter_bar">
+                        <div class="col-md-12" id="container_casedeath_bar">
+                            <div class="row">                        
+                                <div class="col-md-12">
+                                    <div id="buttons-case_bar"></div>
+                                    <div id="chart-case_bar" class="viz">
+                                        <p style="height: 30px;"><span id="chart_case_bar_title"></span> <span class="filter"> </span></p>
+                                    </div>                         
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div id="chart-death_bar" class="viz"></div>
+                                </div>
+                            </div>                                                    
+                        </div>  
+                    </div>
+                    <div id="containter_lin">
+                        <div class="col-md-9" id="container_casedeath_lin">
+                            <div class="row">                        
+                                <div class="col-md-12">
+                                    <div id="buttons-case_lin"></div>
+                                    <div id="chart-case_lin" class="viz">
+                                        <p style="height: 30px;"><span id="chart_case_lin_title"></span></p>
+                                    </div>                         
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div id="chart-death_lin" class="viz"></div>
+                                </div>
+                            </div>                                                    
+                        </div>
+                        <div class="col-md-3">
+                            <div id="buttons-year"></div>
+                            <div id="chart-year" class="viz">
+                                <p style="height: 45px;"><span id="chart_year_title"></span> <span class="filter"> </span></p>
+                            </div>
+                        </div>    
+                    </div>
+                </div>
+            </div>
+
+        <!-- Datatable -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <p><a id="more-table"></a></p>
+                        <div id="container-table" hidden="true"></div>
+                    </div>
+                </div>
+            </div>
+        
+        <!-- Menu -->
+        <div class="row">
+            <div id="menu"></div>
+        </div>
+
+        <!-- Data loading -->
+        <div id="modal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content"></div>
+            </div>
+        </div>
+
+<!--**************************************************************************************
+**************************************************************************************-->
+
+    </body>
+</html>
