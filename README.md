@@ -17,7 +17,7 @@ Here are gathered some use-cases of the MSF-Dashboard and 'online - demo version
 |**Outbreak: MSF Lubumbashi Mission** - since December 2015 - offline, data parsed via tsv|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_msf-lubumbashi) / [download]()|
 |**Surveillance: MSF Katanga ERU** - since January 2016 - offline, data parsed via excel-spreadsheets|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_eru-katanga/) / [download]()|
 |**Surveillance: SRE MOH Tonkolili DHMT** - since April 2016 - offline, data parsed via dedicated datamanager|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_dhmt-tonkolili/) / [download]()|
-|**Surveillance: MSF Katanga ERU** - since June 2016 - offline, data parsed via excel-spreadsheets|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_eru-sudkivu/) / [download]()|
+|**Surveillance: MSF Sud-Kivu ERU** - since June 2016 - offline, data parsed via excel-spreadsheets|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_eru-sudkivu/) / [download]()|
 |More to come...| |
 
 
