@@ -32,9 +32,12 @@ Templates and Examples
 
 The MSF-Dashboard community has created some templates and examples to help you generate and customize your own MSF-Dashboard. Here are a few public ones:
 
-+ [Outbreak-Lubumbashi](http://braimbault.github.io/NA) - January 2016 (offline, data parsed via tsv)
-+ [Surveillance-Tonkolili](http://braimbault.github.io/MSF-Dashboard_Surveillance-Tonkolili/demo-site/) - April 2016 (offline, data parsed via dedicated datamanager)
-+ [Surveillance-ERU](http://braimbault.github.io/NA) - June 2016 (offline, data parsed via excel-spreadsheets)
++ Outbreak: MSF Lubumbashi Mission [online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_msf-lubumbashi) / [download]() - Since December 2015 (offline, data parsed via tsv)
++ Surveillance: MSF Katanga ERU - [online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_eru-katanga/) / [download]() - Since January 2016 (offline, data parsed via excel-spreadsheets)
++ Surveillance: SRE MOH Tonkolili DHMT - [online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_dhmt-tonkolili/) / [download]() - Since April 2016 (offline, data parsed via dedicated datamanager)
++ Surveillance: MSF Katanga ERU - [online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_eru-sudkivu/) / [download]() - Since June 2016 (offline, data parsed via excel-spreadsheets)
++ More to come...
+
 
 To get started, you can also consult the implementation examples of different charts:
 
