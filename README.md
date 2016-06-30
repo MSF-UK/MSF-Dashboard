@@ -38,6 +38,8 @@ The setup that are currently supported and have been tested include:
 - Offline implementation with nwjs micro-server (data parsed via excel-spreadsheets, csv, tsv, dedicated datamanager).
 - Online implementation without backend (data parsed via json/csv/text file directly uploaded to the website).
 - Online implementation with external backend (data parsed via various APIs...).
+ 
+Ready to try? You can start with the ERU versions, here is one page guide -> [X](https://github.com/MSF-UK/MSF-Dashboard/blob/master/cfg_eru-sudkivu/doc-dev/eru_dashboard-deployement_onepage.pdf)
 
 
 Customize the Dashboard: Get started!
@@ -45,7 +47,7 @@ Customize the Dashboard: Get started!
 
 The general idea is that the Dashboard relies on:
 + source files: */src_core/* which are both third-party librairies (in */src_core/lib/*) and librairies developped for this MSF-Dashboard (other files in */src_core/*). These files should not be changed for a 'simple' customization (change layout, text and reuse existing charts and functions).
-+ configuration files: */cfg_[name-your-custom-version-here]/* which are 3: *index.html* for the layout, *lang/lang.js* for the texts and their translation and *dev/dev-defined.js* to describe the data and the charts.
++ configuration files: */cfg_[name-your-custom-version-here]/* which are 3: *index.html* for the layout, *lang/lang.js* for the texts and their translation and *dev/dev-defined.js* to describe the data and the charts + the data files (geojson, population and medical data).
 
 To get started, you can consult the Example / Template section or the implementation examples of different charts (available soon):
 + [Bar Chart](http://braimbault.github.io/NA)
