@@ -32,12 +32,13 @@ Templates and Examples
 
 The MSF-Dashboard community has created some templates and examples to help you generate and customize your own MSF-Dashboard. Here are a few public ones:
 
-+ Outbreak: MSF Lubumbashi Mission [online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_msf-lubumbashi) / [download]() - Since December 2015 (offline, data parsed via tsv)
-+ Surveillance: MSF Katanga ERU - [online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_eru-katanga/) / [download]() - Since January 2016 (offline, data parsed via excel-spreadsheets)
-+ Surveillance: SRE MOH Tonkolili DHMT - [online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_dhmt-tonkolili/) / [download]() - Since April 2016 (offline, data parsed via dedicated datamanager)
-+ Surveillance: MSF Katanga ERU - [online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_eru-sudkivu/) / [download]() - Since June 2016 (offline, data parsed via excel-spreadsheets)
-+ More to come...
-
+|Description                                           |Links                                                 |
+|------------------------------------------------------|------------------------------------------------------|
+|**Outbreak: MSF Lubumbashi Mission** - since December 2015 - offline, data parsed via tsv|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_msf-lubumbashi) / [download]()|
+|**Surveillance: MSF Katanga ERU** - since January 2016 - offline, data parsed via excel-spreadsheets|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_eru-katanga/) / [download]()|
+|**Surveillance: SRE MOH Tonkolili DHMT** - since April 2016 - offline, data parsed via dedicated datamanager|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_dhmt-tonkolili/) / [download]()|
+|**Surveillance: MSF Katanga ERU** - since June 2016 - offline, data parsed via excel-spreadsheets|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_eru-sudkivu/) / [download]()|
+|More to come...| |
 
 To get started, you can also consult the implementation examples of different charts:
 
@@ -49,46 +50,56 @@ General Architecture
 --------------------
 
 ```
-index.html                           - Defines the layout of the dashboard (charts position and identifiers). 
-|                                      @see: Bootstrap grid system: http://getbootstrap.com/css/#grid.  
+index.html                                - Defines the layout of the dashboard (charts position and 
+|                                           identifiers). 
+|                                           @see: Bootstrap grid system: http://getbootstrap.com/css/#grid.  
 |
-├── dev/dev-defined.js               - Parameters to get and check medical and geometry data, define charts and maps.
-|                                      @see: All the defined parameters are global and members of 'module:g'.
-|
-├── lang/module-lang.js              - Stores texts visible to the end user in available languages.
-|                                      @see: 'module:module_lang'
-|
-├-- js/module-chartwarper.js         - [Optional] Warp charts/containers under tabs.
-|                                      @see 'module:module_chartwarper'
-|
-└── js/main-loadfiles.js             - Combines functions of: requesting data from sources, reading and formatting
-    |                                  data, connecting with other components.
-    |                                  @see: 'module:main_loadfiles'
-    |
-    ├── js/module-datacheck.js       - Medical data quality check and processing (runs through all the medical
-    |                                  records).
-    |                                  @see: 'module:module_datacheck'
-    |
-    └── js/main-core.js              - Central component: setup and pulls the data in the charts and maps. Define  
-        |                              the interactions. Connects with other components.
-        |                              @see 'module:main_core'
-        |
-        ├── js/module-interface.js   - A lateral menu and exta functionalities buttons for charts/maps. 
-        |   |                          @see 'module:module_interface'
-        |   |          
-        |   └-- js/module-intro.js   - [Optional] intro.js to access quick interactive help: setup.
-        |                              @see 'module:module_intro'
-        |
-        ├-- js/module-datatable.js   - [Optional] datatables.js to display data: setup, display and interactions.
-        |                              @see 'module:module_datatable'
-        |
-        ├-- js/module-multiadm.js    - [Optional] Maps warper (tabs) and 'Goto' dropdown lists: setup, display and 
-        |                              interactions.
-        |                              @see 'module:module_multiadm'
-        |
-        └-- js/module-colorscale.js  - [Optional] Provide functions to deal with maps colorscale (automatic 
-                                       adaptation, diffrent computing methods - geostats.js - or color tones...).
-                                       @see 'module:module_colorscale'          
+└─ js/main-getlibs.js                     - Loads third-party ibrairies and dashboard sources.
+   |                                        @see: Folders are defined in 'index.html'.
+   |
+   ├─ dev/dev-defined.js                  - Parameters to get and check medical and geometry data, define
+   |                                        charts and maps.
+   |                                        @see: All the defined parameters are global and members of 'module:g'.
+   |
+   ├─ lang/module-lang.js                 - Stores texts visible to the end user in available languages.
+   |                                        @see: 'module:module_lang'
+   |
+   ├- js/module-chartwarper.js            - [Optional] Warp charts/containers under tabs.
+   |                                        @see 'module:module_chartwarper'
+   |
+   └─ js/main-getdata.js                  - Loads datafiles.
+      |                                     @see: 'module:module_getdata'
+      |
+      └── js/main-loadfiles.js            - Combines functions of: requesting data from sources, reading
+          |                                 and formatting data, connecting with other components.
+          |                                 @see: 'module:main_loadfiles'
+          |
+          ├── js/module-datacheck.js      - Medical data quality check and processing (runs through all
+          |                                 the medical records).
+          |                                 @see: 'module:module_datacheck'
+          |
+          └── js/main-core.js             - Central component: setup and pulls the data in the charts and   
+              |                             maps. Define the interactions. Connects with other components.
+              |                             @see 'module:main_core'
+              |
+              ├── js/module-interface.js  - A lateral menu and exta functionalities buttons for charts/maps. 
+              |   |                         @see 'module:module_interface'
+              |   |          
+              |   └-- js/module-intro.js  - [Optional] intro.js to access quick interactive help: setup.
+              |                             @see 'module:module_intro'
+              |
+              ├-- js/module-datatable.js  - [Optional] datatables.js to display data: setup, display and 
+              |                             interactions.
+              |                             @see 'module:module_datatable'
+              |
+              ├-- js/module-multiadm.js   - [Optional] Maps warper (tabs) and 'Goto' dropdown lists: setup, 
+              |                             display and interactions.
+              |                             @see 'module:module_multiadm'
+              |
+              └-- js/module-colorscale.js - [Optional] Provide functions to deal with maps colorscale  
+                                            (automatic adaptation, diffrent computing methods - geostats.js -
+                                            or color tones...).
+                                            @see 'module:module_colorscale'          
     
 ```
 
