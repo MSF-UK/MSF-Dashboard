@@ -3,34 +3,13 @@ MSF-Dashboard v0.9.9
 
 A lightweight and modular data visualization micro-website that can be offlined and adapted to various data-feeds.
 
+Currently in pre-release: [get last release!](https://github.com/MSF-UK/MSF-Dashboard/releases)
 Want to contribute to MSF-Dashboard? Please read `CONTRIBUTING.md`.
 
+Example / Templates
+-------------------
 
-Installation and Usage
-----------------------
-
-MSF Dashboard can be deployed in a variety of contexts. It is a micro-website which, in its 'essential' version, does not require more than a web browser (Firefox or equivalent or Chrome or equivalent, IE is support is not guaranteed at the moment). It is run offline thanks to nwjs which includes a node instance and allow usage of more advanced file manipulation.
-
-The main constraints for installation are:
-- Online or offline implementation.
-- Connexion with data source. 
-
-The setup that are currently supported and have been tested include:
-- Offline implementation with nwjs micro-server (data parsed via excel-spreadsheets, csv, tsv, dedicated datamanager).
-- Online implementation without backend (data parsed via json file directly uploaded to the website).
-- Online implementation with backend (data parsed via various APIs...).
-
-The technical side of a MSF-Dashboard deployment is generally a 3-steps process:
-- 1) Parsing and formatting data 
-- 2) Configuring the MSF-Dashboard
-- 3) Hosting the MSF-Dashboard
-
-[Get last release!](https://github.com/MSF-UK/MSF-Dashboard/releases)
-
-Templates and Examples
-----------------------
-
-The MSF-Dashboard community has created some templates and examples to help you generate and customize your own MSF-Dashboard. Here are a few public ones:
+Here are gathered some use-cases of the MSF-Dashboard and 'online - demo versions' which can help you understand whether it is what you need or not. In the fortunate case it is the solution you need, they can be a good start to help you generate and customize your own MSF-Dashboard.
 
 |Description                                           |Links                                                 |
 |------------------------------------------------------|------------------------------------------------------|
@@ -40,8 +19,34 @@ The MSF-Dashboard community has created some templates and examples to help you 
 |**Surveillance: MSF Katanga ERU** - since June 2016 - offline, data parsed via excel-spreadsheets|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_eru-sudkivu/) / [download]()|
 |More to come...| |
 
-To get started, you can also consult the implementation examples of different charts:
 
+Installation and Usage
+----------------------
+
+MSF Dashboard can be deployed in a variety of contexts. It is a micro-website which, in its 'essential' version, does not require more than a web browser (Firefox or equivalent or Chrome or equivalent, IE is support is not guaranteed at the moment). It is run offline thanks to nwjs which includes a node instance and allow usage of more advanced file manipulation.
+
+The technical side of a MSF-Dashboard deployment is generally a 4-steps process:
+- 1) Workout parsing and formatting data workflow 
+- 2) Configuring the MSF-Dashboard
+- 3) Deploy the MSF-Dashboard
+- 4) Support the end-users
+
+The main constraints for installation are the connexion with data source and specific needs that might not be available yet (get in touch [here](https://github.com/MSF-UK/MSF-Dashboard/issues)). 
+
+The setup that are currently supported and have been tested include:
+- Offline implementation with nwjs micro-server (data parsed via excel-spreadsheets, csv, tsv, dedicated datamanager).
+- Online implementation without backend (data parsed via json/csv/text file directly uploaded to the website).
+- Online implementation with external backend (data parsed via various APIs...).
+
+
+Customize the Dashboard: Get started!
+-------------------------------------
+
+The general idea is that the Dashboard relies on:
++ source files: */src_core/* which are both third-party librairies (in */src_core/lib/*) and librairies developped for this MSF-Dashboard (other files in */src_core/*). These files should not be changed for a 'simple' customization (change layout, text and reuse existing charts and functions).
++ configuration files: */cfg_[name-your-custom-version-here]/* which are 3: *index.html* for the layout, *lang/lang.js* for the texts and their translation and *dev/dev-defined.js* to describe the data and the charts.
+
+To get started, you can consult the Example / Template section or the implementation examples of different charts (available soon):
 + [Bar Chart](http://braimbault.github.io/NA)
 + [Multi Map](http://braimbault.github.io/NA)
 
