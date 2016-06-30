@@ -4,6 +4,7 @@ MSF-Dashboard v0.9.9
 A lightweight and modular data visualization micro-website that can be offlined and adapted to various data-feeds.
 
 Currently in pre-release: [get last release!](https://github.com/MSF-UK/MSF-Dashboard/releases)
+
 Want to contribute to MSF-Dashboard? Please read `CONTRIBUTING.md`.
 
 Example / Templates
