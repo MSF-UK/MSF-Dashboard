@@ -39,7 +39,7 @@ The setup that are currently supported and have been tested include:
 - Online implementation without backend (data parsed via json/csv/text file directly uploaded to the website).
 - Online implementation with external backend (data parsed via various APIs...).
  
-Ready to try? You can start with the ERU versions: 
+**Ready to try? You can start with the ERU versions:**
 + Download the release including configuration files for the Sud-Kivu ERU here -> [X](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.0.0_eru-sudkivu)
 + Here is one page guide for quick deployement (included in the release) -> [X](https://github.com/MSF-UK/MSF-Dashboard/blob/master/cfg_eru-sudkivu/doc-dev/eru_dashboard-deployement_onepage.pdf)
 + Here is a simple user guide (included in the release) -> [X](https://github.com/MSF-UK/MSF-Dashboard/blob/master/cfg_eru-sudkivu/doc-user/eru_doc-user_draft.pdf)
