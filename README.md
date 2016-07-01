@@ -32,15 +32,14 @@ The technical side of a MSF-Dashboard deployment is generally a 4-steps process:
 - 3) Deploy the MSF-Dashboard
 - 4) Support the end-users
 
-The main constraints for installation are the connexion with data source and specific needs that might not be available yet (get in touch [here](https://github.com/MSF-UK/MSF-Dashboard/issues)). 
+The main constraints for installation are the connexion with data source and specific data visualization and interaction needs that might not be implemented yet. 
+ 
+Please get in touch [here](https://github.com/MSF-UK/MSF-Dashboard/issues) if you experience difficulties or if you want to make suggestions!
  
 **Ready to try? You can start with the ERU versions:**
 + Download the release including configuration files for the Sud-Kivu ERU here -> [X](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.0.0_eru-sudkivu)
 + Here is one page guide for quick deployement (included in the release) -> [X](https://github.com/MSF-UK/MSF-Dashboard/blob/master/cfg_eru-sudkivu/doc-dev/eru_dashboard-deployement_onepage.pdf)
 + Here is a simple user guide (included in the release) -> [X](https://github.com/MSF-UK/MSF-Dashboard/blob/master/cfg_eru-sudkivu/doc-user/eru_doc-user_draft.pdf)
-
-Please get in touch [here](https://github.com/MSF-UK/MSF-Dashboard/issues) if you experience difficulties!
-A complete API v1.0.0 documentation for MSF Dashboard customization is underway, please bear with us! 
 
 Customize the Dashboard: Get started!
 -------------------------------------
@@ -49,9 +48,9 @@ The general idea is that the Dashboard relies on:
 + source files: */src_core/* which are both third-party librairies (in */src_core/lib/*) and librairies developped for this MSF-Dashboard (other files in */src_core/*). These files should not be changed for a 'simple' customization (change layout, text and reuse existing charts and functions).
 + configuration files: */cfg_[name-your-custom-version-here]/* which are 3: *index.html* for the layout, *lang/lang.js* for the texts and their translation and *dev/dev-defined.js* to describe the data and the charts + the data files (geojson, population and medical data).
 
-To get started, you can consult the Example / Template section or the implementation examples of different charts (available soon):
-+ [Bar Chart](http://braimbault.github.io/NA)
-+ [Multi Map](http://braimbault.github.io/NA)
+A complete API v1.0.0 documentation for MSF Dashboard customization is underway as well as simple examples, please bear with us! At the moment please consult the example / templates.
+
+Please get in touch [here](https://github.com/MSF-UK/MSF-Dashboard/issues) if you experience difficulties or if you want to make suggestions!
 
 
 General Architecture
