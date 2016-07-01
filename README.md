@@ -33,11 +33,6 @@ The technical side of a MSF-Dashboard deployment is generally a 4-steps process:
 - 4) Support the end-users
 
 The main constraints for installation are the connexion with data source and specific needs that might not be available yet (get in touch [here](https://github.com/MSF-UK/MSF-Dashboard/issues)). 
-
-The setup that are currently supported and have been tested include:
-- Offline implementation with nwjs micro-server (data parsed via excel-spreadsheets, csv, tsv, dedicated datamanager).
-- Online implementation without backend (data parsed via json/csv/text file directly uploaded to the website).
-- Online implementation with external backend (data parsed via various APIs...).
  
 **Ready to try? You can start with the ERU versions:**
 + Download the release including configuration files for the Sud-Kivu ERU here -> [X](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.0.0_eru-sudkivu)
@@ -45,7 +40,7 @@ The setup that are currently supported and have been tested include:
 + Here is a simple user guide (included in the release) -> [X](https://github.com/MSF-UK/MSF-Dashboard/blob/master/cfg_eru-sudkivu/doc-user/eru_doc-user_draft.pdf)
 
 Please get in touch [here](https://github.com/MSF-UK/MSF-Dashboard/issues) if you experience difficulties!
-
+A complete API v1.0.0 documentation for MSF Dashboard customization is underway, please bear with us! 
 
 Customize the Dashboard: Get started!
 -------------------------------------
@@ -119,9 +114,8 @@ index.html                                - Defines the layout of the dashboard 
 For More Information
 --------------------
 
-+ Documentation is available at [Use MSF-Dashboard](https://MSF-UK.github.io/MSF-Dashboard_doc).
++ Developer Documentation is available at [Contribute to MSF-Dashboard](https://MSF-UK.github.io/MSF-Dashboard_doc) but is not not complete for v1.0.0 yet, bear with us!
 + Report issues or ask for help  at [Issues MSF-Dashboard](https://github.com/MSF-UK/MSF-Dashboard/issues).
-+ Track last changes [Releases history MSF-Dashboard](https://github.com/MSF-UK/MSF-Dashboard/releases).
 
 License
 -------
