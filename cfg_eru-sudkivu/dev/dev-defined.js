@@ -155,6 +155,7 @@ g.module_getdata = {
 g.medical_headerlist = {
     epiwk: 'epiweek',     // Epidemiological week: format YYYY-WW
     admN1: 'ZS',    // Name of administrative/health division level N1 
+    admN2: 'AS',    // Name of administrative/health division level N2
     disease: 'disease',
     case: 'nb_cases', 
     death: 'nb_deaths', 
@@ -223,6 +224,7 @@ if(!g.module_datacheck){
 g.module_datacheck.definition_value = {
     epiwk:  {test_type: 'epiwk',        setup: 'none'},     // Epidemiological week: format YYYY-WW
     admN1:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level N1 
+    admN2:  {test_type: 'none',   setup: 'none'}, // No geom file yet 
     pop:    {test_type: 'integer',      setup: 'none'},     // Population of adm
     case: {test_type: 'integer',      setup: 'none'}, 
     death: {test_type: 'integer',      setup: 'none'},
