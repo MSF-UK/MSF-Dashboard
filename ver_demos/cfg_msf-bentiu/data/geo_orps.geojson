@@ -1,0 +1,12 @@
+{
+"type": "FeatureCollection",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+                                                                                
+"features": [
+{ "type": "Feature", "properties": { "Id": 0, "Block": "7", "Sector": "5", "Area": "18031.3039045263", "SqM_per_Pe": 15.800000, "Join": 8, "add": "S5-B7", "pop": null, "ORP": 1, "adm10_name": "Sector 5", "admin_leve": 11, "name": "ORP (Sector 5, S5-B7)", "adm11_name": "Sector 5, S5-B7" }, "geometry": { "type": "Point", "coordinates": [ 29.799179203224966, 9.331021234618641 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Block": "11", "Sector": "4", "Area": "18511.9793102877", "SqM_per_Pe": 12.150000, "Join": 17, "add": "S4-B11", "pop": null, "ORP": 1, "adm10_name": "Sector 4", "admin_leve": 11, "name": "ORP (Sector 4, S4-B11)", "adm11_name": "Sector 4, S4-B11" }, "geometry": { "type": "Point", "coordinates": [ 29.798333762469458, 9.33343265876807 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Block": "7", "Sector": "1", "Area": "22466.7142765192", "SqM_per_Pe": 0.000000, "Join": 22, "add": "S1-B7", "pop": null, "ORP": 1, "adm10_name": "Sector 1", "admin_leve": 11, "name": "ORP (Sector 1, S1-B7)", "adm11_name": "Sector 1, S1-B7" }, "geometry": { "type": "Point", "coordinates": [ 29.785169204902985, 9.334415252121715 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Block": "6", "Sector": "2", "Area": "11587.8023557795", "SqM_per_Pe": 0.000000, "Join": 37, "add": "S2-B6", "pop": null, "ORP": 1, "adm10_name": "Sector 2", "admin_leve": 11, "name": "ORP (Sector 2, S2-B6)", "adm11_name": "Sector 2, S2-B6" }, "geometry": { "type": "Point", "coordinates": [ 29.791387464845972, 9.336489640312976 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Block": "7", "Sector": "3", "Area": "18217.0581587491", "SqM_per_Pe": 18.690000, "Join": 54, "add": "S3-B7", "pop": null, "ORP": 1, "adm10_name": "Sector 3", "admin_leve": 11, "name": "ORP (Sector 3, S3-B7)", "adm11_name": "Sector 3, S3-B7" }, "geometry": { "type": "Point", "coordinates": [ 29.796229440449476, 9.339433921105877 ] } }
+]
+}
