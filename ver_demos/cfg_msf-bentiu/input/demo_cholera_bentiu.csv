@@ -1,6 +1,6 @@
 EpiWk,Row,CTC,PatientID,AdmDate,Age_m,Age_y,Sex,Pregnant,Geo_L1,Geo_L2,Geo_L3,Dehydr_Adm,ExitDate,Dehydr_Most,Outcome,DeathTime,OCV,StayDays,Age,AgeGp,RepHealthFac,CaseAddm,DateOnset,HSB
 2016-41,1,,1,42659,,12,1,2,Sector 5,S5-B8,,B,42665,,1,,0,5,8,2,MSF,1,42659,0
-2016-41,2,,2,42663,,34,1,1,Sector 4,S4-B4,,A,42667,,1,,0,3,56,3,MSF,1,42661,2
+2016-41,2,,2,42663,,34,1,2,Sector 4,S4-B4,,A,42667,,1,,0,3,56,3,MSF,1,42661,2
 2016-41,3,,3,42664,,29,2,1,Sector 1,S1-B7,,B,42668,,1,,0,0,38,2,IOM,1,42664,0
 2016-41,4,,4,42665,,2,2,2,Sector 2,S2-B7,,A,42667,,1,,2,0,34,2,IRC ,2,42665,0
 2016-41,5,,5,42665,,0,2,2,Sector 5,S5-B5,,B,42667,,1,,0,0,35,2,IRC ,2,42662,3

@@ -862,7 +862,7 @@ function generateDashboard(){
                 if(!(g.viz_definition[key1].domain_builder == 'epiweek')){
                     $('#chart-'+key1+' .x-axis-label').attr('dy','-20px');
                     console.log('main-core.js ~l1020: Special label margin: #chart-'+key1);
-                }
+                } 
                 break;
 
             //------------------------------------------------------------------------------------
@@ -1055,11 +1055,10 @@ function generateDashboard(){
                 }
 
                 g.viz_definition[key1].maps = {};
-                g.viz_definition[key1].legend ={};
+                g.viz_definition[key1].legend ={};					
 
                 g.geometry_keylist.forEach(function(key2){
-
-                    var div_id = '#map-' + key2;
+                    var div_id = '#map-' + key2;					
                     var filter_id = div_id + '-filter';
                     g.viz_definition[key1].charts[key2]
                         .width($(div_id).width())
@@ -1073,7 +1072,8 @@ function generateDashboard(){
                         .colorAccessor(colorAccessor)                          
                         .featureKeyAccessor(function(feature){
                             return feature.properties['name'];
-                        }).popup(function(feature){
+                        })
+						.popup(function(feature){
                             return feature.properties['name'];
                         })
                         .renderPopup(true)
@@ -1087,7 +1087,7 @@ function generateDashboard(){
                         .on("renderlet.key",function(e){
                             var html = "";
                             e.filters().forEach(function(l){
-                                html += l.split(',')[l.split(',').length-1]+", ";
+                                html += l.split(',')[l.split(',').length-1]+", ";		//text for filter list
                             });
                             $(filter_id).html(html);
                         });
@@ -1109,19 +1109,25 @@ function generateDashboard(){
                         var div = L.DomUtil.create('div', 'info legend');
                         var html = '<table style="font-size:1em;">';
                         for(var i = g.module_colorscale.valuescurrent.length - 1;i > 1;i--){
+							
                             var minVal = numberWithCommas(g.module_colorscale.valuescurrent[i - 1].toFixed(precision));
                             var maxVal = numberWithCommas(g.module_colorscale.valuescurrent[i].toFixed(precision));
-                            html += '<tr><td><i style="background:' + g.module_colorscale.colors[g.module_colorscale.colorscurrent][i - 1] + '"></i></td>';
+							//console.log("make legend i = ", i, minVal, '-', maxVal);
+                            /* html += '<tr><td><i style="background:' + g.module_colorscale.colors[g.module_colorscale.colorscurrent][i - 1] + '"></i></td>';
                             if (g.module_colorscale.mapunitcurrent == 'Completeness' && i == 2) {
                                 html += '<td>≥</td>';              
                             }else{
                                 html += '<td>></td>';
                             }
-                            html += '<td align="right">' + minVal + '</td></tr>';
+							html += '<td align="right">' + minVal + '</td></tr>';  */
+							
+							html += '<tr><td><i style="background:' + g.module_colorscale.colors[g.module_colorscale.colorscurrent][i - 1] + '"></i></td>';
+							html += '<td>≤ </td><td align="right">' + maxVal + '</td></tr>';
+						
                         }
                         if(!(g.module_colorscale.mapunitcurrent == 'Completeness')){
                             html += '<tr><td><i style="background:' + g.module_colorscale.colors[g.module_colorscale.colorscurrent][0] + '"></i></td>';
-                            html += '<td>=</td><td align="right">'+ g.module_lang.text[g.module_lang.current].map_legendNA + '</td></tr>';
+                            html += '<td></td><td align="right">'+ g.module_lang.text[g.module_lang.current].map_legendNA + '</td></tr>';
                         }
                         html += '</table>';
                         div.innerHTML = html;
@@ -1129,6 +1135,33 @@ function generateDashboard(){
                         return div;
                     };
 
+					
+					var ptLayer = L.geoJson.layer;
+					
+					function onPointsFeature(feature, layer) {
+						//console.log("in onPointsFeature");
+						if (feature.properties.name) {
+							var popupContent = feature.properties.name;
+							layer.bindPopup(popupContent);
+							//console.log(popupContent);    
+						};
+						layer.on('mouseover', function (e) {
+							//console.log("in mouseover: ", e.target.feature.properties.name);
+							this.setStyle({
+								"color": '#ffff00',
+								"weight": 2,
+							}); 
+							//this.setOptions(L.circleMarker, {riseOnHover: true});
+						});
+						layer.on('mouseout', function (e) {
+							//console.log("in mouseout: ", e.target.feature.properties.name);
+							this.setStyle({
+								"color": '#284576',
+								"weight": 1,
+							}); 
+						});
+					} 
+					
                     var extralay_keys = Object.keys(g.module_getdata.extralay);
                     extralay_keys.forEach(function(key_ex) {
                         if(key_ex == 'mask'){
@@ -1158,10 +1191,39 @@ function generateDashboard(){
                                 });
                             admLayer.addTo(g.viz_definition[key1].maps[key2]);
                             //admLayer.bringToBack();
+                        }else if(key_ex == 'points'){
+                            var myStyle = {
+								"radius": 8,
+                                "color": "#284576",
+                                "weight": 1,
+                                "opacity": 1,
+                                "fillColor": "#558ae5",
+                                "fillOpacity": 0.6,
+                            };							
+                            var pointsLayer = L.geoJson(g.extralay_data.points, {
+                                    onEachFeature: onPointsFeature,
+									pointToLayer: function (feature, latlng) {
+										return L.circleMarker(latlng, myStyle);
+									}
+                                });							
+                            pointsLayer.addTo(g.viz_definition[key1].maps[key2]);
+                            pointsLayer.bringToFront(); 
+							ptLayer = pointsLayer;
                         }
                     });
 
                     g.viz_definition[key1].legend[key2].addTo(g.viz_definition[key1].maps[key2]);
+									
+					g.viz_definition[key1].maps[key2].on('focus', function () {
+						if (ptLayer) {
+							ptLayer.bringToFront();
+						}
+					});
+					g.viz_definition[key1].maps[key2].on('click', function () {
+						if (ptLayer) {
+							ptLayer.bringToFront();
+						}
+					});
 
                 });
 
