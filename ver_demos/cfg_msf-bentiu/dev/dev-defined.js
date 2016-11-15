@@ -141,8 +141,8 @@ g.module_getdata = {
     },
     medical:{
         medical: {
-            method: 'medicalfs',
-            options: {  url: './input/',
+	    method: 'medicald3noserver',
+            options: {  url: 'input/demo_cholera_bentiu.csv',
                         type: 'csv'}      
         }
     },
