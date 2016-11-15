@@ -210,7 +210,8 @@ module_colorscale.display = function() {
 	// Title
 	var html = '<div><p><b>'+g.module_lang.text[g.module_lang.current].colorscale_title+'</b></p>';
 	
-	if(g.medical_datatype == 'surveillance'){html += '<div class="col-md-4">';}
+	//if(g.medical_datatype == 'surveillance'){html += '<div class="col-md-4">';}
+	html += '<div class="col-md-4">';
 
 	// Unit
 	html += '<p><table style="font-size:1em;">';
@@ -230,7 +231,8 @@ module_colorscale.display = function() {
 		
 	html +=	'</table></p>';
 	
-	if(g.medical_datatype == 'surveillance'){html += '</div><div class="col-md-4">';}
+	//if(g.medical_datatype == 'surveillance'){html += '</div><div class="col-md-4">';}
+	html += '</div><div class="col-md-4">';
 
 	// Colorscale mode
 	html += '<p><table style="font-size:1em;">';
@@ -252,7 +254,8 @@ module_colorscale.display = function() {
 
 	html +=	'</table></p>';
 
-	if(g.medical_datatype == 'surveillance'){html += '</div><div class="col-md-4">';}
+	//if(g.medical_datatype == 'surveillance'){html += '</div><div class="col-md-4">';}
+	html += '</div><div class="col-md-4">'
 
 	// Colors and intervals
 	html += '<p>'+g.module_lang.text[g.module_lang.current].colorscale_choosecolor+'<select class="select-cs" id="selectform1">';
@@ -269,7 +272,8 @@ module_colorscale.display = function() {
 	});
 	html +='</p></select>';
 
-	if(g.medical_datatype == 'surveillance'){html += '</div>';}
+	//if(g.medical_datatype == 'surveillance'){html += '</div>';}
+	html += '</div>';
 
 	html += '</div></div>';
 
@@ -497,9 +501,9 @@ module_colorscale.lockcolor = function(source){
 		    return a - b;
 		}
 		var unique_values = serie.getClassUniqueValues();
-		/*if(g.module_colorscale.mapunitcurrent !== 'Completeness'){
+		if(g.module_colorscale.mapunitcurrent !== 'Completeness'){
 			unique_values.sort(sortNumber);
-		}*/
+		}
 
 		var nbClass = Math.min(5,unique_values.length - 1);
 
