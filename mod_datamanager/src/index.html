@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>MSF Data Manager v1.0 | Surveillance Tonkolili DHMT</title>
+        <script src="./lib/jquery/jquery-2.2.0.min.js"></script>
+        <script src="./lib/bootstrap/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="./lib/bootstrap/bootstrap.min.css" type="text/css">
+        <link rel="stylesheet" href="./css/main.css" type="text/css">
+        <script src="./lib/jszip/jszip.js"></script>
+        <script src="./lib/sheetjs/xlsx.js"></script>
+        <script src="./lib/jsonfile/jsonfile.js"></script>
+        <link rel="stylesheet" href="./lib/jquery-contextmenu/jquery.contextMenu.css" type="text/css">
+        <script src="./lib/jquery-contextmenu/jquery.ui.position.js"></script>
+        <script src="./lib/jquery-contextmenu/jquery.contextMenu.js"></script>
+        <link rel="stylesheet" href="./lib/interactivetable/interactivetable.css" type="text/css">
+        <script src="./lib/interactivetable/interactivetable.js"></script>
+
+
+    </head>
+    <body>
+        <div class="container" id="containerId">
+
+            <!-- Header -->
+            <div class="row col-md-12">
+                <h2 id="title">MSF Data Manager v1.0 | Surveillance Tonkolili DHMT</h2>
+                <div class="col-md-12">
+                    <p id="description">
+                    PILOT VERSION. This version uses surveillance data. This tool is developed by the MSF UK, Manson Unit - <a href="mailto:gis.mansonunit@london.msf.org">gis.mansonunit@london.msf.org</a>.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Open Database -->
+            <div class="row col-md-12">
+                <p><h3><u>Step 1</u>: Open or Create a database</h3></p>
+                <div class="col-md-6">
+                    <p><h4><input type="button" style="width: 100%;" value="Open an existing database..." onclick="document.getElementById('db_old').click();"/> </h4> <input style="display: none;" type="file" accept=".json" id="db_old"/></p>
+                </div>
+                <div class="col-md-6">
+                    <p><h4><input type="button" style="width: 100%;" value="Create and open a new database..." onclick="document.getElementById('db_new').click();"/> </h4><input style="display: none;" type="file" accept=".json" id="db_new"/></p>
+                </div>
+                <div class="col-md-12">
+                    <p><h4>Currently opened database:</h4></p>
+                    <pre id="prompt_db_current">No database opened</pre>
+                </div>
+            </div>
+
+            <!-- Database Summary -->
+            <div class="row col-md-12">
+                <p><h3><u>Step 2</u>: Add, Update or Delete data in the database</h3></p>
+                <div class="col-md-12">
+                    The table summarizes the records in the database per epi-week. Rows stand for years and columns for epi-weeks. Click an cell of the table to add or update data from file (xlsx) or delete the records. Backups of the database are made before any operation in the 'backup' folder.
+                    </p>
+                </div>
+                <div class="col-md-12">
+                    <pre id="table">No database opened</pre>
+                    <p><a id="more">Show more...</a></p>
+                    <pre id="prompt_db_content" hidden="true">No database opened</pre>
+
+                    <!-- Add Dataset -->
+                    <form><input style="display: none;" type="file" accept=".xlsx" id="ds_add" /></form>
+                </div>
+            </div>
+
+            <!-- Export Database -->
+            <div style="display: none;" class="col-md-6" id="export_row" hidden="true">
+                <div class="col-md-12">
+                    <p><h4><input style="display: none;" type="button" style="width: 100%;" value="Export database to csv..." onclick="document.getElementById('db_export').click();"/> </h4><input style="display: none;" type="file" accept=".csv" nwsaveas="..\..\data-folders\04-dashboard-input\" id="db_export"/></p>
+                </div>
+            </div>
+            <div class="row col-md-12" id="export2_row" hidden="true">
+                <p><h3><u>Step 3</u>: Export an Image of the database to the Dashboard</h3></p>
+                <div class="col-md-12">
+                    <p><h4><input type="button" style="width: 100%;" value="Export database to csv..." onclick="document.getElementById('db_export2').click();"/> </h4><input style="display: none;" type="file" accept=".csv" id="db_export2"/></p>
+                </div>
+            </div>
+
+            <div class="row col-md-12" id="end_row" hidden="true">
+                <p><h3><u>Step 4</u>: <!--Click <a id="dashboardIndex">here</a> to e-->Exit the Data Manager and open the Dashboard</h3></p>
+            </div>
+
+            <!-- Operation hystory -->
+            <div class="row footer col-md-12">
+                <div class="col-md-12">
+                    <p><h4>Operation history:</h4>
+                    </p>
+                    <pre id="prompt_progress"><table></table></pre>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- .js -->
+        <script src="js/config.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+</html>

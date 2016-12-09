@@ -1,0 +1,11 @@
+{
+	"name": "MSF DataManager",
+	"main": "src/index.html",
+	"chromium-args" : "--allow-file-access-from-files",
+	"nodejs" : true,
+	"window": {
+		"toolbar": true,
+		"height": 6000,
+		"width": 8000
+	}
+}
