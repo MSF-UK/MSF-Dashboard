@@ -1,0 +1,32 @@
+.container{
+    width: 90%;
+}
+
+.row{
+    padding-bottom:5px;
+    border-bottom-color: #dddddd;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    margin-bottom:5px;
+}
+
+.footer{
+    padding-bottom:5px;
+    border-bottom-color: white;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    margin-bottom:5px;
+}
+
+#more{
+	cursor: pointer;
+}
+
+#prompt_db_content{
+	max-height: 250px;
+	overflow-y: scroll;
+}
+#prompt_progress{
+	max-height: 100px;
+	overflow-y: scroll;
+}

@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>dev-defined.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>dev-defined.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p><em>2016/12/11 - MSF-Dashboard v1.0.0 - This example is adapted from the Bentiu Dashboard for Cholera Outbreak.</em>  </p>
+<p>This module contains the parameters of the dashboard that have to be defined by the developer in order to tailor the tool to the specific needs of the future users. In the following we will look at the parameters needed to:</p>
+<ul>
+<li>get the medical and geometry data,</li>
+<li>check the medical and geometry data,</li>
+<li>define the charts and maps, feed them with the correct data and define specific interaction.</li>
+</ul>
+<p>All these parameters are defined in <code>dev/dev-defined.js</code> and are stored in the global variable <code>g</code>.<br><code>g</code> stores other Objects as well that are not defined by the developer but that are the results of the processing and interactions. <code>g</code> can be accessed through your developer browser interface.<br>As a reminder, two other files are crucial when setting up a new version of the Dashboard which are:</p>
+<ul>
+<li>the ‘index.html’ file which defines the divs and the positions of the charts and maps, and</li>
+<li>the ‘lang/module-lang.js’ which contains all the text that have to be displayed and its various translations.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/*------------------------------------------------------------------------------------
+    MSF Dashboard - dev-defined.js
+    (c) 2015-2016, MSF-Dashboard contributors for MSF
+    List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
+    Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
+------------------------------------------------------------------------------------*/</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p><code>g.dev_defined</code> is the namespace for this module.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g.dev_defined = {};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Activates autoload dashboard (for development).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g.module_datacheck.autoload = <span class="hljs-literal">false</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Components of the configuration file:</p>
+<ol>
+<li>Data parameters</li>
+<li>Data check parameters</li>
+<li>Charts parameters</li>
+</ol>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h2 id="1-data-parameters">1) Data parameters</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Defines the type of medical data parsed in the dashboard.<br>Currently accepted values are:</p>
+<ul>
+<li><code>surveillance</code> (aggregated) or</li>
+<li><code>outbreak</code> (linelist).</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g.medical_datatype = <span class="hljs-string">'outbreak'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Defines your incidence (and mortality) computation.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g.dev_defined.definition_incidence = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">value,pop,periode</span>) </span>{
+    <span class="hljs-keyword">return</span> value * <span class="hljs-number">10000</span> / (pop * periode);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Defines your completeness computation.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g.dev_defined.ignore_empty = <span class="hljs-literal">true</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Contains the list of implemented map units in ‘module_colorscale’.<br>Currently accepted values are:</p>
+<ul>
+<li><code>Cases</code></li>
+<li><code>Deaths</code></li>
+<li><code>IncidenceProp</code></li>
+<li><code>MortalityProp</code></li>
+<li><code>Completeness</code></li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">if</span>(!g.module_colorscale){
+    g.module_colorscale = {};
+}
+g.module_colorscale.mapunitlist = [<span class="hljs-string">'Cases'</span>,<span class="hljs-string">'Deaths'</span>,<span class="hljs-string">'IncidenceProp'</span>,<span class="hljs-string">'MortalityProp'</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Defines the data parsed in the dashboard (urls and sources type). Order matters.<br>Currently accepted methods are:</p>
+<ul>
+<li><code>arcgis_api</code> (not published yet)</li>
+<li><code>kobo_api</code> (not published yet)</li>
+<li><code>d3</code></li>
+<li><code>medicald3server</code></li>
+<li><code>medicald3noserver</code></li>
+<li><code>geometryd3</code></li>
+<li><code>populationd3</code></li>
+<li><code>medicalxlsx</code></li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g.module_getdata = {
+    <span class="hljs-attr">geometry</span>: {
+        <span class="hljs-attr">admN1</span>: {
+            <span class="hljs-attr">method</span>:  <span class="hljs-string">'geometryd3'</span>,
+            <span class="hljs-attr">options</span>: {  <span class="hljs-attr">url</span>: <span class="hljs-string">'./data/geo_adm10.geojson'</span>,
+                        <span class="hljs-attr">type</span>: <span class="hljs-string">'json'</span>}
+            },
+        <span class="hljs-attr">admN2</span>: {
+            <span class="hljs-attr">method</span>:  <span class="hljs-string">'geometryd3'</span>,
+            <span class="hljs-attr">options</span>: {  <span class="hljs-attr">url</span>: <span class="hljs-string">'./data/geo_adm11.geojson'</span>,
+                        <span class="hljs-attr">type</span>: <span class="hljs-string">'json'</span>}
+            }
+    },
+    <span class="hljs-attr">extralay</span>:{
+        <span class="hljs-attr">points</span>:{
+            <span class="hljs-attr">method</span>: <span class="hljs-string">'d3'</span>,
+            <span class="hljs-attr">options</span>: {  <span class="hljs-attr">url</span>: <span class="hljs-string">'./data/geo_orps.geojson'</span>,
+                        <span class="hljs-attr">type</span>: <span class="hljs-string">'json'</span>,
+						<span class="hljs-attr">front</span>: <span class="hljs-literal">true</span>}
+        }
+    },
+    <span class="hljs-attr">medical</span>:{
+        <span class="hljs-attr">medical</span>: {
+            <span class="hljs-attr">method</span>: <span class="hljs-string">'medicalfs'</span>,
+            <span class="hljs-attr">options</span>: {  <span class="hljs-attr">url</span>: <span class="hljs-string">'./input/'</span>,
+                        <span class="hljs-attr">type</span>: <span class="hljs-string">'csv'</span>}
+        }
+    },
+    <span class="hljs-attr">population</span>:{
+        <span class="hljs-attr">pop</span>: {
+            <span class="hljs-attr">method</span>: <span class="hljs-string">'populationd3'</span>,
+            <span class="hljs-attr">options</span>: {  <span class="hljs-attr">url</span>: <span class="hljs-string">'./data/pop.csv'</span>,
+                        <span class="hljs-attr">type</span>: <span class="hljs-string">'csv'</span>}
+        }
+    }
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Lists the keys used to refer to specific <code>g.medical_data</code> fields. It makes the link between headers in the data files and unambiguous keys used in the code.<br>Each element in the object is coded in the following way:  </p>
+<pre>*key_in_dashboard*: '*header_in_datafile*',</pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g.medical_headerlist = {
+    <span class="hljs-attr">epiwk</span>: <span class="hljs-string">'EpiWk'</span>,     <span class="hljs-comment">// Epidemiological week: format YYYY-WW</span>
+    admN1: <span class="hljs-string">'Geo_L1'</span>,    <span class="hljs-comment">// Name of administrative/health division level N1</span>
+    admN2: <span class="hljs-string">'Geo_L2'</span>,    <span class="hljs-comment">// Name of administrative/health division level N2</span>
+    age: <span class="hljs-string">'Age_y'</span>,       <span class="hljs-comment">// Age of patient in years</span>
+    sex: <span class="hljs-string">'Sex'</span>,         <span class="hljs-comment">// Sex: 1 = Male, 2 = Female</span>
+    preg: <span class="hljs-string">'Pregnant'</span>,   <span class="hljs-comment">// Pregnancy: 1 = Pregnant, 2 = Not Pregnant or N/A</span>
+    sev: <span class="hljs-string">'Dehydr_Adm'</span>,  <span class="hljs-comment">// Dehydratiation severity: A = Light, B = Moderate, C = Severe</span>
+    dur: <span class="hljs-string">'StayDays'</span>,    <span class="hljs-comment">// Stay duration in days</span>
+    out: <span class="hljs-string">'Outcome'</span>,     <span class="hljs-comment">// Outcome: 1 = Cured, 2 = Dead, 3 = Interrupted F/U, 4 = Transfered</span>
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Lists the keys used to refer to specific <code>g.population_data</code> fields. It makes the link between headers in the data files and unambiguous keys used in the code.<br>Each element in the object is coded in the following way:  </p>
+<p><pre>*key_in_dashboard*: ‘*header_in_datafile*‘,</pre>
+Currently implemented keys are:</p>
+<ul>
+<li><code>admNx</code> for administrative or medical division name, format: <code>Adm1_name, Adm2_name…</code>,</li>
+<li><code>pop</code> for population.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g.population_headerlist = {
+    <span class="hljs-attr">admNx</span>: <span class="hljs-string">'name'</span>,
+    <span class="hljs-attr">pop</span>: <span class="hljs-string">'pop'</span>
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Lists the keys from <code>g.medical_headerlist</code> that require custom parsing (eg. translate numbers into words).<br>Requires <code>g.module_lang</code>.<br>Each element in the object is coded in the following way:  </p>
+<pre>*key_in_dashboard*: {  
+  *category1_in_medicaldata*: '*user-readable_output1*',  
+  *category2_in_medicaldata*: '*user-readable_output2*',  
+  ...  
+},</pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main_loadfiles_readvar</span>(<span class="hljs-params"></span>)</span>{
+    g.medical_read = {
+        <span class="hljs-attr">out</span>:        {<span class="hljs-string">'1'</span>:g.module_lang.text[g.module_lang.current].chart_out_label1,
+                     <span class="hljs-string">'2'</span>:g.module_lang.text[g.module_lang.current].chart_out_label2,
+                     <span class="hljs-string">'3'</span>:g.module_lang.text[g.module_lang.current].chart_out_label3,
+                     <span class="hljs-string">'4'</span>:g.module_lang.text[g.module_lang.current].chart_out_label4},
+        <span class="hljs-attr">sev</span>:        {<span class="hljs-attr">A</span>:g.module_lang.text[g.module_lang.current].chart_sev_labelA,
+                     <span class="hljs-attr">B</span>:g.module_lang.text[g.module_lang.current].chart_sev_labelB,
+                     <span class="hljs-attr">C</span>:g.module_lang.text[g.module_lang.current].chart_sev_labelC},
+        <span class="hljs-attr">sexpreg</span>:    {<span class="hljs-string">'12'</span>:g.module_lang.text[g.module_lang.current].chart_sexpreg_label12,
+                     <span class="hljs-string">'22'</span>:g.module_lang.text[g.module_lang.current].chart_sexpreg_label22,
+                     <span class="hljs-string">'21'</span>:g.module_lang.text[g.module_lang.current].chart_sexpreg_label21},
+    };
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <h2 id="2-data-check-parameters">2) Data check parameters</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Associates keys from <code>g.medical_headerlist</code> with datacheck tests performed in <code>module_datacheck~dataprocessing</code> and defined in <code>module_datacheck~testvalue</code>.<br>The elements are coded in the following way:</p>
+<p><pre><em>key</em>: {test_type: ‘<em>test_name</em>‘, setup:’<em>additional_elements</em>‘},</pre>
+Currently implemented test_types are:</p>
+<ul>
+<li><code>none</code> which does not check anything,</li>
+<li><code>epiwk</code> which checks format is ‘YYYY-WW’,</li>
+<li><code>ingeometry</code> which checks whether the location name in the <code>g.medical_data</code> matches any location name in the <code>g.geometry_data</code> of the same divisional level,</li>
+<li><code>integer</code> which checks if the value is an integer,</li>
+<li><code>inlist</code> which checks if the value is in a list (parsed in <code>setup</code>),</li>
+<li><code>integer</code> which checks if the value is an integer.</li>
+</ul>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">if</span>(!g.module_datacheck){
+    g.module_datacheck = {};
+}
+g.module_datacheck.definition_value = {
+    <span class="hljs-attr">epiwk</span>:  {<span class="hljs-attr">test_type</span>: <span class="hljs-string">'epiwk'</span>,        <span class="hljs-attr">setup</span>: <span class="hljs-string">'none'</span>},           <span class="hljs-comment">// Epidemiological week: format YYYY-WW</span>
+    admN1:  {<span class="hljs-attr">test_type</span>: <span class="hljs-string">'ingeometry'</span>,   <span class="hljs-attr">setup</span>: <span class="hljs-string">'none'</span>},           <span class="hljs-comment">// Name of division level N1</span>
+    admN2:  {<span class="hljs-attr">test_type</span>: <span class="hljs-string">'ingeometry'</span>,   <span class="hljs-attr">setup</span>: <span class="hljs-string">'none'</span>},           <span class="hljs-comment">// Name of division level N2</span>
+    age:    {<span class="hljs-attr">test_type</span>: <span class="hljs-string">'integer'</span>,      <span class="hljs-attr">setup</span>: <span class="hljs-string">'none'</span>},           <span class="hljs-comment">// Age of patient in years</span>
+    sex:    {<span class="hljs-attr">test_type</span>: <span class="hljs-string">'inlist'</span>,       <span class="hljs-attr">setup</span>: [<span class="hljs-string">"1"</span>,<span class="hljs-string">"2"</span>]},        <span class="hljs-comment">// Sex: 1 = Male, 2 = Female</span>
+    preg:   {<span class="hljs-attr">test_type</span>: <span class="hljs-string">'inlist'</span>,       <span class="hljs-attr">setup</span>: [<span class="hljs-string">"1"</span>,<span class="hljs-string">"2"</span>]},        <span class="hljs-comment">// Pregnancy: 1 = Pregnant, 2 = Not Pregnant</span>
+    sev:    {<span class="hljs-attr">test_type</span>: <span class="hljs-string">'inlist'</span>,       <span class="hljs-attr">setup</span>: [<span class="hljs-string">"A"</span>,<span class="hljs-string">"B"</span>,<span class="hljs-string">"C"</span>]},    <span class="hljs-comment">// Dehydratiation severity: A = Light, B = Moderate, C = Severe</span>
+    dur:    {<span class="hljs-attr">test_type</span>: <span class="hljs-string">'integer'</span>,      <span class="hljs-attr">setup</span>: <span class="hljs-string">'none'</span>},           <span class="hljs-comment">// Stay duration in days</span>
+    out:    {<span class="hljs-attr">test_type</span>: <span class="hljs-string">'inlist'</span>,       <span class="hljs-attr">setup</span>: [<span class="hljs-string">"1"</span>,<span class="hljs-string">"2"</span>,<span class="hljs-string">"3"</span>,<span class="hljs-string">"4"</span>]} <span class="hljs-comment">// Outcome: 1 = Cured, 2 = Dead, 3 = Interrupted F/U, 4 = Transfered</span>
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Defines an array of Disease to be used as an <code>inlist</code> check in <code>module_datacheck~dataprocessing</code>. In case the list of disease to follow is not predefined, an empty array must be parsed and the list of diseases will be created in <code>module_datacheck~dataprocessing</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g.medical_diseaseslist = [<span class="hljs-string">'Cholera'</span>];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Defines the list of fields that are expected to constitute a unique identifier of a record to be used in the errors log in <code>module_datacheck</code>.<br>The elements are coded in the following way:</p>
+<pre>{key:  '*header_in_datafile*', isnumber: *boolean*},</pre>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g.module_datacheck.definition_record = [
+    {<span class="hljs-attr">key</span>: <span class="hljs-string">'PatientID'</span>, <span class="hljs-attr">isnumber</span>: <span class="hljs-literal">false</span>},                    <span class="hljs-comment">// 'true' key as in data file</span>
+    {<span class="hljs-attr">key</span>: g.medical_headerlist.epiwk, <span class="hljs-attr">isnumber</span>: <span class="hljs-literal">false</span>},     <span class="hljs-comment">// 'true' key as in data file</span>
+    {<span class="hljs-attr">key</span>: g.medical_headerlist.disease, <span class="hljs-attr">isnumber</span>: <span class="hljs-literal">false</span>},   <span class="hljs-comment">// 'true' key as in data file</span>
+    {<span class="hljs-attr">key</span>: g.medical_headerlist.admN1, <span class="hljs-attr">isnumber</span>: <span class="hljs-literal">false</span>},     <span class="hljs-comment">// 'true' key as in data file</span>
+    {<span class="hljs-attr">key</span>: g.medical_headerlist.admN2, <span class="hljs-attr">isnumber</span>: <span class="hljs-literal">false</span>}      <span class="hljs-comment">// 'true' key as in data file</span>
+];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <h2 id="3-chart-parameters">3) Chart parameters</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>Lists the charts and maps to be produced by <code>main-core</code> as well as defines their main characteristics.<br>Each element in the object contains the following sub-elements:</p>
+<pre>chart_id:  {
+
+ domain_builder: {String},
+ domain_parameter: *currently_not_used*,
+
+ instance_builder: {String},
+
+ dimension_builder: {String},
+ dimension_parameter: {  column: {Array.String},
+                         shared: {Boolean},
+                         namespace: {String}  },
+
+ group_builder: {Array},
+ group_parameter: {  column: ['none']},
+
+ sync_to: {Array.String},
+
+ display_axis: {Object},
+ display_colors: {Array.Integer},
+ display_intro: {String},
+ display_filter: {Boolean},
+ display_idcontainer: {String},
+ buttons_list: {Array.String}
+
+}</pre>
+
+<p>Each element is detailed in the following.  </p>
+<h1 id="-code-chart_id-code-"><code><strong>chart_id</strong></code>  </h1>
+<p>‘chart-‘<code>chart_id</code> must match a <code>div id</code> in the <em>index.html</em> file (the dashboard layout).</p>
+<h1 id="-code-domain_builder-code-"><code><strong>domain_builder</strong></code> </h1>
+<p><code>main_core~domainBuilder</code> builds domains from this parameter for charts when : <code>domain_type =/= ‘none’</code>.<br>Definitions can be either ‘linear’: [min,max] (filtering is then performed by range) or ‘ordinal’: [lists, all, the, values, …] (categories can be then filtered one by one).<br>All definitions uses <code>g.medical_data</code> except if indicated otherwise. <code>g.medical_headerlist</code> is required too.<br>List of current domain definitions is as follows:  </p>
+<ul>
+<li><code>epiweek</code> [ordinal], lists all the epiweeks between the first and the last epiweeks of the dataset (from <code>epiwk</code> key),</li>
+<li><code>year</code> [ordinal], lists all the years between the first and the last epiweeks of the dataset (from <code>epiwk</code> key),</li>
+<li><code>week</code> [ordinal], lists all the weeks between the first week of the year and the last week of the year in the dataset (from <code>epiwk</code> key),</li>
+<li><code>date</code> [linear], first and the last dates of the dataset (from <code>date</code> key),</li>
+<li><code>readcat</code> [ordinal] lists all the categories used (from <code>g.medical_read[‘chart_id’]</code> key),</li>
+<li><code>integer_ordinal</code> [ordinal] lists all stay durations from zero to the maximum in the dataset (from <code>dur</code> key),</li>
+<li><code>integer_linear</code> [linear] zero and maximum age of patients in the dataset +2 (to facilitate visualization) (from <code>age</code> key)
+On top of the domain a <code>NA</code> category is added as well in order to visualize data with missing or mismatched values.</li>
+</ul>
+<h1 id="-code-instance_builder-code-"><code><strong>instance_builder</strong></code> </h1>
+<p><code>main_core~chartInstancer</code> and <code>main_core~chartBuilder</code> build chart instances from this parameter with <em>dc.js</em> or <em>dc.leaflet.js</em> or <em>datables.js</em><br>List of current chart definitions is as follows:</p>
+<ul>
+<li><code>bar</code> creates a simple bar chart,</li>
+<li><code>pie</code> creates a simple pie chart,</li>
+<li><code>multiadm</code> creates a multiadm choropleth map (one administrative structure or more that are ‘nested’ one into the others), requires <code>g.geometry_keylist</code> and <code>module_multiadm.display</code>,</li>
+<li><code>row</code> creates a simple row chart,</li>
+<li><code>stackedbar</code> creates a bar chart  with stacked series,</li>
+<li><code>series</code> creates a multi series chart,</li>
+<li><code>table</code> creates a table to display data frome source.</li>
+</ul>
+<h1 id="-code-dimension_builder-dimension_parameter-code-"><code><strong>dimension_builder</strong> &amp;&amp; <strong>dimension_parameter</strong></code></h1>
+<p><code>main_core~dimentsionBuilder</code> builds dimensions from this parameter with <em>crossfilter.js</em>, it correspond to the method to filter the data, to use a spreadsheet analogy, it correspond to the column that will be used to filter the dataset.<br>List of current dimension definitions is as follows:</p>
+<ul>
+<li><code>multiadm</code>, creates ‘location’ categories for each administrative level combining field from current administrative level and superiors (from <code>admNX</code> keys), requires <code>g.geometry_keylist</code>} and uses <code>module_datacheck.toTitleCase</code>},</li>
+<li><code>integer</code>, parses values from a given ‘column’ as integers,</li>
+<li><code>normalize</code>, creates simple categories from a given ‘column’ after normalizing the values,</li>
+<li><code>year</code>, parses years from a given ‘column’ that contains epiweeks (format YYYY-WW),</li>
+<li><code>week</code>, parses weeks from a given ‘column’ that contains epiweeks (format YYYY-WW),</li>
+<li><code>readcat</code>, creates categories from a given ‘column’ using <code>g.medical_read</code>},</li>
+<li><code>readncombcat</code>, creates categories from various ‘columns’ using <code>g.medical_read</code>},</li>
+<li><p><code>auto</code>, creates simple categories from a given ‘column’.</p>
+<p>In the <code>dimension_parameter</code> the column (or the colums to combine) are selected, it is mentioned if the dimension is shared (multiple charts filter the same dimension) and if the namespace used to store the dimentsion is different from the <code>chart_id</code>.</p>
+</li>
+</ul>
+<h1 id="-code-group_builder-group_parameter-code-"><code><strong>group_builder</strong> &amp;&amp; <strong>group_parameter</strong></code></h1>
+<p><code>main_core~groupBuilder</code> builds groups from this parameter with <em>crossfilter.js</em>, it correspond to the method to aggregate the data, counting the records for a patient list or summing a specific column for surveillance data that can contain cases, death… Therefore Required objects are <code>g.medical_datatype</code> is required.<br>Groups are built on top of dimensions.<br>List of current group definitions is as follows:</p>
+<ul>
+<li><code><strong>outbreak</strong></code> (simply counts patients in patient list)<ul>
+<li><code>multiadm</code>, creates a group for each administrative level, requires <code>g.geometry_keylist</code>,</li>
+<li><code>auto</code>, creates a simple group,</li>
+</ul>
+</li>
+<li><code><strong>surveillance</strong></code> (sums or counts already aggregated data)<ul>
+<li><code>multiadm</code>, creates a group for each administrative level, requires <code>g.geometry_keylist</code>,</li>
+<li><code>stackedbar</code>, creates a group summing independently ‘under’ and ‘over’ five years old record,</li>
+<li><code>count</code>, creates a group counting record,</li>
+<li><code>auto</code>, creates a simple group summing data.
+In the <code>group_parameter</code> the column or the colums to aggregate are selected (eg. stackedbar chart or map with multiple units - NB: special treatment for outbreak maps).</li>
+</ul>
+</li>
+</ul>
+<h1 id="-code-sync_to-code-"><code><strong>sync_to</strong></code></h1>
+<p><pre>[‘chart_id’s]</pre>
+Syncronises filtering with other charts.</p>
+<h1 id="-code-display_axis-code-"><code><strong>display_axis</strong></code></h1>
+<p><pre>{x:’labelx’,y:’labely’}</pre>
+Defines axis lables for x/y-type charts.</p>
+<h1 id="-code-display_colors-code-"><code><strong>display_colors</strong></code></h1>
+<p>Refers to colors in <code>g.module_colorscale.colors</code></p>
+<h1 id="-code-display_intro-code-"><code><strong>display_intro</strong></code></h1>
+<p>Defines the position of the help window: ‘top’ or ‘bottom’ or ‘right’ or ‘left’ or ‘none’,</p>
+<h1 id="-code-display_filter-code-"><code><strong>display_filter</strong></code></h1>
+<p>Defines whether filters are displayed or not (true or false).</p>
+<h1 id="-code-display_idcontainer-code-"><code><strong>display_idcontainer</strong></code></h1>
+<p><pre>‘div_id’</pre>
+To display buttons on a div different from: chart-‘chart_id’</p>
+<h1 id="-code-buttons_list-code-"><code><strong>buttons_list</strong></code></h1>
+<p><pre>[‘reset’,’help’]</pre>
+Defines the list of buttons to be associated on each chart: any, all or none of the two for most of charts plus ‘expand’,’lockcolor’ and ‘parameters’ for ‘multiadm’ charts,</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g.viz_definition = {
+    <span class="hljs-attr">multiadm</span>: { <span class="hljs-attr">domain_builder</span>: <span class="hljs-string">'none'</span>,
+                <span class="hljs-attr">domain_parameter</span>: <span class="hljs-string">'none'</span>,
+
+                <span class="hljs-attr">instance_builder</span>: <span class="hljs-string">'multiadm'</span>,
+
+                <span class="hljs-attr">dimension_builder</span>: <span class="hljs-string">'multiadm'</span>,
+                <span class="hljs-attr">dimension_parameter</span>: {  <span class="hljs-attr">column</span>: <span class="hljs-string">'none'</span>,
+                                        <span class="hljs-attr">shared</span>: <span class="hljs-literal">false</span>,
+                                        <span class="hljs-attr">namespace</span>: <span class="hljs-string">'none'</span>},
+
+                <span class="hljs-attr">group_builder</span>: <span class="hljs-string">'multiadm'</span>,
+                <span class="hljs-attr">group_parameter</span>: {  <span class="hljs-attr">column</span>: [{<span class="hljs-attr">key</span>:<span class="hljs-string">'out'</span>,<span class="hljs-attr">value</span>:<span class="hljs-string">'2'</span>}]},
+
+                <span class="hljs-attr">display_colors</span>: [<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>],
+                <span class="hljs-attr">display_intro</span>: <span class="hljs-string">'bottom'</span>,
+                <span class="hljs-attr">display_filter</span>: <span class="hljs-literal">true</span>,
+                <span class="hljs-attr">buttons_list</span>: [<span class="hljs-string">'reset'</span>,<span class="hljs-string">'help'</span>,<span class="hljs-string">'expand'</span>,<span class="hljs-string">'lockcolor'</span>,<span class="hljs-string">'parameters'</span>],
+
+            },
+
+    <span class="hljs-attr">epiwk</span>: {    <span class="hljs-attr">domain_builder</span>: <span class="hljs-string">'epiweek'</span>,
+                <span class="hljs-attr">domain_parameter</span>: <span class="hljs-string">'none'</span>,
+
+                <span class="hljs-attr">instance_builder</span>: <span class="hljs-string">'bar'</span>,
+
+                <span class="hljs-attr">dimension_builder</span>: <span class="hljs-string">'auto'</span>,
+                <span class="hljs-attr">dimension_parameter</span>: {  <span class="hljs-attr">column</span>: <span class="hljs-string">'epiwk'</span>,
+                                        <span class="hljs-attr">shared</span>: <span class="hljs-literal">false</span>,
+                                        <span class="hljs-attr">namespace</span>: <span class="hljs-string">'none'</span>},
+
+                <span class="hljs-attr">group_builder</span>: <span class="hljs-string">'auto'</span>,
+                <span class="hljs-attr">group_parameter</span>: {  <span class="hljs-attr">column</span>: [<span class="hljs-string">'none'</span>]},
+
+                <span class="hljs-attr">display_axis</span>:   {<span class="hljs-attr">x</span>:g.module_lang.text[g.module_lang.current].chart_epiwk_labelx,
+                                 <span class="hljs-attr">y</span>:g.module_lang.text[g.module_lang.current].chart_epiwk_labely},
+                <span class="hljs-attr">display_colors</span>: [<span class="hljs-number">4</span>],
+                <span class="hljs-attr">display_intro</span>: <span class="hljs-string">'top'</span>,
+                <span class="hljs-attr">display_filter</span>: <span class="hljs-literal">true</span>,
+                <span class="hljs-attr">buttons_list</span>: [<span class="hljs-string">'reset'</span>,<span class="hljs-string">'help'</span>],
+
+            },
+    <span class="hljs-attr">age</span>: {      <span class="hljs-attr">domain_builder</span>: <span class="hljs-string">'integer_linear'</span>,
+                <span class="hljs-attr">domain_parameter</span>: <span class="hljs-string">'none'</span>,
+
+                <span class="hljs-attr">instance_builder</span>: <span class="hljs-string">'bar'</span>,
+
+                <span class="hljs-attr">dimension_builder</span>: <span class="hljs-string">'integer'</span>,
+                <span class="hljs-attr">dimension_parameter</span>: {  <span class="hljs-attr">column</span>: <span class="hljs-string">'age'</span>,
+                                        <span class="hljs-attr">shared</span>: <span class="hljs-literal">false</span>,
+                                        <span class="hljs-attr">namespace</span>: <span class="hljs-string">'none'</span>},
+
+                <span class="hljs-attr">group_builder</span>: <span class="hljs-string">'auto'</span>,
+                <span class="hljs-attr">group_parameter</span>: {  <span class="hljs-attr">column</span>: [<span class="hljs-string">'none'</span>]},
+
+                <span class="hljs-attr">display_axis</span>:   {<span class="hljs-attr">x</span>:g.module_lang.text[g.module_lang.current].chart_age_labelx,
+                                 <span class="hljs-attr">y</span>:g.module_lang.text[g.module_lang.current].chart_age_labely},
+                <span class="hljs-attr">display_colors</span>: [<span class="hljs-number">4</span>],
+                <span class="hljs-attr">display_intro</span>: <span class="hljs-string">'top'</span>,
+                <span class="hljs-attr">display_filter</span>: <span class="hljs-literal">true</span>,
+                <span class="hljs-attr">buttons_list</span>: [<span class="hljs-string">'reset'</span>,<span class="hljs-string">'help'</span>],
+
+            },
+
+    <span class="hljs-attr">sexpreg</span>:{   <span class="hljs-attr">domain_builder</span>: <span class="hljs-string">'none'</span>,
+                <span class="hljs-attr">domain_parameter</span>: <span class="hljs-string">'none'</span>,
+
+                <span class="hljs-attr">instance_builder</span>: <span class="hljs-string">'pie'</span>,
+
+                <span class="hljs-attr">dimension_builder</span>: <span class="hljs-string">'readncombcat'</span>,
+                <span class="hljs-attr">dimension_parameter</span>: {  <span class="hljs-attr">column</span>: [<span class="hljs-string">'sex'</span>,<span class="hljs-string">'preg'</span>],
+                                        <span class="hljs-attr">shared</span>: <span class="hljs-literal">false</span>,
+                                        <span class="hljs-attr">namespace</span>: <span class="hljs-string">'none'</span>},
+
+                <span class="hljs-attr">group_builder</span>: <span class="hljs-string">'auto'</span>,
+                <span class="hljs-attr">group_parameter</span>: {  <span class="hljs-attr">column</span>: [<span class="hljs-string">'none'</span>]},
+
+                <span class="hljs-attr">display_colors</span>: [<span class="hljs-number">4</span>,<span class="hljs-number">2</span>,<span class="hljs-number">1</span>],
+                <span class="hljs-attr">display_intro</span>: <span class="hljs-string">'left'</span>,
+                <span class="hljs-attr">display_filter</span>: <span class="hljs-literal">true</span>,
+                <span class="hljs-attr">buttons_list</span>: [<span class="hljs-string">'reset'</span>,<span class="hljs-string">'help'</span>],
+            },
+
+    <span class="hljs-attr">sev</span>:    {   <span class="hljs-attr">domain_builder</span>: <span class="hljs-string">'none'</span>,
+                <span class="hljs-attr">domain_parameter</span>: <span class="hljs-string">'none'</span>,
+
+                <span class="hljs-attr">instance_builder</span>: <span class="hljs-string">'pie'</span>,
+
+                <span class="hljs-attr">dimension_builder</span>: <span class="hljs-string">'readcat'</span>,
+                <span class="hljs-attr">dimension_parameter</span>: {  <span class="hljs-attr">column</span>: [<span class="hljs-string">'sev'</span>],
+                                        <span class="hljs-attr">shared</span>: <span class="hljs-literal">false</span>,
+                                        <span class="hljs-attr">namespace</span>: <span class="hljs-string">'none'</span>},
+
+                <span class="hljs-attr">group_builder</span>: <span class="hljs-string">'auto'</span>,
+                <span class="hljs-attr">group_parameter</span>: {  <span class="hljs-attr">column</span>: [<span class="hljs-string">'none'</span>]},
+
+                <span class="hljs-attr">display_colors</span>: [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">4</span>],
+                <span class="hljs-attr">display_intro</span>: <span class="hljs-string">'left'</span>,
+                <span class="hljs-attr">display_filter</span>: <span class="hljs-literal">true</span>,
+                <span class="hljs-attr">buttons_list</span>: [<span class="hljs-string">'reset'</span>,<span class="hljs-string">'help'</span>],
+            },
+
+    <span class="hljs-attr">dur</span>:    {   <span class="hljs-attr">domain_builder</span>: <span class="hljs-string">'integer_ordinal'</span>,
+                <span class="hljs-attr">domain_parameter</span>: <span class="hljs-string">'none'</span>,
+
+                <span class="hljs-attr">instance_builder</span>: <span class="hljs-string">'bar'</span>,
+
+                <span class="hljs-attr">dimension_builder</span>: <span class="hljs-string">'integer'</span>,
+                <span class="hljs-attr">dimension_parameter</span>: {  <span class="hljs-attr">column</span>: [<span class="hljs-string">'dur'</span>],
+                                        <span class="hljs-attr">shared</span>: <span class="hljs-literal">false</span>,
+                                        <span class="hljs-attr">namespace</span>: <span class="hljs-string">'none'</span>},
+
+                <span class="hljs-attr">group_builder</span>: <span class="hljs-string">'auto'</span>,
+                <span class="hljs-attr">group_parameter</span>: {  <span class="hljs-attr">column</span>: [<span class="hljs-string">'none'</span>]},
+
+                <span class="hljs-attr">display_axis</span>:   {<span class="hljs-attr">x</span>:g.module_lang.text[g.module_lang.current].chart_dur_labelx,
+                                 <span class="hljs-attr">y</span>:g.module_lang.text[g.module_lang.current].chart_dur_labely},
+                <span class="hljs-attr">display_colors</span>: [<span class="hljs-number">4</span>],
+                <span class="hljs-attr">display_intro</span>: <span class="hljs-string">'left'</span>,
+                <span class="hljs-attr">display_filter</span>: <span class="hljs-literal">true</span>,
+                <span class="hljs-attr">buttons_list</span>: [<span class="hljs-string">'reset'</span>,<span class="hljs-string">'help'</span>],
+            },
+
+    <span class="hljs-attr">out</span>:    {   <span class="hljs-attr">domain_builder</span>: <span class="hljs-string">'readcat'</span>,
+                <span class="hljs-attr">domain_parameter</span>: <span class="hljs-string">'none'</span>,
+
+                <span class="hljs-attr">instance_builder</span>: <span class="hljs-string">'bar'</span>,
+
+                <span class="hljs-attr">dimension_builder</span>: <span class="hljs-string">'readcat'</span>,
+                <span class="hljs-attr">dimension_parameter</span>: {  <span class="hljs-attr">column</span>: [<span class="hljs-string">'out'</span>],
+                                        <span class="hljs-attr">shared</span>: <span class="hljs-literal">false</span>,
+                                        <span class="hljs-attr">namespace</span>: <span class="hljs-string">'none'</span>},
+
+                <span class="hljs-attr">group_builder</span>: <span class="hljs-string">'auto'</span>,
+                <span class="hljs-attr">group_parameter</span>: {  <span class="hljs-attr">column</span>: [<span class="hljs-string">'none'</span>]},
+
+                <span class="hljs-attr">display_axis</span>:   {<span class="hljs-attr">x</span>:g.module_lang.text[g.module_lang.current].chart_out_labelx,
+                                 <span class="hljs-attr">y</span>:g.module_lang.text[g.module_lang.current].chart_out_labely},
+                <span class="hljs-attr">display_colors</span>: [<span class="hljs-number">4</span>],
+                <span class="hljs-attr">display_intro</span>: <span class="hljs-string">'left'</span>,
+                <span class="hljs-attr">display_filter</span>: <span class="hljs-literal">true</span>,
+                <span class="hljs-attr">buttons_list</span>: [<span class="hljs-string">'reset'</span>,<span class="hljs-string">'help'</span>],
+            },
+
+    <span class="hljs-attr">table</span>:  {   <span class="hljs-attr">domain_builder</span>: <span class="hljs-string">'none'</span>,
+                <span class="hljs-attr">domain_parameter</span>: <span class="hljs-string">'none'</span>,
+
+                <span class="hljs-attr">instance_builder</span>: <span class="hljs-string">'table'</span>,
+
+                <span class="hljs-attr">dimension_builder</span>: <span class="hljs-string">'auto'</span>,
+                <span class="hljs-attr">dimension_parameter</span>: {  <span class="hljs-attr">column</span>: <span class="hljs-string">'epiwk'</span>,
+                                        <span class="hljs-attr">shared</span>: <span class="hljs-literal">false</span>,
+                                        <span class="hljs-attr">namespace</span>: <span class="hljs-string">'none'</span>},
+
+                <span class="hljs-attr">group_builder</span>: <span class="hljs-string">'none'</span>,
+                <span class="hljs-attr">group_parameter</span>: {  <span class="hljs-attr">column</span>: <span class="hljs-string">'none'</span>},
+
+                <span class="hljs-attr">display_intro</span>: <span class="hljs-string">'top'</span>,
+                <span class="hljs-attr">buttons_list</span>: [<span class="hljs-string">'help'</span>],
+            },
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>Defines the chart used as a reference for time-related interactions.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g.viz_timeline = <span class="hljs-string">'epiwk'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p>Defines the charts that are using time dimensions and that should be synchronized with the reference defined with <code>g.viz_timeline</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>g.viz_timeshare = [];</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

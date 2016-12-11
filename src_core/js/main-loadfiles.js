@@ -3,9 +3,9 @@
     (c) 2015-present, MSF-Dashboard contributors for MSF
     List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
     Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
-------------------------------------------------------------------------------------*/ 
+------------------------------------------------------------------------------------*/
 /**
- * This file is the current implementation of the dataloader module. It actually combines multiple functions: requesting data from sources, reading and formatting data connecting with module-lang.js and module-datacheck.js and the main-core.js. 
+ * This file is the current implementation of the dataloader module. It actually combines multiple functions: requesting data from sources, reading and formatting data connecting with module-lang.js and module-datacheck.js and the main-core.js.
  * @since 0.0
  * @module main_loadfiles
  * @requires index.html
@@ -13,7 +13,7 @@
  * @requires lang/lang.js
  * @requires js/module-datacheck.js
  * @requires js/main-core.js
- * @todo This implementation should be revised in the next versions. 
+ * @todo This implementation should be revised in the next versions.
  **/
 
 /*------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ function generate_display() {
 	html += '<div id="datalog" class="col-md-7">';
 	html += '</div>';
 
-	
+
 	// Load Optional Module: module-colorscale.js
 	//------------------------------------------------------------------------------------
 	//html += '<div class="col-md-6">';
@@ -89,7 +89,7 @@ function generate_display() {
 		g.medical_filetypecurrent = g.medical_filecurrent.substr(g.medical_filecurrent.length - 3);
 		module_getdata.reload_medical();
 	});
-	
+
 
 	// Load Here Optional Modules Interaction:
 	//------------------------------------------------------------------------------------
@@ -107,6 +107,10 @@ function generate_display() {
 		main_loadfiles_readvar();
 		generateDashboard();
 	});
+
+	if (g.module_datacheck.autoload) {
+		$('#loaddashboard').click();
+	}
 
 	//------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------------------
