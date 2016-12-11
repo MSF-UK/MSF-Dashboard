@@ -47,9 +47,13 @@ Customize the Dashboard: Get started!
 
 The general idea is that the Dashboard relies on:
 + source files: */src_core/* which are both third-party librairies (in */src_core/lib/*) and librairies developped for this MSF-Dashboard (other files in */src_core/*). These files should not be changed for a 'simple' customization (change layout, text and reuse existing charts and functions).
-+ configuration files: */cfg_[name-your-custom-version-here]/* which are 3: *index.html* for the layout, *lang/lang.js* for the texts and their translation and *dev/dev-defined.js* to describe the data and the charts + the data files (geojson, population and medical data).
++ configuration files: */cfg_[name-your-custom-version-here]/* which are 3: *index.html* for the layout, *lang/module_lang.js* for the texts and their translation and *dev/dev-defined.js* to describe the data and the charts + the data files (geojson, population and medical data).
 
-A complete API v1.0.0 documentation for MSF Dashboard customization is underway as well as simple examples, please bear with us! At the moment please consult the example / templates.
+A complete API v1.0.0 documentation for MSF Dashboard customization is underway as well as simple examples, please bear with us! 
+At the moment:
++ A complete documentation of [dev/dev-defined.js](http://msf-uk.github.io/MSF-Dashboard/doc_getting-started/docs/dev-defined.html) is now available!
++ The documentation for *index.html* (eg. [index.html](https://github.com/MSF-UK/MSF-Dashboard/blob/master/cfg_msf-bentiu/index.html)) for the layout, *lang/module_lang.js* (eg. [lang/module_lang.js](https://github.com/MSF-UK/MSF-Dashboard/blob/master/cfg_msf-bentiu/lang/module-lang.js)) for the texts and their translations, as well as simple examples, are still missing,
++ And you can still consult the example / templates.
 
 Please get in touch [here](https://github.com/MSF-UK/MSF-Dashboard/issues) if you experience difficulties or if you want to make suggestions!
 
