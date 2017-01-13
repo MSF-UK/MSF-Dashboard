@@ -253,6 +253,7 @@ g.module_lang.text.eng = {
 	chart_disease_title: 'Diseases',
 	chart_disease_labelx: 'Times Reported',
 	chart_disease_labely: 'Diseases',
+	chart_case_ser_title: 'Cases & Deaths',   //HEIDI added this
 	chart_case_bar_title: 'Cases & Deaths',
 	chart_case_lin_title: 'Cases & Deaths',
 	chart_case_labelx: 'Epi-Week',
@@ -263,6 +264,8 @@ g.module_lang.text.eng = {
 	chart_fyo_title: 'Age Classes',
 	chart_fyo_labelu: 'Under 5',
 	chart_fyo_labelo: 'Over 5',
+	chart_fyo_labela: 'All Ages',   //HEIDI added this
+
 
 	filtext: 'Current filter:',
 	
@@ -285,8 +288,11 @@ g.module_lang.text.eng = {
 		title: 'PHU'
 	},
 
-	chartwarper_tab_containter_bar:'By age class',
-	chartwarper_tab_containter_lin:'By year',
+	//chartwarper_tab_containter_bar:'By age class',  
+	//chartwarper_tab_containter_lin:'By year',
+	chartwarper_tab_containter_ser:'Linegraph (by age class)',
+	chartwarper_tab_containter_bar:'Stacked bars (by age class, filterable)',
+	chartwarper_tab_containter_lin:'Linegraph (by year)',
 	
 	colorscale_title: 'MAP PARAMETERS',
 	colorscale_unitintro: 'Choose map unit: ',

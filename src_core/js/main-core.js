@@ -303,6 +303,9 @@ function generateDashboard(){
             series : function(key){
                 g.viz_definition[key].chart = dc.seriesChart('#chart-'+key);
             },
+            composite : function(key){
+                g.viz_definition[key].chart = dc.compositeChart('#chart-'+key);
+            },
             table : function(key){
                 // Loaded later on (dimension needs to be defined first)
             }
@@ -440,6 +443,7 @@ function generateDashboard(){
                         return 'NA';
                     }
                 });
+                console.log("building auto dimension for ", key, " = ", dimension);
                 return dimension;
             },
             readcat: function(key){
@@ -598,7 +602,16 @@ function generateDashboard(){
             auto: function(dimkey,keylistgroup){
                 var group = g.viz_definition[dimkey].dimension.group().reduceSum(function(d) {return d[g.medical_headerlist[keylistgroup[0]]];});
                 return group;
-            }
+            },
+            series: function(dimkey,keylistgroup){
+                var group = {};
+                group.u = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="u"?d[g.medical_headerlist[keylistgroup[0]]]:0;});
+                group.o = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="o"?d[g.medical_headerlist[keylistgroup[0]]]:0;});
+                group.a = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[g.medical_headerlist[keylistgroup[0]]]});
+                //console.log("in groupBuilder.surveillance - series option, group.u = ", group.u);
+                //console.log("in groupBuilder.surveillance - series option, group.o = ", group.o);
+                return group;
+            },
         };
 
         main_core.get_group = function(builder, parameter, dim_parameter) {
@@ -813,6 +826,27 @@ function generateDashboard(){
                 g.viz_definition[key1].chart
                     .yAxis().ticks(5);
 
+                // HEIDI - ADDED THIS - for bar charts where domainBuilder = epiweek, and domain length >=53:
+                if ((g.viz_definition[key1].domain_builder == 'epiweek') && (g.viz_definition[key1].domain.length >= 53)) {  //ideally make this dependent on chart width, not domain length
+                    console.log("should adapt x axis here = ", g.viz_definition[key1].domain_builder, g.viz_definition[key1].domain.length);
+                    g.viz_definition[key1].chart
+                        .xAxis().tickFormat(function(d, i) {
+                            j = parseInt(d.substring(5));
+                            //console.log(d, typeof(d), "  ", j, typeof(j), j%4, typeof(j%4));                       
+                            if (!(isNaN(j)) && (!(j%4==0))) {       
+                                return "";
+                            } else {
+                                return d;
+                            };
+                        })
+                    g.viz_definition[key1].chart   
+                        .on ('renderlet', function (chart) {
+                            chart.selectAll("g.x text")
+                                .attr('dx', '-5')
+                                .attr('dy', '5')
+                        });                        
+                };
+
                 g.viz_definition[key1].chart.render();
             
                 // Add labels for small bars (difficult or sometimes impossible to click)
@@ -883,7 +917,7 @@ function generateDashboard(){
                     .colorDomain(color_domain)
                     .colorAccessor(function(d,i){
                         return i;
-                        });
+                    });
                 
                 g.viz_definition[key1].chart
                     .minAngleForLabel(0.05)
@@ -1300,6 +1334,7 @@ function generateDashboard(){
                 
                 // Randomly select one disease at start
                 var rand = g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)];
+                
                 g.viz_definition[key1].chart.render();
                 g.viz_definition[key1].chart.filter(rand);
 
@@ -1377,6 +1412,28 @@ function generateDashboard(){
 
                 g.viz_definition[key1].chart
                     .yAxis().ticks(5);
+
+                // HEIDI - ADDED THIS - for stackedbar charts where domainBuilder = epiweek, and domain length >=53:
+                if ((g.viz_definition[key1].domain_builder == 'epiweek') && (g.viz_definition[key1].domain.length >= 53)) {  //ideally make this dependent on chart width, not domain length
+                    console.log("should adapt x axis here = ", g.viz_definition[key1].domain_builder, g.viz_definition[key1].domain.length);
+                    g.viz_definition[key1].chart
+                        .xAxis().tickFormat(function(d, i) {
+                            j = parseInt(d.substring(5));
+                            //console.log(d, typeof(d), "  ", j, typeof(j), j%4, typeof(j%4));                       
+                            if (!(isNaN(j)) && (!(j%4==0))) {       
+                                return "";
+                            } else {
+                                return d;
+                            };
+                        })
+                    g.viz_definition[key1].chart   
+                        .on ('renderlet', function (chart) {
+                            chart.selectAll("g.x text")
+                                .attr('dx', '-5')
+                                .attr('dy', '5')
+                        });                        
+                };
+
 
                 g.viz_definition[key1].chart.render();         
 
@@ -1486,6 +1543,90 @@ function generateDashboard(){
 
                 g.viz_definition[key1].chart
                     .yAxis().ticks(5);
+
+                g.viz_definition[key1].chart.render();         
+
+                // When epiweek 
+                if(!(g.viz_definition[key1].domain_builder == 'epiweek')){
+                    $('#chart-'+key1+' .x-axis-label').attr('dy','-20px');
+                    console.log('main-core.js ~l1020: Special label margin: #chart-'+key1);
+                }
+                break;
+
+            //------------------------------------------------------------------------------------
+            case 'composite':    //HEIDI added this section
+            //------------------------------------------------------------------------------------
+                var div_id = '#chart-'+key1;
+                var width = $(div_id).parent().width();
+
+                // Shared dimension
+                if(g.viz_definition[key1].dimension_parameter.shared){
+                    var dim_namespace = g.viz_definition[key1].dimension_parameter.namespace;
+                }else{
+                    var dim_namespace = key1;
+                }
+
+                var xScaleRange = d3.scale.ordinal().domain(g.viz_definition[key1].domain);   
+
+                g.viz_definition[key1].chart
+                    .margins({top: 10, right: 50, bottom: 60, left: 40})
+                    .width(width)
+                    .height(180)
+                    .dimension(g.viz_definition[dim_namespace].dimension)
+                    .group(g.viz_definition[key1].group.o)
+                    .elasticY(true)   
+                    .brushOn(false)     
+                    .valueAccessor(function(d) {
+                        //console.log("valueAccessor d = ", +d); 
+                        return +d.value;
+                    })
+                    .title(function(d) {
+                        //console.log("title d = ", d); 
+                        return d.key+ ": " + d.value; 
+                    });
+                    
+
+                if(g.viz_definition[key1].domain_parameter == 'custom_ordinal'){
+                    g.viz_definition[key1].chart
+                        .x(xScaleRange)
+                        .xUnits(dc.units.ordinal)
+                        .yAxisLabel(g.viz_definition[key1].display_axis.y)   
+                        .xAxisLabel(g.viz_definition[key1].display_axis.x) 
+                        //.clipPadding(10)  
+                        ._rangeBandPadding(1)
+                        .compose([
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).group(g.viz_definition[key1].group.a,g.module_lang.text[g.module_lang.current].chart_fyo_labela).colors("#333"),
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).group(g.viz_definition[key1].group.u,g.module_lang.text[g.module_lang.current].chart_fyo_labelu).colors(color_list[0]),
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).group(g.viz_definition[key1].group.o,g.module_lang.text[g.module_lang.current].chart_fyo_labelo).colors(color_list[1])
+                            
+                        ])
+                        .legend(dc.legend().x(100).y(20).itemHeight(8).gap(4));
+                };
+
+                g.viz_definition[key1].chart
+                    .yAxis().ticks(5);
+
+
+                // HEIDI - ADDED THIS - for composite charts where domainBuilder = epiweek, and domain length >=53:
+                if ((g.viz_definition[key1].domain_builder == 'epiweek') && (g.viz_definition[key1].domain.length >= 53)) {  //ideally make this dependent on chart width, not domain length
+                    console.log("should adapt x axis here = ", g.viz_definition[key1].domain_builder, g.viz_definition[key1].domain.length);
+                    g.viz_definition[key1].chart
+                        .xAxis().tickFormat(function(d, i) {
+                            j = parseInt(d.substring(5));
+                            //console.log(d, typeof(d), "  ", j, typeof(j), j%4, typeof(j%4));                       
+                            if (!(isNaN(j)) && (!(j%4==0))) {       
+                                return "";
+                            } else {
+                                return d;
+                            };
+                        })
+                    g.viz_definition[key1].chart   
+                        .on ('renderlet', function (chart) {
+                            chart.selectAll("g.x text")
+                                .attr('dx', '-5')
+                                .attr('dy', '5')
+                        });                        
+                };
 
                 g.viz_definition[key1].chart.render();         
 

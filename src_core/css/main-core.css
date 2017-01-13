@@ -47,7 +47,7 @@
  }
 
 /* Charts styles */
-#chart-epiwk .x.axis text ,#chart-case_bar .x.axis text ,#chart-death_bar .x.axis text {
+#chart-epiwk .x.axis text ,#chart-case_bar .x.axis text ,#chart-death_bar .x.axis text, #chart-case_ser .x.axis text, #chart-death_ser .x.axis text {
     text-anchor: end !important;
     transform: rotate(-45deg);
     font-size:0.75em !important;

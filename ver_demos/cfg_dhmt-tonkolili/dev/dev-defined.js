@@ -73,6 +73,7 @@ g.dev_defined.definition_incidence = function(value,pop,periode) {
  * @alias module:dev_defined.ignore_empty
  */
 g.dev_defined.ignore_empty = true;
+g.dev_defined.ignore_errors = true;    //HEIDI - added this as a test - used in module-datacheck.js
 
 /**
  * Contains the list of implemented map units.
@@ -139,8 +140,8 @@ g.module_getdata = {
     },
     medical:{
         medical: {
-            method: 'medicald3noserver',
-            options: {  url: 'input/tonkolili_database_wks-201545-201605.csv',
+            method: 'medicalfs',
+            options: {  url: './input/',
                         type: 'csv'}      
         }
     },
@@ -203,7 +204,8 @@ function main_loadfiles_readvar(){
      */
     g.medical_read = {
         fyo:        {u:g.module_lang.text[g.module_lang.current].chart_fyo_labelu,
-                     o:g.module_lang.text[g.module_lang.current].chart_fyo_labelo},
+                     o:g.module_lang.text[g.module_lang.current].chart_fyo_labelo,
+                     a:g.module_lang.text[g.module_lang.current].chart_fyo_labela},         //HEIDI added this line
     };
 }
 
@@ -409,9 +411,9 @@ g.viz_definition = {
                 display_intro: 'top',           
                 display_idcontainer: 'container_casedeath_bar',
                 display_filter: true,
-                buttons_list: ['reset','help'],
-                
+                buttons_list: ['reset','help'],             
             },
+
     death_bar: {domain_builder: 'epiweek',
                 domain_parameter: 'custom_ordinal',  
 
@@ -433,6 +435,58 @@ g.viz_definition = {
                 buttons_list: ['reset','help'],
             },
 
+    case_ser: { domain_builder: 'epiweek',                 
+                domain_parameter: 'custom_ordinal',         
+
+                instance_builder: 'composite',
+
+                dimension_builder: 'auto',
+                dimension_parameter: {  column: 'epiwk',
+                                        //shared: true,
+                                        shared: false,
+                                        //namespace: 'epiweek'},
+                                        namespace: 'none'},
+
+                group_builder: 'series',
+                group_parameter: {  column: ['case','fyo']},    
+
+                sync_to: ['death_ser'],   
+
+                display_axis:   {x:'',
+                                 y:g.module_lang.text[g.module_lang.current].chart_case_labely},
+                display_colors: [4,2,1],            
+                display_intro: 'top',           
+                display_idcontainer: 'container_casedeath_ser',
+                display_filter: false,
+                buttons_list: ['reset','help'],               
+            },
+
+    death_ser: {domain_builder: 'epiweek',                 
+                domain_parameter: 'custom_ordinal',         
+
+                instance_builder: 'composite',
+
+                dimension_builder: 'auto',
+                dimension_parameter: {  column: 'epiwk',
+                                        //shared: true,         //TRY VARYING THIS?
+                                        shared: false,
+                                        //namespace: 'epiweek'},
+                                        namespace: 'none'},
+
+                group_builder: 'series',
+                group_parameter: {  column: ['death','fyo']},    
+
+                sync_to: ['case_ser'],  
+
+                display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_death_labelx,
+                                 y:g.module_lang.text[g.module_lang.current].chart_death_labely},
+                display_colors: [4,2,1],            
+                display_intro: 'top',           
+                //display_idcontainer: 'container_casedeath_ser',   //IS THIS EVEN USED ANYWHERE???
+                display_filter: false,
+                buttons_list: ['reset','help'],               
+            },
+
     fyo: {	domain_builder: 'none',
                 domain_parameter: 'none',  
 
@@ -447,6 +501,7 @@ g.viz_definition = {
 
                 display_colors: [2,4],            
                 display_intro: 'left',
+
                 buttons_list: ['reset','help'],
                 filter: true
             },
@@ -508,7 +563,7 @@ g.viz_definition = {
                 group_parameter: {  column: ['case']},
 
                 display_intro: 'left',           
-                display_idcontainer: 'chart-year',
+                //display_idcontainer: 'chart-year',
                 display_filter: true,
                 buttons_list: ['reset','help'],
             },
