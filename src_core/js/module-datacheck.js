@@ -498,13 +498,26 @@ epiwk: function(rec,key,none){
 					var test_value = module_datacheck.testvalue[g.module_datacheck.definition_value[key].test_type](rec,key,g.module_datacheck.definition_value[key].setup);
 					module_datacheck.errorlogging(test_value,g.module_datacheck.definition_value[key].test_type,key,rec);
 					if(!test_value){
+						//console.log("Errors in record number ", recnum, ": ", key, test_value, rec);
 						error_temp = true;
+						if(g.dev_defined.ignore_errors == true){			//HEIDI - added this global variable here
+							//console.log("fix record here num ", recnum, " here...");
+							//console.log("    fix point at: ", g.medical_headerlist[key]);
+							//console.log("    value was ", g.medical_data[recnum][g.medical_headerlist[key]]);
+							g.medical_data[recnum][g.medical_headerlist[key]] = '';
+							//console.log("    value is  ", g.medical_data[recnum][g.medical_headerlist[key]]);
+						} else if ((recnum==8768)||(recnum==23698)) {
+							//console.log("    value at ",g.medical_headerlist[key], " is ", g.medical_data[recnum][g.medical_headerlist[key]]);
+						}
+						//console.log("medical_data: ", g.medical_data);
 					}else{
 						empty_temp = false;
 					}
 				}
 			}
 		});
+
+		
 
 		if(!(module_datacheck.testvalue.empty(rec,'epiwk','none')) && module_datacheck.testvalue[g.module_datacheck.definition_value['epiwk'].test_type](rec,'epiwk',g.module_datacheck.definition_value['epiwk'].setup)){
 			if(g.medical_yearlist.indexOf(rec[g.medical_headerlist.epiwk].split('-')[0]) == -1){
