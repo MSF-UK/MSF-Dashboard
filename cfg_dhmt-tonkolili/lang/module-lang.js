@@ -111,7 +111,7 @@ module_lang.display = function() {
 // 1) French
 //------------------------------------------------------------------------------------
 g.module_lang.text.fra = {
-	main_title: 'MSF Dashboard v1.0.0 | Surveillance Tonkolili DHMT',
+	main_title: 'MSF Dashboard v1.1.0pre-alpha | Surveillance Tonkolili DHMT',
 	main_description: 'VERSION PILOTE. Cette version prend en entrée des données de surveillance. Cet outil est dévelopé par la Manson Unit, MSF UK - <a href="mailto:gis.mansonunit@london.msf.org">gis.mansonunit@london.msf.org</a>.<br><i>Cliquez sur les graphiques pour filtrer les différentes dimensions de votre jeu de données. Consultez l\'aide pour plus de détails.',
 
 	loadfiles_choose: 'CHOISISSEZ UN FICHIER A CHARGER',
@@ -243,7 +243,7 @@ g.module_lang.text.fra = {
 // 2) English
 //------------------------------------------------------------------------------------
 g.module_lang.text.eng = {
-	main_title: 'MSF Dashboard v1.0.0 | Surveillance Tonkolili DHMT',
+	main_title: 'MSF Dashboard v1.1.0pre-alpha | Surveillance Tonkolili DHMT',
 	main_description: 'PILOT VERSION. This version uses surveillance data. This tool is developed by the MSF UK, Manson Unit - <a href="mailto:gis.mansonunit@london.msf.org">gis.mansonunit@london.msf.org</a>.<br><i>Click the charts to filter the various dimensions of your dataset. Refer to the help for more details.</i>',
 
 	loadfiles_choose: 'CHOOSE A FILE TO LOAD',
@@ -256,6 +256,8 @@ g.module_lang.text.eng = {
 	chart_case_ser_title: 'Cases & Deaths',   //HEIDI added this
 	chart_case_bar_title: 'Cases & Deaths',
 	chart_case_lin_title: 'Cases & Deaths',
+	chart_case_ser_imr_title: 'Incidence & Mortality Rates',   //HEIDI added this
+	chart_case_lin_imr_title: 'Incidence & Mortality Rates',   //HEIDI added this
 	chart_case_labelx: 'Epi-Week',
 	chart_case_labely: 'Cases',
 	chart_death_labelx: 'Epi-Week',
@@ -290,9 +292,9 @@ g.module_lang.text.eng = {
 
 	//chartwarper_tab_containter_bar:'By age class',  
 	//chartwarper_tab_containter_lin:'By year',
-	chartwarper_tab_containter_ser:'Linegraph (by age class)',
-	chartwarper_tab_containter_bar:'Stacked bars (by age class, filterable)',
-	chartwarper_tab_containter_lin:'Linegraph (by year)',
+	chartwarper_tab_containter_ser:'Linegraph (by age class)',				//HEIDI
+	chartwarper_tab_containter_bar:'Stacked bars (by age class, filterable)',  //HEIDI
+	chartwarper_tab_containter_lin:'Linegraph (by year)',					//HEIDI
 	
 	colorscale_title: 'MAP PARAMETERS',
 	colorscale_unitintro: 'Choose map unit: ',

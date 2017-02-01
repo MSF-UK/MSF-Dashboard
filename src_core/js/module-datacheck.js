@@ -28,6 +28,7 @@
  * @requires js/main-loadfiles.js
  * @todo The distinction between the two function (data check and processing) could be made in futur versions.
  **/
+ 
 var module_datacheck = {};
  /*------------------------------------------------------------------------------------
 	Components:

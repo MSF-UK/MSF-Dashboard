@@ -192,6 +192,7 @@ module_multiadm.interaction = function(){
      * @todo Could we avoid module_colorscale dependency here?
      */
 	g.module_multiadm.tabcurrentnum = 0;
+	console.log("ASSIGNED TABCURRENTNUM HERE: ", g.module_multiadm.tabcurrentnum);
 
 	// Tabs 'onclick' events
 	g.geometry_keylist.forEach(function(key1,key1num){

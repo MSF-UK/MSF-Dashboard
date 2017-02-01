@@ -351,6 +351,7 @@ module_colorscale.interaction = function(){
                 .colorAccessor(colorAccessor); 
 		    g.viz_definition.multiadm.legend[adm].addTo(g.viz_definition.multiadm.maps[adm]);
 	    })
+	    console.log("ABOUT TO REDRAW ALL from module_colorscale.interaction...");
 		dc.redrawAll();	
 	});
 
@@ -386,7 +387,7 @@ module_colorscale.interaction = function(){
 		$('#'+unit).on('change',function(){
 			if($('#'+unit).is(':checked')) {
 				g.module_colorscale.mapunitcurrent = g.module_colorscale.mapunitlist[$('#'+unit).val()];
-
+				console.log("SELECTED MAP PARAMETER: ", g.module_colorscale.mapunitcurrent);
 				// Saves last disease displayed when 'Completeness' is selected
 				if(g.module_colorscale.mapunitcurrent == 'Completeness'){
 					$('#selectform1').val('ReversedDiverging');	
@@ -397,26 +398,45 @@ module_colorscale.interaction = function(){
 						g.viz_definition.disease.chart.filterAll();
 						g.medical_currentdisease = g.medical_pastdisease; 
 					}
+
+					$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_title+'</b>');		//HEIDI added
+					$('#chart_case_lin_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_title+'</b>');		//HEIDI added
+
 	                $('#chart-disease').addClass("noclick");
 	                $('#chart-fyo').addClass("noclick");
 
 				}else if(g.module_colorscale.mapunitcurrent == 'Cases' || g.module_colorscale.mapunitcurrent == 'Deaths'){
+					console.log("SELECTED Cases OR Deaths: ", g.module_colorscale.mapunitcurrent);
 					$('#selectform1').val('Classic');	
 					g.module_colorscale.colorscurrent = 'Classic';
+					//console.log("g.viz_definition.disease = ", g.viz_definition.disease);
+					//console.log("g.viz_definition.disease.chart.filter() = ", g.viz_definition.disease.chart.filter());
+					//console.log("g.medical_currentdisease = ", g.medical_currentdisease);
 					if(g.viz_definition.disease && g.viz_definition.disease.chart.filter() == undefined && g.medical_currentdisease){
 			            g.viz_definition.disease.chart.filter(g.medical_currentdisease);
+			            //console.log("IN IF for Cases or Deaths: ", g.medical_currentdisease);
 					}
+
+					$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_title+'</b>');		//HEIDI added
+					$('#chart_case_lin_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_title+'</b>');		//HEIDI added
+
 					$('#chart-disease').removeClass("noclick");
 					$('#chart-fyo').removeClass("noclick");
 
 				}else if(g.module_colorscale.mapunitcurrent == 'IncidenceProp' || g.module_colorscale.mapunitcurrent == 'MortalityProp'){
+					console.log("SELECTED Incidence or Mortality: ", g.module_colorscale.mapunitcurrent);
 					$('#selectform1').val('Classic');	
 					g.module_colorscale.colorscurrent = 'Classic';
 		            if(g.viz_definition.disease && g.viz_definition.disease.chart.filter() == undefined && g.medical_currentdisease){
 			            g.viz_definition.disease.chart.filter(g.medical_currentdisease);
 					}
+					
+					$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_imr_title+'</b>');		//HEIDI added
+					$('#chart_case_lin_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_imr_title+'</b>');		//HEIDI added
+
 					$('#chart-disease').removeClass("noclick");
 					$('#chart-fyo').removeClass("noclick");
+					dc.redrawAll(); //HEIDI ADDED TO TEST
 	          	}
 
 				$("#selectform1").change();

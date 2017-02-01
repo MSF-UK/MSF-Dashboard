@@ -423,6 +423,19 @@ function generateDashboard(){
                 });
                 return dimension;
             },
+            week_num: function(key){
+                var dimension = cf.dimension(function(rec) {
+                    if(rec[g.medical_headerlist[key]]){
+                        return parseInt(rec[g.medical_headerlist[key]].split('-')[1]);
+                        //console.log("week_num dimension: ", parseInt(rec[g.medical_headerlist[key]].substr(-2)), " = ", parseInt(rec[g.medical_headerlist[key]].split('-')[1]));
+                        //return parseInt(rec[g.medical_headerlist[key]].substr(-2));
+                    }else{
+                        return 'NA';
+                    }
+                });
+                //console.log("week_num Dimension = ", dimension.bottom(Infinity).map(function(d) {return (d.epiweek).substr(-2)}));
+                return dimension;
+            },
             date: function(key){
                 var key = 'date';
                 var dimension = cf.dimension(function(rec) {
@@ -443,7 +456,7 @@ function generateDashboard(){
                         return 'NA';
                     }
                 });
-                console.log("building auto dimension for ", key, " = ", dimension);
+                //console.log("building auto dimension for ", key, " = ", dimension);
                 return dimension;
             },
             readcat: function(key){
@@ -603,13 +616,52 @@ function generateDashboard(){
                 var group = g.viz_definition[dimkey].dimension.group().reduceSum(function(d) {return d[g.medical_headerlist[keylistgroup[0]]];});
                 return group;
             },
-            series: function(dimkey,keylistgroup){
+            series_age: function(dimkey,keylistgroup){
+                //console.log("groupBuilder series_age, dimkey = ", dimkey);
+                //console.log("groupBuilder series_age, keylistgroup = ", keylistgroup);
                 var group = {};
+                /*group.u = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){
+                    if ((g.module_colorscale.mapunitcurrent == 'Cases') || (g.module_colorscale.mapunitcurrent == 'Deaths')) {
+                        var therewego = d[keylistgroup[1]]=="u"?d[g.medical_headerlist[keylistgroup[0]]]*10000:0;
+                        //return d[keylistgroup[1]]=="u"?d[g.medical_headerlist[keylistgroup[0]]]*10000:0;
+                    } else if ((g.module_colorscale.mapunitcurrent == 'IncidenceProp') || (g.module_colorscale.mapunitcurrent == 'MortalityProp')) {
+                        var therewego = d[keylistgroup[1]]=="u"?d[g.medical_headerlist[keylistgroup[0]]]*1000:0;
+                        //return d[keylistgroup[1]]=="u"?d[g.medical_headerlist[keylistgroup[0]]]*1000:0;
+                    };    
+                    //console.log("therewego: ", therewego); 
+                    return therewego;             
+                });*/
                 group.u = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="u"?d[g.medical_headerlist[keylistgroup[0]]]:0;});
                 group.o = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="o"?d[g.medical_headerlist[keylistgroup[0]]]:0;});
                 group.a = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[g.medical_headerlist[keylistgroup[0]]]});
+
+                //group.u_ir = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="u"?1000*d[g.medical_headerlist[keylistgroup[0]]]:0;});
+                //group.o_ir = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="o"?1000*d[g.medical_headerlist[keylistgroup[0]]]:0;});
+                //group.a_ir = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return 1000*d[g.medical_headerlist[keylistgroup[0]]]});
                 //console.log("in groupBuilder.surveillance - series option, group.u = ", group.u);
                 //console.log("in groupBuilder.surveillance - series option, group.o = ", group.o);
+                //console.log("RETURNING GROUP series_age");
+                return group;
+            },
+            /*series_age_ir: function(dimkey,keylistgroup){
+                var group = {};
+                group.u = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="u"?1000*d[g.medical_headerlist[keylistgroup[0]]]:0;});
+                group.o = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="o"?1000*d[g.medical_headerlist[keylistgroup[0]]]:0;});
+                group.a = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return 1000*d[g.medical_headerlist[keylistgroup[0]]]});
+                //console.log("in groupBuilder.surveillance - series option, group.u = ", group.u);
+                //console.log("in groupBuilder.surveillance - series option, group.o = ", group.o);
+                console.log("RETURNING GROUP series_age");
+                return group;
+            },*/
+            series_yr: function(dimkey,keylistgroup){
+                //console.log("groupBuilder series_yr, dimkey = ", dimkey);
+                //console.log("groupBuilder series_yr, keylistgroup = ", keylistgroup);
+                var group = {};
+                group.yr2015 = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[g.medical_headerlist[keylistgroup[1]]].substring(0,4)=="2015"?d[g.medical_headerlist[keylistgroup[0]]]:"";});
+                group.yr2016 = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[g.medical_headerlist[keylistgroup[1]]].substring(0,4)=="2016"?d[g.medical_headerlist[keylistgroup[0]]]:"";});
+                
+                //console.log("in groupBuilder.surveillance - series_yr option, group.yr2015 = ", group.yr2015);
+                //console.log("in groupBuilder.surveillance - series_yr option, group.yr2016 = ", group.yr2016);
                 return group;
             },
         };
@@ -641,26 +693,45 @@ function generateDashboard(){
         //------------------------------------------------------------------------------------
         //------------------------------------------------------------------------------------
 
+        var color_list = [];
         if (g.viz_definition[key1].display_colors) {
-             /**
-             * Stores color values converted from <code>display_colors</code> ({@link module:g.viz_definition}) to actual colors picked up in the current colorscale {@link module:g.module_colorscale.colors} > {@link module:g.module_colorscale.colorscurrent}.
-             * @type {Array} 
-             * @alias module:main_core~color_list
-             */
-            var color_list = [];
-            g.viz_definition[key1].display_colors.forEach(function(num) {
-                color_list.push(g.module_colorscale.colors[g.module_colorscale.colorscurrent][num]);
-            });
+            if (g.viz_definition[key1].display_colors[0]==999) {     //HEIDI - temporary fix, need to formalize this
+                var temp_color_list = ['#17becf', '#bcbd22', '#9467bd'];
+                g.viz_definition[key1].display_colors.forEach(function(num) {
+                    if (num!=999) {
+                        color_list.push(temp_color_list[num]);
+                    }
+                    
+                });
+                //var color_domain = [0,color_list.length - 1];
+            } else {
+                /**
+                 * Stores color values converted from <code>display_colors</code> ({@link module:g.viz_definition}) to actual colors picked up in the current colorscale {@link module:g.module_colorscale.colors} > {@link module:g.module_colorscale.colorscurrent}.
+                 * @type {Array} 
+                 * @alias module:main_core~color_list
+                 */
+                //var color_list = [];
+                g.viz_definition[key1].display_colors.forEach(function(num) {
+                    color_list.push(g.module_colorscale.colors[g.module_colorscale.colorscurrent][num]);
+                });
+            }          
              /**
              * Stores the number of values in {@link module:main_core~color_list}.
              * @type {Array} 
              * @alias module:main_core~color_domain
              */
-            var color_domain = [0,color_list.length - 1];
-        }else{
-            var color_list = d3.scale.category10();
-            var color_domain = [0,color_list.length - 1]; 
+            //var color_domain = [0,color_list.length - 1];
+        } else {
+            var color_list = d3.scale.category10().range();
+            //var color_domain = [0,color_list.length - 1]; 
         }
+        /**
+             * Stores the number of values in {@link module:main_core~color_list}.
+             * @type {Array} 
+             * @alias module:main_core~color_domain
+             */
+        var color_domain = [0,color_list.length - 1];
+        console.log("COLORS for ", key1, " = ", color_list, color_domain);
 
         
         /**
@@ -905,6 +976,9 @@ function generateDashboard(){
                 var div_id = '#chart-'+key1;
                 var width = $(div_id).parent().width();
 
+                console.log("COLOR LIST = ", color_list);
+                console.log("COLOR DOMAIN = ", color_domain);
+
                 g.viz_definition[key1].chart
                     .width(width)
                     .height(160)
@@ -913,9 +987,11 @@ function generateDashboard(){
                     .innerRadius(25);
 
                 g.viz_definition[key1].chart
+                    //.colors(function(d) {console.log("color_list in pie function: ", color_list); return color_list;})
                     .colors(color_list)
                     .colorDomain(color_domain)
                     .colorAccessor(function(d,i){
+                        console.log("accessing color for pie chart = ", i, d);
                         return i;
                     });
                 
@@ -967,20 +1043,25 @@ function generateDashboard(){
                     temp_adm = g.geometry_keylist[d.key.split(', ').length - 1];
                     if (g.module_colorscale.mapunitcurrent == 'IncidenceProp') {
 
-                        var select_weeks = g.viz_definition[g.viz_timeline].chart.filters();
-                        var filterswklength = select_weeks.length;
+                        var select_weeks = g.viz_definition[g.viz_timeline].chart.filters();        //currently filtered epiweeks
+                        //console.log("CURRENTLY FILTERED EPIWEEKS: ", select_weeks);
+                        var filterswklength = select_weeks.length;                                  //number of filtered epiweeks
+                        //console.log("NUMBER OF FILTERED EPIWEEKS: ", filterswklength);
 
-                        if(filterswklength == 0){
+                        if(filterswklength == 0){                                                   //if no filter applied then...
                             select_weeks = $.extend(true, [], g.viz_definition[g.viz_timeline].domain);
-                            select_weeks.pop();
+                            //console.log("CURRENTLY FILTERED EPIWEEKS (was 0): ", select_weeks);
+                            select_weeks.pop();                                                     //remove last element of array (i.e. 'NA')
+                            //console.log("CURRENTLY FILTERED EPIWEEKS (was 0): ", select_weeks);
                             filterswklength = select_weeks.length;
-                        }
+                            //console.log("NUMBER OF FILTERED EPIWEEKS (was 0): ", filterswklength);
+                        }  
 
                         // Deals with filtering by years
                         if(g.viz_definition.year){
                             var select_years = g.viz_definition.year.chart.filters();
                             var filtersyrlength = select_years.length;
-                            if(!(filtersyrlength == 0)){
+                            if(!(filtersyrlength == 0)){                                            //if a year has been filtered - remove any epiweeks that don't match year
                                 select_weeks.forEach(function(wk) {
                                     select_years.forEach(function(yr) {
                                        if(wk.substr(0,4) !== yr){
@@ -990,9 +1071,12 @@ function generateDashboard(){
                                 });
                             }
                         }
-                        // Incidence definition
-                        var accessed_value = g.dev_defined.definition_incidence(d.value.Values_c,g.population_databyloc.pop[d.key],filterswklength);
+                       // console.log("NUMBER OF FILTERED EPIWEEKS (accounted for filtered years): ", filterswklength);
 
+                        // Incidence definition                                                     //calculate incidence using (value, pop, periode)
+                        var accessed_value = g.dev_defined.definition_incidence(d.value.Values_c,g.population_databyloc.pop[d.key],filterswklength);
+                        //console.log("INCDIENCE RATE (Inc Prop):  (", d.value.Values_c,"*10,000) / (",g.population_databyloc.pop[d.key],"*",filterswklength,") = ", accessed_value);
+                        
                     }else if (g.module_colorscale.mapunitcurrent == 'MortalityProp') {
 
                         var select_weeks = g.viz_definition[g.viz_timeline].chart.filters();
@@ -1020,6 +1104,8 @@ function generateDashboard(){
 
                         // Mortality == Incidence definition
                         var accessed_value = g.dev_defined.definition_incidence(d.value.Values_d,g.population_databyloc.pop[d.key],filterswklength);
+                        console.log("INCDIENCE RATE (Mort Prop):  (", d.value.Values_d,"*10,000) / (",g.population_databyloc.pop[d.key],"*",filterswklength,") = ", accessed_value);
+                        
 
                     }else if (g.module_colorscale.mapunitcurrent == 'Completeness') {
 
@@ -1557,6 +1643,8 @@ function generateDashboard(){
             case 'composite':    //HEIDI added this section
             //------------------------------------------------------------------------------------
                 var div_id = '#chart-'+key1;
+                //console.log("COMPOSITE CHART: ", key1);
+                //console.log("   g.viz_definition[", key1, "] = ", g.viz_definition[key1]);
                 var width = $(div_id).parent().width();
 
                 // Shared dimension
@@ -1566,45 +1654,181 @@ function generateDashboard(){
                     var dim_namespace = key1;
                 }
 
-                var xScaleRange = d3.scale.ordinal().domain(g.viz_definition[key1].domain);   
+                //console.log("MAP UNIT IS: ", g.module_colorscale.mapunitcurrent);
+
+                if (g.viz_definition[key1].domain_parameter == 'custom_ordinal'){
+                    var xScaleRange = d3.scale.ordinal().domain(g.viz_definition[key1].domain);  
+                    var group0 =  g.viz_definition[key1].group.a;
+                } else if (g.viz_definition[key1].domain_parameter == 'custom_linear'){
+                    var xScaleRange = d3.scale.linear().domain(g.viz_definition[key1].domain); 
+                    var group0 = g.viz_definition[key1].group.yr2015;   //HEIDI - need to replace these groups with references - define keygroup?
+                };
+
+                function getPopNum() {          //return population for all currently selected regions
+                    var pop = 0;
+                    //if selected adm level in map is one of those defined - i.e. an integer between 0 and g.geometry_keylist.length-1
+                    //console.log("tabcurrentnum is an integer ", Number.isInteger(g.module_multiadm.tabcurrentnum));
+                    if ((Number.isInteger(g.module_multiadm.tabcurrentnum) && (g.module_multiadm.tabcurrentnum >=0) && (g.module_multiadm.tabcurrentnum <= g.geometry_keylist.length-1))) {
+                        //console.log("tabcurrentnum = ", g.module_multiadm.tabcurrentnum);
+                        //console.log("geom_keylist = ", g.geometry_keylist[g.module_multiadm.tabcurrentnum]);
+                        var select_locs = g.viz_definition[g.viz_locations].charts[g.geometry_keylist[g.module_multiadm.tabcurrentnum]].filters();        //currently filtered locations
+                        if (select_locs.length == 0){
+                            select_locs = g.geometry_loclists[g.geometry_keylist[g.module_multiadm.tabcurrentnum]];
+                        };
+                    } else {        //otherwise assume level 0
+                        //console.log("tabcurrentnum = assume ", 0);
+                        //console.log("geom_keylist = ", g.geometry_keylist[0]);
+                        var select_locs = g.viz_definition[g.viz_locations].charts[g.geometry_keylist[0]].filters(); 
+                        if (select_locs.length == 0){
+                            select_locs = g.geometry_loclists[g.geometry_keylist[0]];
+                        };
+                    }
+                    //console.log("CURRENT LOCATIONS: ", select_locs);
+
+                    //loop through locations adding them up
+                    for (i=0; i<=select_locs.length-1; i++) {
+                        //console.log("i = ", i, "   add in ", select_locs[i], g.population_databyloc.pop[select_locs[i]]);
+                        pop += g.population_databyloc.pop[select_locs[i]];
+                    }
+
+                    //console.log("FINAL POP = ", pop);
+                    return pop;
+                };
+
+                function valueAccessor1(d) {        //value for overall summary group (e.g. All Ages)
+                    if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {        
+                        var accessed = g.dev_defined.definition_incidence(+d.value, getPopNum(), 1);   //HEIDI - need to change function to return correct age group
+                        //console.log("INCDIENCE RATE:  (", d.value,"*10,000) / (", pop_num,"*",1,") = ", accessed);
+                    } else {
+                        var accessed = +d.value;
+                    }
+                    return accessed;
+                };
+
+                function getYLabel() {    
+                    if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
+                        var yLabel = g.viz_definition[key1].display_axis.y_imr;                                
+                    } else {
+                        var yLabel = g.viz_definition[key1].display_axis.y;
+                    }
+                    return yLabel;
+                }; 
+
 
                 g.viz_definition[key1].chart
                     .margins({top: 10, right: 50, bottom: 60, left: 40})
                     .width(width)
                     .height(180)
                     .dimension(g.viz_definition[dim_namespace].dimension)
-                    .group(g.viz_definition[key1].group.o)
+                    .group(group0)
                     .elasticY(true)   
-                    .brushOn(false)     
-                    .valueAccessor(function(d) {
-                        //console.log("valueAccessor d = ", +d); 
-                        return +d.value;
-                    })
-                    .title(function(d) {
-                        //console.log("title d = ", d); 
-                        return d.key+ ": " + d.value; 
-                    });
-                    
+                    .brushOn(false);                     
 
-                if(g.viz_definition[key1].domain_parameter == 'custom_ordinal'){
+                if (g.viz_definition[key1].domain_parameter == 'custom_ordinal'){
+                    //console.log("COLOR LIST = ", color_list);
+                    //console.log("COLOR DOMAIN = ", color_domain);
+
+                    function valueAccessor2(d) {        //value for subgroups (e.g. Under 5, Over 5)
+                        if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
+                            if (g.population_byAgeGroup) {      //if age group population data is available      
+                                var accessed = g.dev_defined.definition_incidence(+d.value, pop_num, 1);  //HEIDI - need to change function to return correct age group
+                                //console.log("INCDIENCE RATE:  (", d.value,"*10,000) / (", pop_num,"*",1,") = ", accessed);
+                            } else {                            //if age group population data is not available
+                                var accessed = null;   
+                            }
+                        } else {
+                            var accessed = +d.value;
+                        }
+                        return accessed;
+                    };
+
+                    function titleAccessor1(d) {    //hover info for overall summary group (e.g. All Ages)
+                        if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
+                            var accessed = d.key+ ": " + d3.format(",.2f")(valueAccessor1(d));                                
+                        } else {
+                            var accessed = d.key+ ": " +d.value;
+                        }
+                        return accessed;
+                    };
+
+                    function titleAccessor2(d) {    //hover info for subgroups (e.g. Under 5, Over 5)
+                        if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
+                            if (g.population_byAgeGroup) {      //if age group population data is available
+                                var accessed = d.key+ ": " + d3.format(",.2f")(valueAccessor2(d));   
+                            } else {                            //if age group population data is not available
+                                var accessed = "Data not available";   
+                            }                              
+                        } else {
+                            var accessed = d.key+ ": " + d.value;
+                        }
+                        return accessed;
+                    };               
+
                     g.viz_definition[key1].chart
                         .x(xScaleRange)
                         .xUnits(dc.units.ordinal)
-                        .yAxisLabel(g.viz_definition[key1].display_axis.y)   
-                        .xAxisLabel(g.viz_definition[key1].display_axis.x) 
+                        //.yAxisLabel(g.viz_definition[key1].display_axis.y) 
+                        .yAxisLabel(getYLabel)
+                        .xAxisLabel(g.viz_definition[key1].display_axis.x)      //could change padding parameter to 6 here but must do for all charts (default=12)
+                        .shareTitle(false)
                         //.clipPadding(10)  
                         ._rangeBandPadding(1)
                         .compose([
-                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).group(g.viz_definition[key1].group.a,g.module_lang.text[g.module_lang.current].chart_fyo_labela).colors("#333"),
-                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).group(g.viz_definition[key1].group.u,g.module_lang.text[g.module_lang.current].chart_fyo_labelu).colors(color_list[0]),
-                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).group(g.viz_definition[key1].group.o,g.module_lang.text[g.module_lang.current].chart_fyo_labelo).colors(color_list[1])
-                            
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.a,g.module_lang.text[g.module_lang.current].chart_fyo_labela).valueAccessor(valueAccessor1).title(titleAccessor1).colors("#333"),
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.u,g.module_lang.text[g.module_lang.current].chart_fyo_labelu).valueAccessor(valueAccessor2).title(titleAccessor2).colors(color_list[0]),
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.o,g.module_lang.text[g.module_lang.current].chart_fyo_labelo).valueAccessor(valueAccessor2).title(titleAccessor2).colors(color_list[1])
+                        ])
+                        .legend(dc.legend().x(100).y(20).itemHeight(8).gap(4));
+                        /*.yAxis().ticks(5)
+                        .tickFormat(function(d) {
+                            if ((g.module_colorscale.mapunitcurrent=='Cases') || (g.module_colorscale.mapunitcurrent=='Deaths')) {
+                                return d3.format("d");
+                            } 
+                         })
+                        .tickSubdivide(function(d) {
+                            if ((g.module_colorscale.mapunitcurrent=='Cases') || (g.module_colorscale.mapunitcurrent=='Deaths')) {
+                                return 0;
+                            } 
+                         });
+*/
+
+
+
+                } else if (g.viz_definition[key1].domain_parameter == 'custom_linear'){
+                    console.log("COLOR LIST = ", color_list);
+                    console.log("COLOR DOMAIN = ", color_domain);
+                    g.viz_definition[key1].chart
+                        .x(xScaleRange)
+                        .xUnits(dc.units.integers)   
+                        .yAxisLabel(getYLabel)   
+                        .xAxisLabel(g.viz_definition[key1].display_axis.x) 
+                        //.shareTitle(false)
+                        //.clipPadding(10)  
+                        ._rangeBandPadding(1)
+                        .title(function(d) {
+                            if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
+                                return "Week " + d.key+ ": " + d3.format(",.2f")(valueAccessor1(d));                                
+                            } else {
+                                return "Week " + d.key+ ": " +d.value;
+                            }
+                        })
+                        .compose([
+                            //Note that /*.defined(function(d) {if (d.y !== null) {return d.y;}})*/ removes data entry of null but not of 0
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.yr2015,g.medical_yearlist[1]).valueAccessor(valueAccessor1).colors(color_list[0]),
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.yr2016,g.medical_yearlist[0]).valueAccessor(valueAccessor1).colors(color_list[1])
                         ])
                         .legend(dc.legend().x(100).y(20).itemHeight(8).gap(4));
                 };
 
                 g.viz_definition[key1].chart
-                    .yAxis().ticks(5);
+                    .yAxis().ticks(5)
+                    .tickFormat(function(d) {
+                        if ((g.module_colorscale.mapunitcurrent=='Cases') || (g.module_colorscale.mapunitcurrent=='Deaths')) {
+                            return d3.format("d")(d);
+                        } else {
+                            return d3.format("")(d);
+                        } 
+                     });
 
 
                 // HEIDI - ADDED THIS - for composite charts where domainBuilder = epiweek, and domain length >=53:
@@ -1625,7 +1849,7 @@ function generateDashboard(){
                             chart.selectAll("g.x text")
                                 .attr('dx', '-5')
                                 .attr('dy', '5')
-                        });                        
+                        })              
                 };
 
                 g.viz_definition[key1].chart.render();         
@@ -1810,3 +2034,4 @@ function zoomToGeom(geom,adm){
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
+

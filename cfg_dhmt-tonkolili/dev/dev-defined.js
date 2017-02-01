@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------------
     MSF Dashboard - dev-defined.js
-    (c) 2015-2016, MSF-Dashboard contributors for MSF
+    (c) 2015-2017, MSF-Dashboard contributors for MSF
     List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
     Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
 ------------------------------------------------------------------------------------*/
@@ -63,7 +63,7 @@ g.medical_datatype = 'surveillance'; // 'outbreak' or 'surveillance'
  * @alias module:dev_defined.definition_incidence
  */
 g.dev_defined.definition_incidence = function(value,pop,periode) {
-    return value * 10000 / (pop * periode); 
+    return value * 10000 / (pop * periode);             //Note: periode = number of epiweeks
 };
 
 /**
@@ -191,6 +191,8 @@ g.population_headerlist = {
     admNx: 'name',
     pop: 'population'
 };
+
+g.population_byAgeGroup = false;   //HEIDI added this - prob needs more appropriate defining in appropriate location
 
 function main_loadfiles_readvar(){
     /**
@@ -447,18 +449,20 @@ g.viz_definition = {
                                         //namespace: 'epiweek'},
                                         namespace: 'none'},
 
-                group_builder: 'series',
+                group_builder: 'series_age',
                 group_parameter: {  column: ['case','fyo']},    
 
                 sync_to: ['death_ser'],   
 
                 display_axis:   {x:'',
-                                 y:g.module_lang.text[g.module_lang.current].chart_case_labely},
-                display_colors: [4,2,1],            
+                                 y:g.module_lang.text[g.module_lang.current].chart_case_labely,
+                                 y_imr: 'Incidence Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js
+                //display_colors: [4,2,1],     
+                display_colors: [999, 0,1],           //HEIDI - temporary fix       
                 display_intro: 'top',           
                 display_idcontainer: 'container_casedeath_ser',
                 display_filter: false,
-                buttons_list: ['reset','help'],               
+                buttons_list: ['help'],               
             },
 
     death_ser: {domain_builder: 'epiweek',                 
@@ -473,18 +477,20 @@ g.viz_definition = {
                                         //namespace: 'epiweek'},
                                         namespace: 'none'},
 
-                group_builder: 'series',
+                group_builder: 'series_age',
                 group_parameter: {  column: ['death','fyo']},    
 
                 sync_to: ['case_ser'],  
 
                 display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_death_labelx,
-                                 y:g.module_lang.text[g.module_lang.current].chart_death_labely},
-                display_colors: [4,2,1],            
+                                 y:g.module_lang.text[g.module_lang.current].chart_death_labely,
+                                 y_imr: 'Mortality Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js
+                //display_colors: [4,2,1],      
+                display_colors: [999, 0,1],           //HEIDI - temporary fix      
                 display_intro: 'top',           
                 //display_idcontainer: 'container_casedeath_ser',   //IS THIS EVEN USED ANYWHERE???
                 display_filter: false,
-                buttons_list: ['reset','help'],               
+                buttons_list: ['help'],               
             },
 
     fyo: {	domain_builder: 'none',
@@ -499,56 +505,61 @@ g.viz_definition = {
                 group_builder: 'auto',
                 group_parameter: {  column: ['case']},
 
-                display_colors: [2,4],            
+                //display_colors: [2,4],    
+                display_colors: [999, 1,0],           //HEIDI - temporary fix
                 display_intro: 'left',
 
                 buttons_list: ['reset','help'],
                 filter: true
             },
 
-    case_lin: { domain_builder: 'week',
+    case_lin: {domain_builder: 'week',
                 domain_parameter: 'custom_linear',
 
-                instance_builder: 'series',
+                instance_builder: 'composite',
 
-                dimension_builder: 'week',
+                dimension_builder: 'week_num',
                 dimension_parameter: {  column: 'epiwk',
                                         shared: true,
                                         namespace: 'week'},
 
-                group_builder: 'auto',
-                group_parameter: {  column: ['case']},
+                group_builder: 'series_yr',
+                group_parameter: {  column: ['case','epiwk']},
 
                 sync_to: ['death_lin'],
 
                 display_axis:   {x:'',
-                                 y:g.module_lang.text[g.module_lang.current].chart_case_labely},
-                display_colors: [],            
+                                 y:g.module_lang.text[g.module_lang.current].chart_case_labely,
+                                 y_imr: 'Incidence Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js},
+                //display_colors: [4,2,1],            
                 display_intro: 'top',           
                 display_idcontainer: 'container_casedeath_lin',
                 buttons_list: ['help'],
             },
+
     death_lin: {domain_builder: 'week',
                 domain_parameter: 'custom_linear',  
 
-                instance_builder: 'series',
+                instance_builder: 'composite',
 
-                dimension_builder: 'week',
+                dimension_builder: 'week_num',
                 dimension_parameter: {  column: 'epiwk',
                                         shared: true,
                                         namespace: 'week'},
 
-                group_builder: 'auto',
-                group_parameter: {  column: ['death']},
+                group_builder: 'series_yr',
+                group_parameter: {  column: ['death', 'epiwk']},
 
                 sync_to: ['case_lin'],
 
                 display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_death_labelx,
-                                 y:g.module_lang.text[g.module_lang.current].chart_death_labely},
-                display_colors: [],            
+                                 y:g.module_lang.text[g.module_lang.current].chart_death_labely,
+                                 y_imr: 'Mortality Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js},
+                //display_colors: [4,2,1],            
                 display_intro: 'none',
-                buttons_list: ['reset','help'],
-            },
+                buttons_list: ['help'],
+            },    
+
     year: {     domain_builder: 'year',
                 domain_parameter: 'none',
 
@@ -601,4 +612,12 @@ g.viz_timeline = 'case_bar';
  * @todo Automate
  */
 g.viz_timeshare = ['death_bar'];
+
+/**
+ Defines the chart used as a reference for location-related interactions (e.g. incidence rates).
+ * @constant
+ * @type {String} 
+ * @alias module:g.viz_locations
+ */
+g.viz_locations = 'multiadm';
 

@@ -55,6 +55,9 @@
 .x-axis-label {
     font-size: 12px !important;
 }
+.y-axis-label {
+    font-size: 11px !important;
+}
 .dc-chart .pie-slice {
     fill: #656F73;
 }
