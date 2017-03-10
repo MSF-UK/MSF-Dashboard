@@ -140,8 +140,10 @@ g.module_getdata = {
     },
     medical:{
         medical: {
-            method: 'medicalfs',
-            options: {  url: './input/',
+            //method: 'medicalfs',
+            //options: {  url: './input/',
+			method: 'medicald3noserver',
+			options: {  url: 'input/tonkolili_database_wks-201545-201605.csv',
                         type: 'csv'}      
         }
     },
