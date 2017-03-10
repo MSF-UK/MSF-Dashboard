@@ -50,9 +50,10 @@ var files = [
     ['css','css/module-chartwarper.css',prg_folder],
     ['js','js/module-chartwarper.js',prg_folder],
     ['css','css/module-datatable.css',prg_folder],
-    ['js','js/module-datatable.js',prg_folder],
+    ['js','js/module-datatable.js',prg_folder],   
     ['css','css/main-core.css',prg_folder],
     ['js','js/main-core.js',prg_folder],
+    ['js','js/module-epitime.js',prg_folder],       //HEIDI - where should this be?
     ['css','css/module-intro.css',prg_folder],
     ['js','js/module-intro.js',prg_folder],
     ['css','css/module-interface.css',prg_folder],

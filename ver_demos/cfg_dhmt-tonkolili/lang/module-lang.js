@@ -263,7 +263,7 @@ g.module_lang.text.eng = {
 	chart_death_labelx: 'Epi-Week',
 	chart_death_labely: 'Deaths',
 	chart_year_title: 'Years',
-	chart_fyo_title: 'Age Classes',
+	chart_fyo_title: 'Age Groups',
 	chart_fyo_labelu: 'Under 5',
 	chart_fyo_labelo: 'Over 5',
 	chart_fyo_labela: 'All Ages',   //HEIDI added this
@@ -290,10 +290,10 @@ g.module_lang.text.eng = {
 		title: 'PHU'
 	},
 
-	//chartwarper_tab_containter_bar:'By age class',  
+	//chartwarper_tab_containter_bar:'By age group',  
 	//chartwarper_tab_containter_lin:'By year',
-	chartwarper_tab_containter_ser:'Linegraph (by age class)',				//HEIDI
-	chartwarper_tab_containter_bar:'Stacked bars (by age class, filterable)',  //HEIDI
+	chartwarper_tab_containter_ser:'Linegraph (by age group)',				//HEIDI
+	chartwarper_tab_containter_bar:'Stacked bars (by age group, filterable)',  //HEIDI
 	chartwarper_tab_containter_lin:'Linegraph (by year)',					//HEIDI
 	
 	colorscale_title: 'MAP PARAMETERS',
@@ -369,11 +369,11 @@ g.module_lang.text.eng = {
 
 	intro_disease: 'This row chart displays represented diseases.<br><i>Click on the bars to display data for a chosen disease.<br>The horizontal axis displays the number of times a disease has been reported ie. +1 per Area and per Week where 1 or more cases of the disease have been reported.</i>',
 
-	intro_case_bar: 'These bar charts display case and death numbers by epi-week and by age class (+/- 5 years old).<br><i>Click on the bars to filter by a specific epi-week. You can select multiple epi-weeks. To reset, click again on the selected epi-weeks (one by one) or click the "<span class="ft">↻</span>" button.</i>',
+	intro_case_bar: 'These bar charts display case and death numbers by epi-week and by age group (+/- 5 years old).<br><i>Click on the bars to filter by a specific epi-week. You can select multiple epi-weeks. To reset, click again on the selected epi-weeks (one by one) or click the "<span class="ft">↻</span>" button.</i>',
 
 	intro_case_lin: 'These charts display case and death numbers by epi-week and by year.<br><i>These charts cannot be used to filter the dataset.</i>',
 
-	intro_fyo: 'This pie chart displays case numbers by age class (+/- 5 years old).<br><i>Click on the pie slices to filter by a specific age class. To reset, click the selected pie slices one by one or click the "<span class="ft">↻</span>" button.</i>',
+	intro_fyo: 'This pie chart displays case numbers by age group (+/- 5 years old).<br><i>Click on the pie slices to filter by a specific age group. To reset, click the selected pie slices one by one or click the "<span class="ft">↻</span>" button.</i>',
 	
 	intro_year: 'This pie chart displays case numbers by year.<br><i>Click on the pie slices to filter by a specific year. You can select multiple years. To reset, click the selected pie slices one by one or click the "<span class="ft">↻</span>" button.</i>',
 

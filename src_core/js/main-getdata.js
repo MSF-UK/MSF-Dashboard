@@ -78,7 +78,7 @@ module_getdata.load_propagate = function(){
               }
           }
       }
-      console.log('main-getdate.js ~l70: Current: ' + current_datatype + ' - ' + current_dataname);
+      console.log('main-getdata.js ~l70: Current: ' + current_datatype + ' - ' + current_dataname);
       var current_datasource = getdata[current_datatype][current_dataname];
       switch(current_datasource.method){
             case 'd3':
@@ -458,6 +458,7 @@ module_getdata.load_medical_xls = function() {
         return sum;
     }
     g.medical_data = medical_data;
+    console.log("g.medical_data = ", g.medical_data); 
     module_getdata.afterload_medical_d3(medical_data);
 
 };

@@ -243,7 +243,7 @@ module_multiadm.interaction = function(){
 	
 	// Onclick initialize the next dropdown lists: propagate (inside jumpto divs)
 	/**
-	 * Modifies the 'Goto' dropdown lists of imediate lower level after a dropdownlist change event (populates with features in the selected area).
+	 * Modifies the 'Goto' dropdown lists of immediate lower level after a dropdownlist change event (populates with features in the selected area).
 	 * <br>
 	 * Requires - *complete list [.]*:
 	 * <ul>
@@ -328,7 +328,7 @@ module_multiadm.interaction = function(){
         // Initialize first jumpto
 	    var html = '<select class="select-adm" id="select-admN1">';
 	    html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+'</option>';
-	    g.medical_loclists.admN1.forEach(function(loc){
+	    g.medical_loclists.admN1.sort().forEach(function(loc){
 	        html +='<option value="'+loc+'">'+loc+'</option>';
 	    });
 	    html += '</select></div>';
@@ -394,10 +394,13 @@ module_multiadm.zoomTo = function(key,loc){
  * @method
  * @alias module:module_multiadm.resetGoto
  */
-module_multiadm.resetGoto = function(key){	
+module_multiadm.resetGoto = function(key){	  //key=adm level, e.g. admN2
 	// Reset jumpto dropdown lists content
     var html = '<select class="select-adm" id="select-'+ key +'">';
     html += '<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+'</option>';
+    g.medical_loclists[key].sort().forEach(function(loc){	
+        html +='<option value="'+loc+'">'+loc+'</option>';
+    });
     html += '</select></div>';
     $('#map-'+key+'-jumpto').html(html);
     g.module_multiadm.focuscurrent[key] = 'NA';

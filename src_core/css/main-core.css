@@ -52,6 +52,11 @@
     transform: rotate(-45deg);
     font-size:0.75em !important;
 }
+
+#chart-casedeath_ser_range .y.axis path {
+    stroke: none;
+}
+
 .x-axis-label {
     font-size: 12px !important;
 }
@@ -76,3 +81,4 @@
 .noclick {
     pointer-events: none;
 }
+

@@ -118,3 +118,43 @@
     top: 580px;
 }
 
+/* Quick filter buttons */
+
+.button_qf {
+    background-color: #cccccc; /* #3160b2; */
+    border: none;
+    border-radius: 6px;
+    outline: none;
+    /*outline-color: #ffff00;*/
+    color: black; /* white; */
+    padding: 4px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    /*margin: 4px 2px;*/
+    margin-left: 12px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+
+.button_qf:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    /* background-color: #264b8b */
+}
+
+.button_qf:active {
+  border-radius: 8px;
+  background-color: #3160b2; /* #264b8b; */
+  color: white;   /* #ffff00; */
+  box-shadow: 0 4px #666;
+  transform: translateY(3px); 
+  /* border: 1px solid #979797;  */
+}
+
+.on {
+    background-color: #3160b2;
+    color: white;
+}

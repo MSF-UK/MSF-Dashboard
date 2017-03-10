@@ -50,7 +50,8 @@ g.module_chartwarper.tabcontainer_id = 'containter_bar-lin_tabs';
  * @type {Array} 
  * @alias module:module_chartwarper.chartcontainers_list
  */
-g.module_chartwarper.chartcontainers_list = ['containter_ser','containter_bar','containter_lin'];   //HEIDI - added 'containter_ser' here
+//g.module_chartwarper.chartcontainers_list = ['containter_bar','containter_lin'];   
+g.module_chartwarper.chartcontainers_list = ['containter_ser','containter_lin'];   //HEIDI - added 'containter_ser', removed 'containter_bar'
 
 /**
  * Defines the tabs layout.

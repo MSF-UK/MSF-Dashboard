@@ -96,6 +96,10 @@ var main_core = {};
  * @todo group_type == 'shared' should not exist, but should be taken from 'dimension_type' instead.
  */
 function generateDashboard(){
+    module_epitime.createEpiTime();     //HEIDI - where should this go???
+    console.log("g.module_epitime.epitime_all = ", g.module_epitime.epitime_all);
+    g.module_epitime.all_epiweeks = module_epitime.getEpiweeksInData().sort();
+    //console.log("g.module_epitime.all_epiweeks = ", g.module_epitime.all_epiweeks);
 
     // *) Checks Modules actives
     //------------------------------------------------------------------------------------
@@ -111,6 +115,24 @@ function generateDashboard(){
      * @alias module:g.viz_keylist
      */
     g.viz_keylist = Object.keys(g.viz_definition);
+
+    //function rangeChartName() {  //HEIDI - added this function to check whether range_chart exists
+    //var rangeChartName = function() {
+        //var range_tempo = false;
+        //var range_tempo = "";   //HEIDI - change variable name!
+        //console.log("range_tempo = ", range_tempo);
+        //console.log("g.viz_keylist = ", g.viz_keylist);
+        g.viz_keylist.forEach(function(key) {                           
+            if (g.viz_definition[key].range_chart) {   //check whether range_chart exists
+                //range_tempo = key;
+                g.viz_rangechart = key;
+            }        
+        });
+        //console.log("rangeExists? ", range_tempo);
+        //return range_tempo;
+    //};
+    //var g.viz_rangechart = rangeChartName();  //HEIDI - should this be defined somewhere in g variable?
+    //console.log("rangeChartName2 = ", rangeChartName2);
 
 
     // 1) DC.js Extend Domains definitions (in order to have clickable bar behavior)
@@ -194,6 +216,18 @@ function generateDashboard(){
                 var minDate = new Date(min.split('-')[0], min.split('-')[1] - 1, min.split('-')[2]);
                 var maxDate = new Date(max.split('-')[0], max.split('-')[1] - 1, max.split('-')[2]);
                 return [minDate, maxDate];
+            },
+            date_extent: function() {
+                var dateAccessor = function (rec){
+                    var epidt = module_epitime.get_epiDate(rec[g.medical_headerlist['epiwk']]);
+                    return epidt;
+                };
+                var temp_dateExtent, dateExtent = [];
+                temp_dateExtent = d3.extent(g.medical_data, dateAccessor);  
+                dateExtent = [d3.time.day.offset(temp_dateExtent[0], -3), d3.time.day.offset(temp_dateExtent[1], 6)];
+                g.module_epitime.date_extent = dateExtent;
+                //console.log("dateExtent: ", dateExtent);
+                return dateExtent;
             },
             readcat : function(){
                 var domain = [];
@@ -448,6 +482,14 @@ function generateDashboard(){
                 });
                 return dimension;
             },
+            epidate: function(key){
+                var dimension = cf.dimension(function(rec) {
+                    var epidt = module_epitime.get_epiDate(rec[g.medical_headerlist[key]]);
+                    //console.log("epidate dim: ", epidt);
+                    return epidt;
+                });
+                return dimension;
+            },
             auto: function(key){
                 var dimension = cf.dimension(function(rec) {
                     if(rec[g.medical_headerlist[key]]){
@@ -456,7 +498,7 @@ function generateDashboard(){
                         return 'NA';
                     }
                 });
-                //console.log("building auto dimension for ", key, " = ", dimension);
+                //console.log("building auto dimension for ", key, " = ", dimension.bottom(Infinity).map(function(d) {return (d.epiweek)}));
                 return dimension;
             },
             readcat: function(key){
@@ -599,6 +641,35 @@ function generateDashboard(){
                 });
                 return mapGroup;
             },
+            multiadm_heidi: function(dimkey,keylistgroup){
+                console.log("dimkey: ", dimkey);
+                console.log("keylistgroup: ", keylistgroup);
+                var mapGroup = {};
+                g.geometry_keylist.forEach(function(key2) {
+                    mapGroup[key2] = g.viz_definition[dimkey].dimension[key2].group().reduce(
+                    function(p,v) {
+                        p['Records']++;
+                        p['Values_c'] += +v[g.medical_headerlist[keylistgroup[0]]];
+                        p['Values_d'] += +v[g.medical_headerlist[keylistgroup[1]]];
+                        return p;
+                    },
+                    function(p,v) {
+                        p['Records']--;
+                        p['Values_c'] -= +v[g.medical_headerlist[keylistgroup[0]]];
+                        p['Values_d'] -= +v[g.medical_headerlist[keylistgroup[1]]];
+                        return p;
+                    },
+                    function() {
+                        var temp = {};
+                        temp['Records'] = 0;
+                        temp['Values_c'] = 0;
+                        temp['Values_d'] = 0;
+                        return temp;
+                    }
+                    );                
+                });
+                return mapGroup;
+            },
             // /!\ "u" & "o" are hardcoded!
             stackedbar: function(dimkey,keylistgroup){
                 var group = {};
@@ -643,16 +714,10 @@ function generateDashboard(){
                 //console.log("RETURNING GROUP series_age");
                 return group;
             },
-            /*series_age_ir: function(dimkey,keylistgroup){
-                var group = {};
-                group.u = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="u"?1000*d[g.medical_headerlist[keylistgroup[0]]]:0;});
-                group.o = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="o"?1000*d[g.medical_headerlist[keylistgroup[0]]]:0;});
-                group.a = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return 1000*d[g.medical_headerlist[keylistgroup[0]]]});
-                //console.log("in groupBuilder.surveillance - series option, group.u = ", group.u);
-                //console.log("in groupBuilder.surveillance - series option, group.o = ", group.o);
-                console.log("RETURNING GROUP series_age");
+            series_all: function(dimkey,keylistgroup){
+                group = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[g.medical_headerlist[keylistgroup[0]]]});
                 return group;
-            },*/
+            },
             series_yr: function(dimkey,keylistgroup){
                 //console.log("groupBuilder series_yr, dimkey = ", dimkey);
                 //console.log("groupBuilder series_yr, keylistgroup = ", keylistgroup);
@@ -731,7 +796,7 @@ function generateDashboard(){
              * @alias module:main_core~color_domain
              */
         var color_domain = [0,color_list.length - 1];
-        console.log("COLORS for ", key1, " = ", color_list, color_domain);
+        //console.log("COLORS for ", key1, " = ", color_list, color_domain);
 
         
         /**
@@ -822,18 +887,25 @@ function generateDashboard(){
             //------------------------------------------------------------------------------------
                 var div_id = '#chart-'+key1;
                 var width = $(div_id).parent().width();
-                
+                var height = (g.viz_definition[key1].range_chart)? 100 : 180;
+
                 // Shared dimension
                 if(g.viz_definition[key1].dimension_parameter.shared){
                     var dim_namespace = g.viz_definition[key1].dimension_parameter.namespace;
                 }else{
                     var dim_namespace = key1;
                 }
-                g.viz_definition[key1].chart
+
+
+                g.viz_definition[key1].chart             
+                    .margins({top: 10, right: 50, bottom: 20, left: 40})
                     .width(width)
-                    .height(180)
-                    .dimension(g.viz_definition[dim_namespace].dimension)
-                    .group(g.viz_definition[key1].group);
+                    .height(height)
+                    //.dimension(g.viz_definition[dim_namespace].dimension)    //HEIDI - need to redefine these for each domain parameter? or will it work for heidi_custom_time to take them out?
+                    //.group(g.viz_definition[key1].group)
+                    .elasticY(true);
+                    //.elasticX(true)
+                    //.centerBar(true); 
 
                 // Domain parameters
                 if (g.viz_definition[key1].domain_parameter == 'custom_ordinal') {
@@ -842,7 +914,23 @@ function generateDashboard(){
                         .x(xScaleRange)
                         .xUnits(dc.units.ordinal)
                         .title(function(d) { return d.key + ": " + d.value; });
-                }else if (g.viz_definition[key1].domain_parameter == 'custom_linear'){
+
+                } else if (g.viz_definition[key1].domain_parameter == 'heidi_custom_time') {
+                    var xScaleRange = d3.time.scale().domain(g.viz_definition[key1].domain)
+                    g.viz_definition[key1].chart
+                        .x(xScaleRange)
+                        .dimension(g.viz_definition[dim_namespace].dimension)
+                        .group(g.viz_definition[key1].group)
+                        //.focusCharts(g.viz_definition['case_ser'].chart, g.viz_definition['death_ser'].chart)
+                        //.centerBar(true)
+                        .xUnits(function(){return g.module_epitime.epitime_all.length;})
+                        .barPadding(0.5)
+                        .yAxisLabel("")
+                        .round(d3.time.day.round)
+                        .alwaysUseRounding(true)
+                        .brushOn(true);
+
+                } else if (g.viz_definition[key1].domain_parameter == 'custom_linear'){
                     // Range filtering only takes integers
                     function filterPrinterCustom(filter){
                         var s = "";
@@ -864,7 +952,7 @@ function generateDashboard(){
                     g.viz_definition[key1].chart
                         .x(xScaleRange)
                         .filterPrinter(filterPrinterCustom);
-                }else if (g.viz_definition[key1].domain_parameter == 'custom_date'){
+                } else if (g.viz_definition[key1].domain_parameter == 'custom_date'){
                     // Range filtering displays dates
                     function filterPrinterCustom(filter){
                         var s = "";
@@ -887,19 +975,157 @@ function generateDashboard(){
                         .filterPrinter(filterPrinterCustom);
                 }
 
-                g.viz_definition[key1].chart
-                    .margins({top: 10, right: 50, bottom: 60, left: 40})
-                    .elasticY(true)
-                    .colors(color_list)
-                    .xAxisLabel(g.viz_definition[key1].display_axis.x)
-                    .yAxisLabel(g.viz_definition[key1].display_axis.y);
+                //console.log("IN BAR CHART 4");
 
-                g.viz_definition[key1].chart
-                    .yAxis().ticks(5);
+                if (g.viz_definition[key1].range_chart) {
+                    g.viz_definition[key1].chart
+                        //.margins({top: 10, right: 50, bottom: 20, left: 40})
+                        .colors(color_list)
+                        .xAxisLabel(g.viz_definition[key1].display_axis.x)
+                        .yAxisLabel(g.viz_definition[key1].display_axis.y);
 
-                // HEIDI - ADDED THIS - for bar charts where domainBuilder = epiweek, and domain length >=53:
+                    g.viz_definition[key1].chart.xAxis()
+                        //.ticks(d3.time.month)     //Monday-based weeks
+                        .tickValues(function() {
+                            //console.log("epiOverviewChart dateExtent: ", dateExtent[0], dateExtent[1]);
+                            //var tick_range = [dateExtent[0],dateExtent[1]];
+                            var tick_range = [];
+                            var time_diff = g.module_epitime.date_extent[1].getTime() - g.module_epitime.date_extent[0].getTime();
+                            //var time_diff = dateExtent[1].getTime() - dateExtent[0].getTime();
+                            //console.log("time_diff = ", time_diff);
+                            //if ((time_diff >= 4838400000) && (time_diff < 32054400000))  {        //if time range is >8 weeks but <53 weeks, add in months
+                            if (time_diff < 32054400000)  {     //if time range is <53 weeks, add in months
+                                var start_yr = g.module_epitime.date_extent[0].getFullYear();
+                                var start_month = g.module_epitime.date_extent[0].getMonth();
+                                var end_yr = g.module_epitime.date_extent[1].getFullYear();
+                                var end_month = g.module_epitime.date_extent[1].getMonth();
+                                //console.log("date: ", start_month, start_yr, " - ", end_month, end_yr);
+                                for (i=start_yr; i<=end_yr; i++) {
+                                    for (j=0; j<=11; j++) {     //for each month of the year
+                                        if ((i==start_yr) && (j== start_month+1)) {     //for first month only, include tick only if less than half way through month
+                                            //if (g.module_epitime.date_extent[0].getDate() <15) {
+                                                var new_date = new Date(i,j,1); 
+                                                tick_range.push(new_date);
+                                            //}
+                                        } else if ((i==start_yr) && (j> start_month+1)) {
+                                            var new_date = new Date(i,j,1); 
+                                            tick_range.push(new_date);
+                                        } else if ((i==end_yr) && (j < end_month)) {
+                                            var new_date = new Date(i,j,1);     
+                                            tick_range.push(new_date);
+                                        } else if ((i==end_yr) && (j== end_month)) {    //for last month only, include tick only if more than half way through month
+                                            //if (g.module_epitime.date_extent[1].getDate() >15) {
+                                                var new_date = new Date(i,j,1); 
+                                                tick_range.push(new_date);
+                                            //} 
+                                        } else if ((i != start_yr) && (i != end_yr)) {
+                                            var new_date = new Date(i,j,1);     
+                                            tick_range.push(new_date);
+                                        }
+                                    }
+                                }
+                            } else if (time_diff >= 32054400000) {                              //if time range is >=53 weeks, add ticks for year numbers
+                                var start_yr = g.module_epitime.date_extent[0].getFullYear();
+                                var end_yr = g.module_epitime.date_extent[1].getFullYear();
+                                //console.log("years: ", start_yr, " - ", end_yr);
+                                for (i=start_yr+1; i<=end_yr; i++) {
+                                    //console.log("i = ", i);
+                                    var new_date = new Date(i,0,1);     
+                                    tick_range.push(new_date);
+                                }
+                                
+                            }   
+                            //console.log("final tick_range = ", tick_range);
+                            return tick_range;
+                        })
+                        .tickFormat(function (d) {      
+                            if ((d==g.module_epitime.date_extent[0]) || (d==g.module_epitime.date_extent[1])) {
+                                var x_label = get_epi_id(d);
+                            } else {
+                                var time_diff = g.module_epitime.date_extent[1].getTime() - g.module_epitime.date_extent[0].getTime();
+                                if ((time_diff >= 4838400000) && (time_diff < 32054400000)) {       //if time range is >8 weeks but <53 weeks, display months
+                                    var x_label = (d3.time.format("%b %Y"))(d);
+                                } else if (time_diff >= 32054400000) {                              //if time range is >53 weeks, display years only
+                                    var x_label = (d3.time.format("%Y"))(d);
+                                };
+                            }; 
+                            //console.log(x_label, d);
+                            return x_label;
+                        }); 
+
+                    g.viz_definition[key1].chart
+                        .yAxis().ticks(0); 
+
+                    //$('#chart-'+key1+' .y.axis path').css('style',  'stroke: none');  //HEIDI - how do we set css with jquery?
+
+                    g.viz_definition[key1].chart
+                        .on("renderlet.filt", function(chart) {
+                           //console.log("************************* in renderlet rangeChart: ", chart);
+                           //$('.button_qf').removeClass('on');
+
+
+                           if (chart.filter()==null) {
+                                $('.button_qf').removeClass('on');
+                                $('#filters_qf-'+key1).html("Epiweeks selected: All"); 
+                                //console.log("in filter==null i.e. removed all range zoom"); 
+                            } else {
+                                var dates = chart.filter();
+                                //console.log("filtered to ", dates);
+
+                                // fix dates to be outputted to screen as filter (not changing actual filtered dates):
+                                if (dates[0].getDay() != 1) {     //if first day is not Monday 
+                                    //dates[0] = d3.time.day.offset(dates[0], 7);   //offset 7 days
+                                };
+                                if (dates[1].getDay() == 1) {    //if last day is Monday
+                                    //dates[1] = d3.time.day.offset(dates[1], -1);   //offset -1 days
+                                };
+                                var epi_id_0 = module_epitime.get_epi_id(dates[0]);    //HEIDI - PROBLEM HERE WITH dates[0] being undefined in get_epi_id
+                                var epi_id_1 = module_epitime.get_epi_id(dates[1]);
+                                if (epi_id_0 == epi_id_1) {
+                                    $('#filters_qf-'+key1).html("Epiweeks selected: " + module_epitime.get_epi_id(dates[0]));  
+                                } else {
+                                    $('#filters_qf-'+key1).html("Epiweeks selected: " + module_epitime.get_epi_id(dates[0]) + ' - ' + module_epitime.get_epi_id(dates[1])); 
+                                }
+
+
+                                //check whether button should still be 'on' - i.e. if user dragged brush then all buttons should be turned off                               
+                                $('.button_qf.on').each(function () {
+                                    var orig_id = this.id;
+                                    var buttons = g.viz_definition[key1].buttons_filt_range;
+                                    buttons.forEach(function(btn){
+                                        var btn_id = 'btn_qf-'+btn.btn_type + btn.btn_param;
+                                        //console.log("btn_id: ", btn_id, "   this.id: ", orig_id);
+                                        if (orig_id==btn_id) {               //e.g. btn_qf-lastXepiweeks4
+                                            if (!((btn.btn_startDate==dates[0]) && (btn.btn_endDate==dates[1]))) {  //compare start & end dates to current dates[0] & dates[1]
+                                                $('#'+orig_id).removeClass('on');
+                                            }
+                                        }    
+                                    });
+                                });
+
+                            }
+                            //console.log("****************** end of in renderlet rangeChart: ", chart);
+                           
+                        });
+
+
+                } else {
+                    g.viz_definition[key1].chart
+                        .margins({top: 10, right: 50, bottom: 60, left: 40})
+                        .colors(color_list)
+                        .xAxisLabel(g.viz_definition[key1].display_axis.x)
+                        .yAxisLabel(g.viz_definition[key1].display_axis.y);
+
+                    g.viz_definition[key1].chart
+                        .yAxis().ticks(5);    
+                }
+                
+
+                //console.log("IN BAR CHART 5");
+
+                // HEIDI - ADDED THIS - for bar charts where domainBuilder = epiweek, and domain length >=53:   //HEIDI - also for domain_builder = date_extent?
                 if ((g.viz_definition[key1].domain_builder == 'epiweek') && (g.viz_definition[key1].domain.length >= 53)) {  //ideally make this dependent on chart width, not domain length
-                    console.log("should adapt x axis here = ", g.viz_definition[key1].domain_builder, g.viz_definition[key1].domain.length);
+                    //console.log("should adapt x axis here = ", g.viz_definition[key1].domain_builder, g.viz_definition[key1].domain.length);
                     g.viz_definition[key1].chart
                         .xAxis().tickFormat(function(d, i) {
                             j = parseInt(d.substring(5));
@@ -911,19 +1137,157 @@ function generateDashboard(){
                             };
                         })
                     g.viz_definition[key1].chart   
-                        .on ('renderlet', function (chart) {
+                        .on('renderlet', function (chart) {
                             chart.selectAll("g.x text")
                                 .attr('dx', '-5')
                                 .attr('dy', '5')
                         });                        
                 };
 
+                //console.log("IN BAR CHART 6");
+
+                //HEIDI - added this for multi-focus charts when using rangechart
+                if (g.viz_definition[key1].range_chart) {
+                    //console.log("*** Attempting to fix multi-focus for range charts");
+                    // we need to this helper function out of coordinateGridMixin
+                    // https://github.com/dc-js/dc.js/blob/master/web/examples/multi-focus.html
+                    function rangesEqual(range1, range2) {
+                        if (!range1 && !range2) {
+                            return true;
+                        }
+                        else if (!range1 || !range2) {
+                            return false;
+                        }
+                        else if (range1.length === 0 && range2.length === 0) {
+                            return true;
+                        }
+                        else if (range1[0].valueOf() === range2[0].valueOf() &&
+                            range1[1].valueOf() === range2[1].valueOf()) {
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    // monkey-patch the first chart with a new function
+                    // technically we don't even need to do this, we could just change the 'filtered'
+                    // event externally, but this is a bit nicer and could be added to dc.js core someday
+                    g.viz_definition[key1].chart.focusCharts = function (chartlist) {
+
+                        if (!arguments.length) {
+                            return this._focusCharts;
+                        }
+                        //console.log(chartlist);
+                        this._focusCharts = chartlist; // only needed to support the getter above
+
+                        /*function getRangeChartFilterFn(range_chart) {
+                            return function() {
+                                if (!range_chart.filter()) {
+                                    dc.events.trigger(function () {
+                                        chartlist.forEach(function(focus_chart) {
+                                            focus_chart.x().domain(focus_chart.xOriginalDomain());
+                                        });
+                                    });
+                                } else chartlist.forEach(function(focus_chart) {
+                                    if (!rangesEqual(range_chart.filter(), focus_chart.filter())) {
+                                        dc.events.trigger(function () {
+                                            focus_chart.focus(range_chart.filter());
+                                        });
+                                    }
+                                });
+                                if (g.module_colorscale.mapunitcurrent == 'MortalityProp' || g.module_colorscale.mapunitcurrent == 'IncidenceProp' || g.module_colorscale.mapunitcurrent == 'Cases' || g.module_colorscale.mapunitcurrent == 'Deaths'){
+                                    setTimeout(function() {
+                                        module_colorscale.lockcolor('Auto');
+                                    }, 0);
+                                } else {
+                                    module_colorscale.lockcolor('Auto');
+                                };
+                                module_datatable.refreshTable();
+                            };
+
+                        };*/
+
+
+                        this.on('filtered', function (range_chart) {
+                            //console.log("1 - range_chart.filter() = ", range_chart.filter());
+                            if (!range_chart.filter()) {
+                                dc.events.trigger(function () {
+                                    chartlist.forEach(function(focus_chart) {
+                                        focus_chart.x().domain(focus_chart.xOriginalDomain());
+                                    });
+                                });
+                            } else {
+                                chartlist.forEach(function(focus_chart) {
+                                //focus_chart.filterAll(); 
+                                //console.log("range_chart.filter() = ", range_chart.filter());
+                                //console.log("WORKING ON FOCUS_CHART: ", focus_chart);
+                                    if (!rangesEqual(range_chart.filter(), focus_chart.filter())) {
+                                        //console.log("2a - range_chart.filter() = ", range_chart.filter());
+                                        //console.log("2b - focus_chart.filter() = ", focus_chart.filter());
+                                        dc.events.trigger(function () {
+                                            if (!g.module_interface.autoplayon) {                                      
+                                                focus_chart.focus(range_chart.filter()); 
+                                                //focus_chart.filterAll();  
+                                                //focus_chart.filter(range_chart.filter());    
+                                                //console.log("3a - range_chart.filter() = ", range_chart.filter());
+                                                //console.log("3b - focus_chart.filter() = ", focus_chart.filter());    
+                                            } /*else {
+                                                console.log("PLAYING WITH FOCUS_CHART NOW");
+                                                //focus_chart.elasticX(false);
+                                                //focus_chart.elasticY(false);
+                                                //range_chart.filterAll();
+                                                //focus_chart.filterAll();
+                                                //focus_chart.filter(null);
+                                                
+                                                console.log("4a - range_chart.filter() = ", range_chart.filter());
+                                                console.log("4b - focus_chart.filter() = ", focus_chart.filter());
+                                                //focus_chart.resetFilterHandler();
+                                                //focus_chart.filter(range_chart.filter()); 
+                                                //var new_dates = range_chart.filter();
+                                                //focus_chart.filter(new_dates);   //HEIDI - this is redrawing map :-)  but need to filterAll() somehwhere
+                                                console.log("5a - range_chart.filter() = ", range_chart.filter());
+                                                console.log("5b - focus_chart.filter() = ", focus_chart.filter());*/
+                                                //focus_chart.filter(range_chart.filter());
+                                                //console.log("6a - range_chart.filter() = ", range_chart.filter());
+                                                //console.log("6b - focus_chart.filter() = ", focus_chart.filter());
+                                                //focus_chart.focus(range_chart.filter());   //HEIDI - toggle this to prevent filtering of focus charts on range chart
+                                                //HEIDI - want a grey line on range_charts here to show where current time is
+                                                //HEIDI - also want to update multiadm
+                                                /*g.viz_keylist.forEach(function(key2) {    
+                                                    if (g.viz_definition[key2].instance_builder=='multiadm') {
+                                                        console.log("found map, need to update here: ", key2); //HEIDI need to update multiadm here
+
+                                                    }
+                                                });*/
+                                                //focus_chart.elasticY(true);  
+                                                //dc.redrawAll();
+                                            //};
+                                        });
+                                    } else {
+                                        //console.log("SOMETHING GOING ON HERE HEIDI");
+                                    }
+                                });
+                            };
+
+                            rangeFilterAdds();  //HEIDI - not sure this is necessary (keeping in case for now as not harming) - seems that module_colorscale.lockcolor is already called via somewhere else
+
+                        });
+                        //console.log(this);
+                        return this;
+                    };
+
+                    if (g.viz_rangechart) {     //HEIDI - should case_ser & death_ser be defined in dev_defined as focus charts for range_chart?
+                        g.viz_definition[key1].chart.focusCharts([g.viz_definition['case_ser'].chart, g.viz_definition['death_ser'].chart]);  //HEIDI - just for rangecharts only
+                    };
+                };
+            
                 g.viz_definition[key1].chart.render();
+
+                //console.log("IN BAR CHART 7");
             
                 // Add labels for small bars (difficult or sometimes impossible to click)
-                g.viz_definition[key1].chart
+                /*g.viz_definition[key1].chart
                     .on('renderlet.bar',function(chart){
-                        if (!(g.interface_autoplayon)) {
+                        if (!(g.module_interface.autoplayon)) {
                             var barsData = [];
                             var bars = chart.selectAll('.bar').each(function(d) { barsData.push(d); });
                             d3.select(bars[0][0].parentNode).select('#inline-labels').remove();
@@ -961,13 +1325,16 @@ function generateDashboard(){
                     })
                     .on("preRedraw", function(chart){
                         chart.select('#inline-labels').remove();
-                    });
+                    }); */
+
+                //console.log("IN BAR CHART 8");
 
                 // When epiweek 
                 if(!(g.viz_definition[key1].domain_builder == 'epiweek')){
                     $('#chart-'+key1+' .x-axis-label').attr('dy','-20px');
                     console.log('main-core.js ~l1020: Special label margin: #chart-'+key1);
                 } 
+                //console.log("IN BAR CHART 9 - END");
                 break;
 
             //------------------------------------------------------------------------------------
@@ -976,8 +1343,8 @@ function generateDashboard(){
                 var div_id = '#chart-'+key1;
                 var width = $(div_id).parent().width();
 
-                console.log("COLOR LIST = ", color_list);
-                console.log("COLOR DOMAIN = ", color_domain);
+                //console.log("COLOR LIST = ", color_list);
+                //console.log("COLOR DOMAIN = ", color_domain);
 
                 g.viz_definition[key1].chart
                     .width(width)
@@ -991,7 +1358,7 @@ function generateDashboard(){
                     .colors(color_list)
                     .colorDomain(color_domain)
                     .colorAccessor(function(d,i){
-                        console.log("accessing color for pie chart = ", i, d);
+                        //console.log("accessing color for pie chart = ", i, d);
                         return i;
                     });
                 
@@ -1040,28 +1407,44 @@ function generateDashboard(){
                  * @todo Implement completeness without year chart...
                  */
                 function valueAccessor(d){
+                    //console.log("IN VALUE ACCESSOR FOR MULTIADM - ", g.module_colorscale.mapunitcurrent);
                     temp_adm = g.geometry_keylist[d.key.split(', ').length - 1];
                     if (g.module_colorscale.mapunitcurrent == 'IncidenceProp') {
 
-                        var select_weeks = g.viz_definition[g.viz_timeline].chart.filters();        //currently filtered epiweeks
+                        if (g.viz_rangechart) {
+                            //console.log("filters: ", g.viz_definition[g.viz_timeline].chart.filters());
+                            if (g.viz_definition[g.viz_timeline].chart.filters().length==0) {
+                                var dateRange = g.module_epitime.date_extent;
+                            } else {
+                                var dateRange = g.viz_definition[g.viz_timeline].chart.filters()[0]; 
+                            }  
+                            //console.log("dateRange = ", dateRange);                        
+                            var select_weeks = module_epitime.getEpiweeksInRange(dateRange[0], dateRange[1]);
+                            //var select_weeks = g.module_epitime.current_epiweeks;
+                        } else {
+                            var select_weeks = g.viz_definition[g.viz_timeline].chart.filters();        //currently filtered epiweeks
+                            //var select_weeks = g.viz_definition[g.viz_timeline].chart.filters()[0];  //HEIDI - should it be this if no rangechart? 
+                        };
                         //console.log("CURRENTLY FILTERED EPIWEEKS: ", select_weeks);
                         var filterswklength = select_weeks.length;                                  //number of filtered epiweeks
                         //console.log("NUMBER OF FILTERED EPIWEEKS: ", filterswklength);
 
-                        if(filterswklength == 0){                                                   //if no filter applied then...
-                            select_weeks = $.extend(true, [], g.viz_definition[g.viz_timeline].domain);
-                            //console.log("CURRENTLY FILTERED EPIWEEKS (was 0): ", select_weeks);
-                            select_weeks.pop();                                                     //remove last element of array (i.e. 'NA')
-                            //console.log("CURRENTLY FILTERED EPIWEEKS (was 0): ", select_weeks);
-                            filterswklength = select_weeks.length;
-                            //console.log("NUMBER OF FILTERED EPIWEEKS (was 0): ", filterswklength);
-                        }  
+                        if (!(g.viz_rangechart)) { 
+                            if (filterswklength == 0) {                                                   //if no filter applied then...
+                                select_weeks = $.extend(true, [], g.viz_definition[g.viz_timeline].domain);
+                                //console.log("CURRENTLY FILTERED EPIWEEKS (was 0): ", select_weeks);
+                                select_weeks.pop();                                                     //remove last element of array (i.e. 'NA')
+                                //console.log("CURRENTLY FILTERED EPIWEEKS (was 0): ", select_weeks);
+                                filterswklength = select_weeks.length;
+                                //console.log("NUMBER OF FILTERED EPIWEEKS (was 0): ", filterswklength);
+                            }  
+                        }
 
-                        // Deals with filtering by years
+                        //Deals with filtering by years
                         if(g.viz_definition.year){
                             var select_years = g.viz_definition.year.chart.filters();
                             var filtersyrlength = select_years.length;
-                            if(!(filtersyrlength == 0)){                                            //if a year has been filtered - remove any epiweeks that don't match year
+                            if(!(filtersyrlength == 0)){                      //if a year has been filtered - remove any epiweeks that don't match year
                                 select_weeks.forEach(function(wk) {
                                     select_years.forEach(function(yr) {
                                        if(wk.substr(0,4) !== yr){
@@ -1071,22 +1454,54 @@ function generateDashboard(){
                                 });
                             }
                         }
-                       // console.log("NUMBER OF FILTERED EPIWEEKS (accounted for filtered years): ", filterswklength);
+                           // console.log("NUMBER OF FILTERED EPIWEEKS (accounted for filtered years): ", filterswklength);
+                     
+                        //Deals with getting population for appropriate age class
+                        if (g.viz_definition.fyo) {     //HEIDI - 'fyo' now hard-coded for age classes - need to convert to changeable parameter
+                            var select_age_class = g.viz_definition.fyo.chart.filters();  //=[] or ['Under 5'] or ['Over 5'] or ['Under 5', 'Over 5']
+                            //console.log("select_age_class = ", select_age_class);
+                            if ((select_age_class.indexOf('Under 5')>-1) && (select_age_class.length==1)) {  //filtered to only Under 5s
+                                //console.log("in Under 5 only");
+                                var popAgeClass = g.population_databyloc.pop[d.key] * (g.pop_perc_u5/100);
+                            } else if ((select_age_class.indexOf('Over 5')>-1) && (select_age_class.length==1)) {   //filtered to only Over 5s
+                                //console.log("in Over 5 only");
+                                var popAgeClass = g.population_databyloc.pop[d.key] * ((100-g.pop_perc_u5)/100);  
+                            } else {                                                                          //filtered to both or neither
+                                //console.log("in neither or both: ");
+                                var popAgeClass = g.population_databyloc.pop[d.key];
+                            }                       
+                        } else {                //no age class chart
+                            //console.log("no age class chart");
+                            var popAgeClass = g.population_databyloc.pop[d.key];
+                        }
 
                         // Incidence definition                                                     //calculate incidence using (value, pop, periode)
-                        var accessed_value = g.dev_defined.definition_incidence(d.value.Values_c,g.population_databyloc.pop[d.key],filterswklength);
-                        //console.log("INCDIENCE RATE (Inc Prop):  (", d.value.Values_c,"*10,000) / (",g.population_databyloc.pop[d.key],"*",filterswklength,") = ", accessed_value);
+                        var accessed_value = g.dev_defined.definition_incidence(d.value.Values_c,popAgeClass,filterswklength);
+                        //console.log("INCDIENCE RATE (Inc Prop):  (", d.value.Values_c,"*10,000) / (",popAgeClass,"*",filterswklength,") = ", accessed_value);
                         
                     }else if (g.module_colorscale.mapunitcurrent == 'MortalityProp') {
 
-                        var select_weeks = g.viz_definition[g.viz_timeline].chart.filters();
-                        var filterswklength = select_weeks.length;
+                        if (g.viz_rangechart) {
+                            if (g.viz_definition[g.viz_timeline].chart.filters().length==0) {
+                                var dateRange = g.module_epitime.date_extent;
+                            } else {
+                                var dateRange = g.viz_definition[g.viz_timeline].chart.filters()[0]; 
+                            }                       
+                            var select_weeks = module_epitime.getEpiweeksInRange(dateRange[0], dateRange[1]);
+                        } else {
+                            var select_weeks = g.viz_definition[g.viz_timeline].chart.filters();        //currently filtered epiweeks
+                            //var select_weeks = g.viz_definition[g.viz_timeline].chart.filters()[0];  //HEIDI - should it be this if no rangechart? 
+                        };
+                        var filterswklength = select_weeks.length;                          
 
-                        if(filterswklength == 0){
-                            select_weeks = $.extend(true, [], g.viz_definition[g.viz_timeline].domain);
-                            select_weeks.pop();
-                            filterswklength = select_weeks.length;
-                        }
+                        if (!(g.viz_rangechart)) { 
+                            if(filterswklength == 0){
+                                select_weeks = $.extend(true, [], g.viz_definition[g.viz_timeline].domain);
+                                select_weeks.pop();
+                                filterswklength = select_weeks.length;
+                            }
+                        };
+
                         // Deals with filtering by years
                         if(g.viz_definition.year){
                             var select_years = g.viz_definition.year.chart.filters();
@@ -1102,21 +1517,53 @@ function generateDashboard(){
                             }
                         }
 
+                        //Deals with getting population for appropriate age class
+                        if (g.viz_definition.fyo) {     //HEIDI - 'fyo' now hard-coded for age classes - need to convert to changeable parameter
+                            var select_age_class = g.viz_definition.fyo.chart.filters();  //=[] or ['Under 5'] or ['Over 5'] or ['Under 5', 'Over 5']
+                            //console.log("select_age_class = ", select_age_class);
+                            if ((select_age_class.indexOf('Under 5')>-1) && (select_age_class.length==1)) {  //filtered to only Under 5s
+                                //console.log("in Under 5 only");
+                                var popAgeClass = g.population_databyloc.pop[d.key] * (g.pop_perc_u5/100);
+                            } else if ((select_age_class.indexOf('Over 5')>-1) && (select_age_class.length==1)) {   //filtered to only Over 5s
+                                //console.log("in Over 5 only");
+                                var popAgeClass = g.population_databyloc.pop[d.key] * ((100-g.pop_perc_u5)/100);  
+                            } else {                                                                          //filtered to both or neither
+                                //console.log("in neither or both: ");
+                                var popAgeClass = g.population_databyloc.pop[d.key];
+                            }                       
+                        } else {                //no age class chart
+                            //console.log("no age class chart");
+                            var popAgeClass = g.population_databyloc.pop[d.key];
+                        }
+
+
                         // Mortality == Incidence definition
-                        var accessed_value = g.dev_defined.definition_incidence(d.value.Values_d,g.population_databyloc.pop[d.key],filterswklength);
-                        console.log("INCDIENCE RATE (Mort Prop):  (", d.value.Values_d,"*10,000) / (",g.population_databyloc.pop[d.key],"*",filterswklength,") = ", accessed_value);
+                        var accessed_value = g.dev_defined.definition_incidence(d.value.Values_d,popAgeClass,filterswklength);
+                        console.log("INCDIENCE RATE (Mort Prop):  (", d.value.Values_d,"*10,000) / (",popAgeClass,"*",filterswklength,") = ", accessed_value);
                         
 
                     }else if (g.module_colorscale.mapunitcurrent == 'Completeness') {
 
-                        var select_weeks = g.viz_definition[g.viz_timeline].chart.filters();
-                        var filterswklength = select_weeks.length;
+                        if (g.viz_rangechart) {
+                            if (g.viz_definition[g.viz_timeline].chart.filters().length==0) {
+                                var dateRange = g.module_epitime.date_extent;
+                            } else {
+                                var dateRange = g.viz_definition[g.viz_timeline].chart.filters()[0]; 
+                            }                       
+                            var select_weeks = module_epitime.getEpiweeksInRange(dateRange[0], dateRange[1]);
+                        } else {
+                            var select_weeks = g.viz_definition[g.viz_timeline].chart.filters();        //currently filtered epiweeks
+                            //var select_weeks = g.viz_definition[g.viz_timeline].chart.filters()[0];  //HEIDI - should it be this if no rangechart? 
+                        };
+                        var filterswklength = select_weeks.length;  
 
-                        if(filterswklength == 0){
-                            select_weeks = $.extend(true, [], g.viz_definition[g.viz_timeline].domain);
-                            select_weeks.pop();
-                            filterswklength = select_weeks.length;
-                        }
+                        if (!(g.viz_rangechart)) {
+                            if(filterswklength == 0){
+                                select_weeks = $.extend(true, [], g.viz_definition[g.viz_timeline].domain);
+                                select_weeks.pop();
+                                filterswklength = select_weeks.length;
+                            }
+                        };
 
                         // Deals with filtering by years
                         if(g.viz_definition.year){
@@ -1144,7 +1591,16 @@ function generateDashboard(){
                         var accessed_value = temp_count * 100;
 
                     }else if(g.module_colorscale.mapunitcurrent == 'Cases'){ // Cases
-                        var accessed_value = d.value.Values_c;
+                        if (g.viz_rangechart) { 
+                            //console.log("g.viz_rangechart = ", g.viz_rangechart); 
+                            var accessed_value = d.value.Values_c;  //HEIDI - just to test
+                            //console.log("d in accessed value = ", d);
+                            //HEIDI - need to account for selected time in range_chart
+                        } else {
+                            //console.log("g.viz_rangechart (should be empty) = ", g.viz_rangechart);
+                            var accessed_value = d.value.Values_c;
+                        }
+                        //var accessed_value = d.value.Values_c;
                     }else if(g.module_colorscale.mapunitcurrent == 'Deaths'){ // Deaths
                         var accessed_value = d.value.Values_d;
                     };
@@ -1357,7 +1813,7 @@ function generateDashboard(){
                 
                 g.viz_definition[key1].chart
                     .width(width)
-                    .height(345)
+                    .height(350)
                     .dimension(g.viz_definition[key1].dimension)
                     .group(g.viz_definition[key1].group)
                     .colors(color_list[0]);
@@ -1526,7 +1982,7 @@ function generateDashboard(){
                 // Add labels for small bars (difficult or sometimes impossible to click)
                 g.viz_definition[key1].chart
                     .on('renderlet.bar',function(chart){
-                        if (!(g.interface_autoplayon)) {
+                        if (!(g.module_interface.autoplayon)) {
                             var barsData = [];
                             var bars = chart.selectAll('.bar').each(function(d) { barsData.push(d); });
                             d3.select(bars[0][0].parentNode).select('#inline-labels').remove();
@@ -1607,7 +2063,7 @@ function generateDashboard(){
                     g.viz_definition[key1].chart
                         .x(xScaleRange)
                         .xUnits(dc.units.ordinal)
-                        .title(function(d) { return d.key + ": " + d.value; });
+                        .title(function(d) { return d.key + ": " + d.value; })
                 }else if(g.viz_definition[key1].domain_parameter == 'custom_linear'){
                     var xScaleRange = d3.scale.linear().domain(g.viz_definition[key1].domain); 
                     g.viz_definition[key1].chart
@@ -1656,15 +2112,18 @@ function generateDashboard(){
 
                 //console.log("MAP UNIT IS: ", g.module_colorscale.mapunitcurrent);
 
-                if (g.viz_definition[key1].domain_parameter == 'custom_ordinal'){
+                if ((g.viz_definition[key1].domain_parameter == 'custom_ordinal') || (g.viz_definition[key1].domain_parameter == 'heidi_move_custom_ordinal')){
                     var xScaleRange = d3.scale.ordinal().domain(g.viz_definition[key1].domain);  
                     var group0 =  g.viz_definition[key1].group.a;
                 } else if (g.viz_definition[key1].domain_parameter == 'custom_linear'){
                     var xScaleRange = d3.scale.linear().domain(g.viz_definition[key1].domain); 
                     var group0 = g.viz_definition[key1].group.yr2015;   //HEIDI - need to replace these groups with references - define keygroup?
+                } else if (g.viz_definition[key1].domain_parameter == 'heidi_custom_time') {
+                    var xScaleRange = d3.time.scale().domain(g.viz_definition[key1].domain);
+                    var group0 =  g.viz_definition[key1].group.a;
                 };
 
-                function getPopNum() {          //return population for all currently selected regions
+                function getPopNum() {       //return population for all currently selected regions & age classes
                     var pop = 0;
                     //if selected adm level in map is one of those defined - i.e. an integer between 0 and g.geometry_keylist.length-1
                     //console.log("tabcurrentnum is an integer ", Number.isInteger(g.module_multiadm.tabcurrentnum));
@@ -1691,18 +2150,95 @@ function generateDashboard(){
                         pop += g.population_databyloc.pop[select_locs[i]];
                     }
 
-                    //console.log("FINAL POP = ", pop);
+                    //Deals with getting population for appropriate age class
+                    /*if (g.viz_definition.fyo) {     //HEIDI - 'fyo' now hard-coded for age classes - need to convert to changeable parameter
+                        var select_age_class = g.viz_definition.fyo.chart.filters();  //=[] or ['Under 5'] or ['Over 5'] or ['Under 5', 'Over 5']
+                        console.log("select_age_class = ", select_age_class);
+                        if ((select_age_class.indexOf('Under 5')>-1) && (select_age_class.length==1)) {  //filtered to only Under 5s
+                            console.log("in Under 5 only");
+                            var ageClassMultiplier = g.pop_perc_u5/100;
+                        } else if ((select_age_class.indexOf('Over 5')>-1) && (select_age_class.length==1)) {   //filtered to only Over 5s
+                            console.log("in Over 5 only");
+                            var ageClassMultiplier = (100-g.pop_perc_u5)/100;  
+                        } else {                                                                          //filtered to both or neither
+                            console.log("in neither or both: ");
+                            var ageClassMultiplier = 1;
+                        }                       
+                    } else {                //no age class chart
+                        console.log("no age class chart");
+                        var ageClassMultiplier = 1;
+                    }
+
+
+                    var final_pop = pop * ageClassMultiplier;
+                    console.log("FINAL POP = ", pop, " * ", ageClassMultiplier, " = ", final_pop);*/
+                    
                     return pop;
                 };
 
-                function valueAccessor1(d) {        //value for overall summary group (e.g. All Ages)
-                    if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {        
-                        var accessed = g.dev_defined.definition_incidence(+d.value, getPopNum(), 1);   //HEIDI - need to change function to return correct age group
-                        //console.log("INCDIENCE RATE:  (", d.value,"*10,000) / (", pop_num,"*",1,") = ", accessed);
+                function getValue(d, group) {
+                    if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {    
+                        switch (group) {
+                            case 'all': if (g.viz_definition.fyo) {
+                                            var select_age_class = g.viz_definition.fyo.chart.filters();  //=[] or ['Under 5'] or ['Over 5'] or ['Under 5', 'Over 5']
+                                            //console.log("select_age_class = ", select_age_class);
+                                            if ((select_age_class.indexOf('Under 5')>-1) && (select_age_class.length==1)) {  //filtered to only Under 5s
+                                                //console.log("in Under 5 only");
+                                                if (g.pop_perc_u5) {         //if this value is defined in dev-defined.js
+                                                       //var pop = getPopNum()*(g.pop_perc_u5/100);
+                                                       var v =  g.dev_defined.definition_incidence(+d.value, getPopNum()*(g.pop_perc_u5/100), 1);  //HEIDI - for under 5s
+                                                       //console.log("in getValue u5:  (", +d.value,"*10,000) / (",getPopNum(),"*(",g.pop_perc_u5,"/100)*",1," = ", v);
+                                                    } else {
+                                                       var v = null;
+                                                    };
+                                            } else if ((select_age_class.indexOf('Over 5')>-1) && (select_age_class.length==1)) {   //filtered to only Over 5s
+                                                //console.log("in Over 5 only");
+                                                if (g.pop_perc_u5) {
+                                                       //var pop = getPopNum()*((100-g.pop_perc_u5)/100);
+                                                       var v = g.dev_defined.definition_incidence(+d.value, getPopNum()*((100-g.pop_perc_u5)/100), 1);
+                                                       //console.log("in getValue o5:  (", +d.value,"*10,000) / (",getPopNum(),"*(",g.pop_perc_u5,"/100)*",1," = ", v);
+                                                    } else {
+                                                       var v = null;
+                                                    };
+                                            } else {                                                                          //filtered to both or neither
+                                                //console.log("in neither or both: ");
+                                                var v = g.dev_defined.definition_incidence(+d.value, getPopNum(), 1);  
+                                            };
+                                        } else {
+                                            var v = g.dev_defined.definition_incidence(+d.value, getPopNum(), 1);   
+                                        };
+                                        //console.log("in getValue all:  (", +d.value,"*10,000) / (",getPopNum(),"*",1,") = ", v);
+                                        break;
+                            case 'u5': if (g.pop_perc_u5) {         //if this value is defined in dev-defined.js
+                                           //var pop = getPopNum()*(g.pop_perc_u5/100);
+                                           var v =  g.dev_defined.definition_incidence(+d.value, getPopNum()*(g.pop_perc_u5/100), 1);  //HEIDI - for under 5s
+                                           //console.log("in getValue u5:  (", +d.value,"*10,000) / (",getPopNum(),"*(",g.pop_perc_u5,"/100)*",1," = ", v);
+                                        } else {
+                                           var v = null;
+                                        };
+                                        break;
+                            case 'o5': if (g.pop_perc_u5) {
+                                           //var pop = getPopNum()*((100-g.pop_perc_u5)/100);
+                                           var v = g.dev_defined.definition_incidence(+d.value, getPopNum()*((100-g.pop_perc_u5)/100), 1);
+                                           //console.log("in getValue o5:  (", +d.value,"*10,000) / (",getPopNum(),"*(",g.pop_perc_u5,"/100)*",1," = ", v);
+                                        } else {
+                                           var v = null;
+                                        };
+                                        break;
+                            default:  var v = g.dev_defined.definition_incidence(+d.value, getPopNum(), 1); 
+                                      //var pop = -2;
+                        }                                                
                     } else {
-                        var accessed = +d.value;
-                    }
-                    return accessed;
+                        var v = +d.value;
+                        //var pop = -1;
+                    };
+                    //console.log("in getValue: group ", group, " pop = ", pop);
+
+                    return v;                   
+                }
+
+                function valueAccessor_all(d) {      //value for overall summary group (e.g. All Ages)
+                    return getValue(d, 'all');
                 };
 
                 function getYLabel() {    
@@ -1715,70 +2251,91 @@ function generateDashboard(){
                 }; 
 
 
-                g.viz_definition[key1].chart
-                    .margins({top: 10, right: 50, bottom: 60, left: 40})
-                    .width(width)
-                    .height(180)
-                    .dimension(g.viz_definition[dim_namespace].dimension)
-                    .group(group0)
-                    .elasticY(true)   
-                    .brushOn(false);                     
+                //console.log("COMPOSITE CHART DIM =", g.viz_definition[dim_namespace].dimension);
+                //console.log("chart = ", g.viz_definition[key1]);
 
-                if (g.viz_definition[key1].domain_parameter == 'custom_ordinal'){
-                    //console.log("COLOR LIST = ", color_list);
-                    //console.log("COLOR DOMAIN = ", color_domain);
 
-                    function valueAccessor2(d) {        //value for subgroups (e.g. Under 5, Over 5)
-                        if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
-                            if (g.population_byAgeGroup) {      //if age group population data is available      
-                                var accessed = g.dev_defined.definition_incidence(+d.value, pop_num, 1);  //HEIDI - need to change function to return correct age group
-                                //console.log("INCDIENCE RATE:  (", d.value,"*10,000) / (", pop_num,"*",1,") = ", accessed);
-                            } else {                            //if age group population data is not available
-                                var accessed = null;   
-                            }
-                        } else {
-                            var accessed = +d.value;
-                        }
-                        return accessed;
+
+
+                if (g.viz_definition[key1].domain_parameter == 'custom_ordinal'){                 
+
+                    function valueAccessor_u5(d) {        //value for subgroup under 5
+                        return getValue(d, 'u5');
                     };
 
-                    function titleAccessor1(d) {    //hover info for overall summary group (e.g. All Ages)
-                        if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
-                            var accessed = d.key+ ": " + d3.format(",.2f")(valueAccessor1(d));                                
-                        } else {
-                            var accessed = d.key+ ": " +d.value;
-                        }
-                        return accessed;
+                    function valueAccessor_o5(d) {        //value for subgroup over 5
+                        return getValue(d, 'o5');
                     };
 
-                    function titleAccessor2(d) {    //hover info for subgroups (e.g. Under 5, Over 5)
-                        if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
-                            if (g.population_byAgeGroup) {      //if age group population data is available
-                                var accessed = d.key+ ": " + d3.format(",.2f")(valueAccessor2(d));   
-                            } else {                            //if age group population data is not available
-                                var accessed = "Data not available";   
-                            }                              
+                    function getTitle(d, group) {
+                        if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {    
+                            switch (group) {
+                                case 'all': var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_all(d)); 
+                                            break;
+                                case 'u5': if (g.pop_perc_u5) {
+                                               var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_u5(d)); 
+                                            } else {
+                                               var t = "Data not available";
+                                            };
+                                            break;
+                                case 'o5': if (g.pop_perc_u5) {
+                                               var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_o5(d)); 
+                                            } else {
+                                               var t = "Data not available";
+                                            };
+                                            break;
+                                default:  var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_all(d)); 
+                            }                                                
                         } else {
-                            var accessed = d.key+ ": " + d.value;
-                        }
-                        return accessed;
-                    };               
+                            var t = d.key+ ": " + d.value;
+                        };
+                        return t;       
+                    };
+
+                    function titleAccessor_all(d) {    //hover info for overall summary group (e.g. All Ages)
+                        return getTitle(d, 'all');
+                    };
+
+                    function titleAccessor_u5(d) {    //hover info for subgroup under 5
+                        return getTitle(d, 'u5');
+                    };      
+
+                    function titleAccessor_o5(d) {    //hover info for subgroup over 5
+                        return getTitle(d, 'o5');
+                    };    
+
 
                     g.viz_definition[key1].chart
+                        .margins({top: 10, right: 50, bottom: 60, left: 40})
+                        .width(width)
+                        .height(180)
+                        //.transitionDuration(1000)    //HEIDI added to test rangeChart
+                        .elasticX(true)
+                        .dimension(g.viz_definition[dim_namespace].dimension)
+                        .group(group0)
+                        .elasticY(true)
+                        .brushOn(false)     //turning brushOn to true removes rendering and pop-ups of points, and doesn't 'brush' here because units are ordinal  
                         .x(xScaleRange)
                         .xUnits(dc.units.ordinal)
-                        //.yAxisLabel(g.viz_definition[key1].display_axis.y) 
                         .yAxisLabel(getYLabel)
-                        .xAxisLabel(g.viz_definition[key1].display_axis.x)      //could change padding parameter to 6 here but must do for all charts (default=12)
+                        .xAxisLabel(g.viz_definition[key1].display_axis.x)     
+                        
+                        //.rangeChart(g.viz_definition['casedeath_ser_move'].chart)  //HEIDI added to test rangeChart
+                        .mouseZoomable(false)     
+                        //.mouseZoomabe(true)  //HEIDI added to test rangeChart --- CREATING PROBLEMS
+                        .renderHorizontalGridLines(true)
+                        
                         .shareTitle(false)
-                        //.clipPadding(10)  
+                        //.clipPadding(10)   //could change padding parameter to 6 here but must do for all charts (default=12)
                         ._rangeBandPadding(1)
                         .compose([
-                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.a,g.module_lang.text[g.module_lang.current].chart_fyo_labela).valueAccessor(valueAccessor1).title(titleAccessor1).colors("#333"),
-                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.u,g.module_lang.text[g.module_lang.current].chart_fyo_labelu).valueAccessor(valueAccessor2).title(titleAccessor2).colors(color_list[0]),
-                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.o,g.module_lang.text[g.module_lang.current].chart_fyo_labelo).valueAccessor(valueAccessor2).title(titleAccessor2).colors(color_list[1])
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.a,g.module_lang.text[g.module_lang.current].chart_fyo_labela).valueAccessor(valueAccessor_all).title(titleAccessor_all).colors("#333"),
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.u,g.module_lang.text[g.module_lang.current].chart_fyo_labelu).valueAccessor(valueAccessor_u5).title(titleAccessor_u5).colors(color_list[0]),
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.o,g.module_lang.text[g.module_lang.current].chart_fyo_labelo).valueAccessor(valueAccessor_o5).title(titleAccessor_o5).colors(color_list[1])
                         ])
                         .legend(dc.legend().x(100).y(20).itemHeight(8).gap(4));
+                        //-.brushOn(false);
+
                         /*.yAxis().ticks(5)
                         .tickFormat(function(d) {
                             if ((g.module_colorscale.mapunitcurrent=='Cases') || (g.module_colorscale.mapunitcurrent=='Deaths')) {
@@ -1789,15 +2346,117 @@ function generateDashboard(){
                             if ((g.module_colorscale.mapunitcurrent=='Cases') || (g.module_colorscale.mapunitcurrent=='Deaths')) {
                                 return 0;
                             } 
-                         });
-*/
+                         }); */
 
+
+                } else if  (g.viz_definition[key1].domain_parameter == 'heidi_custom_time'){
+                    //console.log("in heidi_custom_time 1");
+
+                    function valueAccessor_u5(d) {        //value for subgroup under 5
+                        return getValue(d, 'u5');
+                    };
+
+                    function valueAccessor_o5(d) {        //value for subgroup over 5
+                        return getValue(d, 'o5');
+                    };
+
+                    function getTitle(d, group) {
+                        if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {    
+                            switch (group) {
+                                case 'all': //var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_all(d)); 
+                                            var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor_all(d));
+                                            break;
+                                case 'u5': if (g.pop_perc_u5) {
+                                               //var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_u5(d)); 
+                                               var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor_u5(d));
+                                            } else {
+                                               var t = "Data not available";
+                                            };
+                                            break;
+                                case 'o5': if (g.pop_perc_u5) {
+                                            var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor_o5(d));
+                                               //var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_o5(d)); 
+                                            } else {
+                                               var t = "Data not available";
+                                            };
+                                            break;
+                                default:  //var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_all(d)); 
+                                          var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor_all(d));
+                                            
+                            }                                                
+                        } else {
+                            //var t = d.key+ ": " + d.value;
+                            //console.log("d = ", d);
+                            //console.log("module_epitime.get_epi_id(d.key) = ", module_epitime.get_epi_id(d.key));
+                            var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nValue: " + d.value;
+                        };
+                        return t;       
+                    };
+
+                    function titleAccessor_all(d) {    //hover info for overall summary group (e.g. All Ages)
+                        return getTitle(d, 'all');
+                    };
+
+                    function titleAccessor_u5(d) {    //hover info for subgroup under 5
+                        return getTitle(d, 'u5');
+                    };      
+
+                    function titleAccessor_o5(d) {    //hover info for subgroup over 5
+                        return getTitle(d, 'o5');
+                    };    
+
+
+                    g.viz_definition[key1].chart
+                        .margins({top: 10, right: 50, bottom: 60, left: 40})
+                        .width(width)
+                        .height(180)
+                        .x(xScaleRange)
+                        .yAxisLabel(getYLabel)
+                        .dimension(g.viz_definition[dim_namespace].dimension)
+                        //.transitionDuration(1000)    //HEIDI added to test rangeChart
+                        //.rangeChart(g.viz_definition['casedeath_ser_range'].chart)  //HEIDI added to test rangeChart
+                        //.group(group0)
+                        .elasticY(true)
+                        //.elasticX(false)
+                        .renderHorizontalGridLines(true)
+                        //.brushOn(false)     //turning brushOn to true removes rendering and pop-ups of points, and doesn't 'brush' here because units are ordinal  
+                        
+                        //.xAxisLabel(g.viz_definition[key1].display_axis.x)     
+                       
+                        .shareTitle(false)
+                        //.clipPadding(10)   //could change padding parameter to 6 here but must do for all charts (default=12)
+                        //._rangeBandPadding(1)
+                        .compose([
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.a,g.module_lang.text[g.module_lang.current].chart_fyo_labela).valueAccessor(valueAccessor_all).title(titleAccessor_all).colors("#333"),
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.u,g.module_lang.text[g.module_lang.current].chart_fyo_labelu).valueAccessor(valueAccessor_u5).title(titleAccessor_u5).colors(color_list[0]),
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.o,g.module_lang.text[g.module_lang.current].chart_fyo_labelo).valueAccessor(valueAccessor_o5).title(titleAccessor_o5).colors(color_list[1])
+                        ])
+                        .round(d3.time.day.round)
+                        .brushOn(false)
+                        .legend(dc.legend().x(100).y(20).itemHeight(8).gap(4));
+
+                    g.viz_definition[key1].chart.xAxis()
+                        .ticks(d3.time.monday)      //Monday-based weeks
+                        .tickFormat(function (d) {
+                            var x_label = module_epitime.get_epi_id(d);
+                            //console.log(x_label, d);
+                            return x_label;
+                        }); 
 
 
                 } else if (g.viz_definition[key1].domain_parameter == 'custom_linear'){
-                    console.log("COLOR LIST = ", color_list);
-                    console.log("COLOR DOMAIN = ", color_domain);
+                    //console.log("COLOR LIST = ", color_list);
+                    //console.log("COLOR DOMAIN = ", color_domain);
                     g.viz_definition[key1].chart
+                        .margins({top: 10, right: 50, bottom: 60, left: 40})
+                        .width(width)
+                        .height(180)
+                        //.transitionDuration(1000)    //HEIDI added to test rangeChart
+                        //.elasticX(true)       //CHECK THIS?
+                        //.dimension(g.viz_definition[dim_namespace].dimension)         //HEIDI - can remove this because its defined at beginning of section
+                        //.group(group0)                                                //HEIDI - can remove this because its defined in 'compose'
+                        .elasticY(true)
+                        .brushOn(false)   
                         .x(xScaleRange)
                         .xUnits(dc.units.integers)   
                         .yAxisLabel(getYLabel)   
@@ -1807,22 +2466,25 @@ function generateDashboard(){
                         ._rangeBandPadding(1)
                         .title(function(d) {
                             if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
-                                return "Week " + d.key+ ": " + d3.format(",.2f")(valueAccessor1(d));                                
+                                return "Week " + d.key+ ": " + d3.format(",.2f")(valueAccessor_all(d));                                
                             } else {
                                 return "Week " + d.key+ ": " +d.value;
                             }
                         })
                         .compose([
                             //Note that /*.defined(function(d) {if (d.y !== null) {return d.y;}})*/ removes data entry of null but not of 0
-                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.yr2015,g.medical_yearlist[1]).valueAccessor(valueAccessor1).colors(color_list[0]),
-                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.yr2016,g.medical_yearlist[0]).valueAccessor(valueAccessor1).colors(color_list[1])
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.yr2015,g.medical_yearlist[1]).valueAccessor(valueAccessor_all).colors(color_list[0]),
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.yr2016,g.medical_yearlist[0]).valueAccessor(valueAccessor_all).colors(color_list[1])
                         ])
                         .legend(dc.legend().x(100).y(20).itemHeight(8).gap(4));
                 };
 
-                g.viz_definition[key1].chart
+
+                //console.log("in heidi_move_custom_ordinal 9");
+
+               g.viz_definition[key1].chart
                     .yAxis().ticks(5)
-                    .tickFormat(function(d) {
+                    .tickFormat(function(d) {           //Cases & Death y-ticks as integers, Incidence & Mortality Rate y-ticks to 2 decimal places
                         if ((g.module_colorscale.mapunitcurrent=='Cases') || (g.module_colorscale.mapunitcurrent=='Deaths')) {
                             return d3.format("d")(d);
                         } else {
@@ -1830,10 +2492,11 @@ function generateDashboard(){
                         } 
                      });
 
+                //console.log("in heidi_move_custom_ordinal 10");
 
                 // HEIDI - ADDED THIS - for composite charts where domainBuilder = epiweek, and domain length >=53:
                 if ((g.viz_definition[key1].domain_builder == 'epiweek') && (g.viz_definition[key1].domain.length >= 53)) {  //ideally make this dependent on chart width, not domain length
-                    console.log("should adapt x axis here = ", g.viz_definition[key1].domain_builder, g.viz_definition[key1].domain.length);
+                    //console.log("should adapt x axis here = ", g.viz_definition[key1].domain_builder, g.viz_definition[key1].domain.length);
                     g.viz_definition[key1].chart
                         .xAxis().tickFormat(function(d, i) {
                             j = parseInt(d.substring(5));
@@ -1851,6 +2514,8 @@ function generateDashboard(){
                                 .attr('dy', '5')
                         })              
                 };
+
+                //console.log("in heidi_move_custom_ordinal 11");
 
                 g.viz_definition[key1].chart.render();         
 
@@ -1890,14 +2555,18 @@ function generateDashboard(){
      * @todo Define properly.
      * @todo Check if works properly.
      */
-    var sync_maps = function() {};
+
+
+    var sync_maps = function() {};                
     g.geometry_keylist.forEach(function(key1){
         g.geometry_keylist.forEach(function(key2){
             if(!(key1 == key2)){
                 g.viz_definition.multiadm.maps[key1].sync(g.viz_definition.multiadm.maps[key2]);
+                //console.log("in sync_maps, syncing key1, key2 = ", key1, key2);
             }
         }); 
     });
+   
 
     // Sync charts filters
     /**
@@ -1908,19 +2577,44 @@ function generateDashboard(){
      * @todo Define properly.
      */
     var sync_charts = function() {};
+    
+    //console.log("ABOUT TO SYNC NOW");  //
     g.viz_keylist.forEach(function(key1) {
-        if(g.viz_definition[key1].sync_to){
+        //console.log("in sync_charts, key1 = ", key1, "    sync_to? ", g.viz_definition[key1].sync_to);
+        if (g.viz_definition[key1].hasOwnProperty("sync_to")) {
             g.viz_definition[key1].chart.on('renderlet.sync',function(chart) {
-                g.viz_definition[key1].chart.selectAll('rect').on("click", function(d) {
-                    g.viz_definition[key1].chart.filter(d.x);
-                    g.viz_definition[key1].sync_to.forEach(function(key2) {
-                        g.viz_definition[key2].chart.filter(d.x);
-                    });
+                //console.log("in renderlet.sync, key1 = ", key1);
+                g.viz_definition[key1].chart.selectAll('rect').on("click", function(d) {  
+                //g.viz_definition[key1].chart.on("click", function(d) {
+                    //console.log("in selectAll rect, key1 = ", key1);
+                    //console.log("g.viz_definition[key1].chart.filter = ", g.viz_definition[key1].chart.filter());
+                
+                    //if (g.viz_definition[key1].domain_builder=="date_extent") {         
+                    if (g.viz_definition[key1].range_chart) {       //if its a rangechart - HEIDI added in this 'if' here
+                        //console.log("IN IF, key1 = ", key1, g.viz_definition[key1].chart.domain_builder);
+                        var filt = g.viz_definition[key1].chart.filter();
+                        g.viz_definition[key1].chart.filter(filt);
+                        g.viz_definition[key1].sync_to.forEach(function(key2) {
+                            //console.log("in sync_charts, key2 = ", key2);
+                            g.viz_definition[key2].chart.filter(filt);
+                        });
+                    } else {
+                        //console.log("IN ELSE, key1 = ", key1);
+                        g.viz_definition[key1].chart.filter(d.x); 
+                        g.viz_definition[key1].sync_to.forEach(function(key2) {
+                            //console.log("in sync_charts, key2 = ", key2);
+                            g.viz_definition[key2].chart.filter(d.x);
+                        });
+                    }
+                    
+
                     dc.redrawAll();
+                    //console.log("*****REDREW ALL HERE****");
                 });
             });
         }
-    });
+    });  
+
               
 
     // Load Optional Modules: module-multiadm.js | module-intro.js | module-interface.js | module-chartwarper.js
@@ -1947,7 +2641,7 @@ function generateDashboard(){
      <li>For 'outbreak': number of patients in current subset. Container ids: <code>count-info</code>.</li>
      * @type {Function} 
      * @alias module:main_core~numericOutputs
-     * @todo Define properly.
+     * @todo Define properly.e
      */
     var numericOutputs = function() {};
      /********************************************************/
@@ -1981,7 +2675,7 @@ function generateDashboard(){
 
     dc.redrawAll();
      /********************************************************/
-
+     
     /**
      * Enable 'Auto' mode for the function {@link module:module_colorscale.lockcolor}.
      <br> Includes a small delay for 'Incidence' unit as {@link module:main_core~valueAccessor} requires more time to parse the data.
@@ -1990,34 +2684,70 @@ function generateDashboard(){
      * @alias module:main_core~onFiltered
      * @todo Define properly.
      */
-    var onFiltered = function() {};
+    var onFiltered = function() {};  
     for (var i = 0; i < dc.chartRegistry.list().length; i++) {
         var chart = dc.chartRegistry.list()[i];
+        //console.log("now in onFiltered: ", i, chart);
 
         if(chart.anchorName().substring(0,3) == 'map'){
+            //console.log(i, "in if: ", chart.anchorName());
             chart.on("filtered",function() {
+                //console.log(i, "filtered", chart.anchorName());
                 module_datatable.refreshTable();
             });
-        }else if(chart.anchorName().substring(chart.anchorName().length - 4,chart.anchorName().length) == 'info'){
+        } else if(chart.anchorName().substring(chart.anchorName().length - 4,chart.anchorName().length) == 'info'){
             //console.log(chart.anchorName());
-        }else{
-            chart.on("filtered",function() {
-                if(g.module_colorscale.mapunitcurrent == 'MortalityProp' || g.module_colorscale.mapunitcurrent == 'IncidenceProp' || g.module_colorscale.mapunitcurrent == 'Cases' || g.module_colorscale.mapunitcurrent == 'Deaths'){
-                setTimeout(function() {
-                    module_colorscale.lockcolor('Auto');
-                }, 0);
-                }else{
-                    module_colorscale.lockcolor('Auto');
-                }
-                module_datatable.refreshTable();
-            });
+            //console.log(i, "in else if (but nothing defined): ", chart.anchorName());
+        } else{
+            //console.log(i, "now in onFiltered else: ", chart.anchorName(), g.module_colorscale.mapunitcurrent);
+            if (!(chart.anchorName() == 'chart-casedeath_ser_range')) { //HEIDI - creating another "filtered" function here is creating a problem with multi-range chart interaction
+                chart.on("filtered", function() {
+                    //console.log(i, "filtered", chart.anchorName());
+                    if(g.module_colorscale.mapunitcurrent == 'MortalityProp' || g.module_colorscale.mapunitcurrent == 'IncidenceProp' || g.module_colorscale.mapunitcurrent == 'Cases' || g.module_colorscale.mapunitcurrent == 'Deaths'){
+                        setTimeout(function() {
+                            //console.log("calling module_colorscale.lockcolor - Auto");
+                            module_colorscale.lockcolor('Auto');
+                        }, 0);
+                    }else{
+                        //console.log("calling module_colorscale.lockcolor - Auto");
+                        module_colorscale.lockcolor('Auto');
+                    }
+                    module_datatable.refreshTable();
+                });
+            } /*else {
+                console.log(i, "not yet filtered", chart.anchorName());
+                //chart.on("filtered", function());
+                //console.log(fn);
+            }*/
+            
         }
     }
+     
+    function rangeFilterAdds() {
+        return function() {
+            //console.log(i, "filtered", chart.anchorName());
+            if (g.module_colorscale.mapunitcurrent == 'MortalityProp' || g.module_colorscale.mapunitcurrent == 'IncidenceProp' || g.module_colorscale.mapunitcurrent == 'Cases' || g.module_colorscale.mapunitcurrent == 'Deaths'){
+                setTimeout(function() {
+                    //console.log("calling module_colorscale.lockcolor - Auto");
+                    module_colorscale.lockcolor('Auto');
+                }, 0);
+            } else {
+                //console.log("calling module_colorscale.lockcolor - Auto");
+                module_colorscale.lockcolor('Auto');
+            };
+            module_datatable.refreshTable();
+            //console.log("add rangerFilterAdds()");
+        }  
+    };
+                            
+
     // Initiate
+    //console.log("calling module_colorscale.lockcolor - ", module_colorscale.lockcolor(g.module_colorscale.modecurrent));
     module_colorscale.lockcolor(g.module_colorscale.modecurrent);
 
     $('#modal').modal('hide');
 }
+
 
 /**
  * Zoom a given map to a given geometry.
