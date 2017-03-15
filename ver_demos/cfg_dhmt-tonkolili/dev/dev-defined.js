@@ -140,11 +140,9 @@ g.module_getdata = {
     },
     medical:{
         medical: {
-            //method: 'medicalfs',
-            //options: {  url: './input/',
-			method: 'medicald3noserver',
+            method: 'medicald3noserver',
 			options: {  url: 'input/tonkolili_database_wks-201545-201605.csv',
-                        type: 'csv'}      
+                        type: 'csv'}     
         }
     },
     population:{
@@ -195,6 +193,9 @@ g.population_headerlist = {
 };
 
 g.pop_perc_u5 = 18.9;   //HEIDI added this - percentage of population assumed to be under 5 -- put it in g.population_data?
+g.pop_annual_growth = 3.0; //HEIDI added this - assumed percentage increase per year if pop data not supplied
+g.pop_new_format = false;    //HEIDI defined this where each year is given column heading of e.g. 'yr_2015', 'yr_2020', etc.
+
 
 function main_loadfiles_readvar(){
     /**
@@ -524,7 +525,7 @@ g.viz_definition = {
                 //HEIDI - quick filter currently has 3 button types: lastXepiweeks, lastXepimonths, lastXepiyears; could extend this though; 0 represents 'current' for epimonth and epiyear 
                 buttons_filt_range: [{btn_type: 'lastXepiweeks', btn_param: 1, btn_text: 'Last full epiweek'},  //note all buttons are 'relative' time
                                     {btn_type: 'lastXepiweeks', btn_param: 4, btn_text: 'Last 4 epiweeks'},
-                                    {btn_type: 'lastXepiweeks', btn_param: 52, btn_text: 'Last 52 epiweeks'},
+                                    {btn_type: 'lastXepiweeks', btn_param: 52, btn_text: 'Last 52 epiweeks', btn_default: true},
                                     {btn_type: 'lastXepimonths', btn_param: 0, btn_text: 'Current epimonth'},     //0 for current (probably incomplete) epimonth
                                     {btn_type: 'lastXepimonths', btn_param: 1, btn_text: 'Last full epimonth'},
                                     {btn_type: 'lastXepimonths', btn_param: 2, btn_text: 'Last 2 epimonths'},  
@@ -655,8 +656,10 @@ g.viz_definition = {
  * @type {String} 
  * @alias module:g.viz_timeline
  */
-//g.viz_timeline = 'case_bar';        //HEIDI - CHECK OUT IMPLICATIONS OF THIS
 g.viz_timeline = 'casedeath_ser_range'; 
+g.dev_defined.autoplay_delay = 2000;    //currently only defined for rangeChart
+g.dev_defined.autoplay_rewind = false;  //at end of timeline, continues to play from beginning automatically; currently only defined for rangeChart
+
 
 /**
  Defines the charts that are using time dimensions and that should be synchronized with the reference defined with {@link module:g.viz_timeline}.
@@ -665,8 +668,6 @@ g.viz_timeline = 'casedeath_ser_range';
  * @alias module:g.viz_timeshare
  * @todo Automate
  */
-//g.viz_timeshare = ['death_bar'];    //HEIDI - CHECK OUT IMPLICATIONS OF THIS
-//g.viz_timeshare = ['case_ser', 'death_ser', 'multiadm']; 
 g.viz_timeshare = ['case_ser', 'death_ser'];
 
 /**

@@ -183,7 +183,7 @@ g.module_epitime = {};
     
 
     //function get_epiDate (epiwk) {
-    module_epitime.get_epiDate = function(epiwk){   //function accepts epiweek, returns date (date format)
+    module_epitime.get_epiDate = function(epiwk){   //function accepts epiweek, returns associated date (in date format)
         var num_epiwks = g.module_epitime.epitime_all.length;
         
         for (i=0; i<num_epiwks; i++) {
@@ -209,7 +209,11 @@ g.module_epitime = {};
                 console.log("ERROR HERE TRYING TO ACCESS:");
                 console.log(g.module_epitime.epitime_all[i+1]);
             }*/
-            if ((i==num_epiwks-1) && (g.module_epitime.epitime_all[i].epiDate.getTime() <= epidt.getTime()) && (epidt.getTime() < (d3.time.day.offset(g.module_epitime.epitime_all[i].epiDate, 7)).getTime())) {          //for last epiTime entry and date between last epiTime date and last epiTime date + 6days
+
+            if ((i==0) && (epidt.getTime() <= g.module_epitime.epitime_all[i].epiDate.getTime())) {  //if date is before first epiweek defined, return first epiweek
+                epi_id = g.module_epitime.epitime_all[i].epi_id; 
+                break;
+            } else if ((i==num_epiwks-1) && (g.module_epitime.epitime_all[i].epiDate.getTime() <= epidt.getTime()) ) {          //for last epiTime entry and date >= last epiTime date
                 //console.log("in module_epitime.get_epi_id if: ", epidt.getTime(), (d3.time.day.offset(g.module_epitime.epitime_all[i].epiDate, 7)).getTime());
                 epi_id = g.module_epitime.epitime_all[i].epi_id;  //for last epiTime entry, if date is between last date entry & last date entry + 7 days
                 break;
@@ -217,6 +221,8 @@ g.module_epitime = {};
                 //console.log("in module_epitime.get_epi_id else if: ", epidt.getTime(), g.module_epitime.epitime_all[i+1].epiDate.getTime());
                 epi_id = g.module_epitime.epitime_all[i].epi_id;
                 break;
+            } else {
+                //console.log("ERROR - can't get epi_id for: ", epidt);
             }
         }
         //console.log("get_epi_id ", epidt, epi_id);
@@ -234,7 +240,7 @@ module_epitime.getEpiweeksInRange = function(date_start, date_end) {
             } 
         }
     //console.log("Epiweeks in range: ", epiweeksInRange);
-    //g.module_epitime.current_epiweeks = epiweeksInRange;
+    g.module_epitime.current_epiweeks = epiweeksInRange;   //HEIDI - USE THIS
     return epiweeksInRange;
 }
  
@@ -244,7 +250,7 @@ var date_sort_asc = function (date1, date2) {   //sort dates in ascending order
   return 0;
 };
 
-module_epitime.get_epiRange = function(filtType, startYr, endYr, startMonth, endMonth, startWeek, endWeek, numPrevWeeks)  {    //enter filter type & date parameters, returns date range
+module_epitime.get_epiRange = function(filtType, startYr, endYr, startMonth, endMonth, startWeek, endWeek, numPrevWeeks)  {    //enter filter type & date parameters, returns date extent with a few days buffer
     //console.log("in module_epitime.get_epiRange (", filtType, startYr, endYr, startMonth, endMonth, startWeek, endWeek, numPrevWeeks, ")");
     var num_epiwks = g.module_epitime.epitime_all.length;
     //console.log("num_epiwks = ", num_epiwks); 
@@ -362,7 +368,7 @@ module_epitime.get_epiRange = function(filtType, startYr, endYr, startMonth, end
     //console.log("first, last = ", first, last);
     
     //if (first==last) {
-        first = d3.time.day.offset(first, 0);
+        first = d3.time.day.offset(first, -1);  //HEIDI - make these buffer days accessible? - note the same as in domainBuilder.dateExtent
         last = d3.time.day.offset(last, 6);
     //}
     

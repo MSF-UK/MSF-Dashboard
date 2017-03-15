@@ -98,6 +98,7 @@ module_interface.display = function(){
         if (g.viz_definition[key].hasOwnProperty("buttons_filt_range")) {
             buttons_quickfilt_create(key, g.viz_definition[key].buttons_filt_range);
             buttons_quickfilt_interaction(key, g.viz_definition[key].buttons_filt_range);
+
         }
     });
 
@@ -416,24 +417,24 @@ module_interface.display = function(){
                         //var dateRange = module_epitime.filterDates(btn.btn_type,  startYr, endYr, startMonth, endMonth, '', '', '');  
                         //console.log("dateRange: ", dateRange[0], dateRange[1]);
                         var prevDateRange =  g.viz_definition[key1].chart.filter();
-                        var dateRange = [btn.btn_startDate, btn.btn_endDate];
+                        var btnDateRange = [btn.btn_startDate, btn.btn_endDate];
                         //console.log("prev dateRange: ", prevDateRange);
                         //console.log("new dateRange: ", dateRange[0], dateRange[1]);
                         
                         //HEIDI - if new dates different to previous dates!!!!  then dc.redrawAll();
                         //if (prevDateRange!=null) {
-                        var noDateChange = false;
-                        if (prevDateRange!=null) {
-                            noDateChange = ((prevDateRange[0]==dateRange[0]) && (prevDateRange[1]==dateRange[1]));
+                        var noDateChange = false;   //assume new range selected
+                        if (prevDateRange!=null) {  //if previously a range was selected, check whether it has now changed
+                            noDateChange = ((prevDateRange[0]==btnDateRange[0]) && (prevDateRange[1]==btnDateRange[1]));
                         }
                         //console.log("noDateChange: ", noDateChange);
                         
                         //if ((prevDateRange==null) || (!(noDateChange))) {
-                        if (!(noDateChange)) {
+                        if (!(noDateChange)) {      //if range selection has changed
                             //console.log("for chart = ", key1);
                             //console.log("now filtering to ", dateRange[0], dateRange[1]);
                             g.viz_definition[key1].chart.filterAll();
-                            g.viz_definition[key1].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1])); 
+                            g.viz_definition[key1].chart.filter(dc.filters.RangedFilter(btnDateRange[0], btnDateRange[1])); 
                             dc.redrawAll();
                             //console.log("filtered to ", g.viz_definition[key1].chart.filter());
                         }
@@ -451,21 +452,21 @@ module_interface.display = function(){
                         //var dateRange = module_epitime.filterDates(btn.btn_type,  startYr, endYr, startMonth, endMonth, '', '', '');  
                         //console.log("dateRange: ", dateRange[0], dateRange[1]);
                         var prevDateRange =  g.viz_definition[key1].chart.filter();
-                        var dateRange = [btn.btn_startDate, btn.btn_endDate];
+                        var btnDateRange = [btn.btn_startDate, btn.btn_endDate];
                         //console.log("prev dateRange: ", prevDateRange);
                         //console.log("new dateRange: ", dateRange[0], dateRange[1]);
                         
                         //HEIDI - if new dates different to previous dates!!!!  then dc.redrawAll();
                         var noDateChange = false;
                         if (prevDateRange!=null) {
-                            noDateChange = ((prevDateRange[0]==dateRange[0]) && (prevDateRange[1]==dateRange[1]));
+                            noDateChange = ((prevDateRange[0]==btnDateRange[0]) && (prevDateRange[1]==btnDateRange[1]));
                         }
                         //console.log("noDateChange: ", noDateChange);
                         
                         if (!(noDateChange)) {
                             //console.log("now filtering");
                             g.viz_definition[key1].chart.filterAll();
-                            g.viz_definition[key1].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1])); 
+                            g.viz_definition[key1].chart.filter(dc.filters.RangedFilter(btnDateRange[0], btnDateRange[1])); 
                             dc.redrawAll();
                         } 
 
@@ -489,21 +490,21 @@ module_interface.display = function(){
                         //var dateRange = module_epitime.filterDates(btn.btn_type,  startYr, endYr, startMonth, endMonth, '', '', '');  
                         //console.log("dateRange: ", dateRange[0], dateRange[1]);
                         var prevDateRange =  g.viz_definition[key1].chart.filter();
-                        var dateRange = [btn.btn_startDate, btn.btn_endDate];
+                        var btnDateRange = [btn.btn_startDate, btn.btn_endDate];
                         //console.log("prev dateRange: ", prevDateRange);
                         //console.log("new dateRange: ", dateRange[0], dateRange[1]);
                         
                         //HEIDI - if new dates different to previous dates!!!!  then dc.redrawAll();
                         var noDateChange = false;
                         if (prevDateRange!=null) {
-                            noDateChange = ((prevDateRange[0]==dateRange[0]) && (prevDateRange[1]==dateRange[1]));
+                            noDateChange = ((prevDateRange[0]==btnDateRange[0]) && (prevDateRange[1]==btnDateRange[1]));
                         }
                         //console.log("noDateChange: ", noDateChange);
                         
                         if (!(noDateChange)) {
                             //console.log("now filtering");
                             g.viz_definition[key1].chart.filterAll();
-                            g.viz_definition[key1].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1])); 
+                            g.viz_definition[key1].chart.filter(dc.filters.RangedFilter(btnDateRange[0], btnDateRange[1])); 
                             dc.redrawAll();
                         }
                         
@@ -513,6 +514,12 @@ module_interface.display = function(){
             };            
         });
 
+        for (i = 0; i < buttons.length-1; i++) {
+            if (buttons[i].btn_default==true) {
+                $('#btn_qf-'+ buttons[i].btn_type + buttons[i].btn_param).click();
+                break;
+            }
+        };
     };
 
 
@@ -544,7 +551,7 @@ module_interface.display = function(){
         // Help button
         html += '<button id="menu_help" class="menu_button btn btn-primary btn-sm">'+g.module_lang.text[g.module_lang.current].interface_menuhelp+'</button>';
 
-        // Quick access to epiweeks button - only if no range_chart
+        // Quick access to epiweeks button - only if no range_chart  //HEIDI - didn't we make fast access to this in g.?
         var range_chart_displayed = false;
         g.viz_keylist.forEach(function(key1) {
             if (g.viz_definition[key1].range_chart) {range_chart_displayed=true;}
@@ -657,7 +664,7 @@ module_interface.display = function(){
                     g.module_interface.autoplaytime = 0;
                     //console.log("g.module_interface.autoplaytimer (before)= ",  g.module_interface.autoplaytimer);
 
-                    var d = new Date();
+                    //var d = new Date();
                     //console.log("calling menu_autoRangePlay(): ", d.getSeconds());
                     if (g.viz_rangechart) {
                        module_interface.menu_autoRangePlay();
@@ -865,20 +872,71 @@ module_interface.menu_autoPlay = function(){
 } 
 
 
-module_interface.menu_autoRangePlay = function(){
-    var slideDuration = 2000;   //HEIDI - need this to be applied only after first playthrough - see http://stackoverflow.com/questions/6685396/execute-the-setinterval-function-without-delay-the-first-time
-    var autoRewind = false;
-    var currentEpiweekPos = -1;
-    var allEpiweeks = g.module_epitime.all_epiweeks;
-    //console.log("IN menu_autoRangePlay, length of play = ", allEpiweeks.length);
-    var alreadyAdded = false;
 
-    var d = new Date();
-    //console.log("calling menu_autoRangePlay(): ", d.getSeconds());
+function rangePlayUpdate() {  //uses setTimeout() instead of setInterval() 
+ 
+    var allEpiweeks = g.module_epitime.all_epiweeks;
+    //d = new Date();
+    currentEpiweekPos++;
+    g.module_interface.autoplaytimer = currentEpiweekPos;
+
+    //$('#filters_qf-'+g.viz_rangechart).html("Currently playing epiweek: " + g.module_epitime.all_epiweeks[currentEpiweekPos]); 
+
+    if (currentEpiweekPos > allEpiweeks.length-1) {    //if we reach the final year
+        //console.log("in final year, current play = ", currentEpiweekPos, " > ", allEpiweeks.length-1);
+        if (autoRewind) {               //if we loop (autoRewind) then go back to beginning
+            currentEpiweekPos = 0;
+        }
+        else {                          //if we don't loop (autoRewind) then stop and clear 
+            clearTimeout(g.module_interface.autoplaytimer);
+            g.module_interface.autoplaytimer = undefined;
+            currentEpiweekPos = -1;
+            //console.log("IN menu_autoRangePlay, current play = ", currentEpiweekPos, " = ", g.module_interface.autoplaytimer);
+            module_interface.menu_pausePlay();
+            dc.redrawAll();
+            $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.play);
+
+            return;
+        }
+    }    
+
+    var startWeek = parseInt(allEpiweeks[currentEpiweekPos].substr(5,2));
+    var startYr = parseInt(allEpiweeks[currentEpiweekPos].substr(0,4));
+    var dateRange = module_epitime.filterDates("lastXepiweeks",  startYr, startYr,'', '', startWeek, startWeek, '');  //HEIDI - do we need this here? can't we just assign to .epidate?
+    //console.log("IN menu_autoRangePlay, now filtering to ", dateRange[0], dateRange[1]);
+
+    if(currentEpiweekPos == allEpiweeks.length) {   //if autoplay has completed
+        //console.log("autoPlay completed run through here");
+        module_interface.menu_pausePlay();
+        dc.redrawAll(); //should this be before incrementing autoplaytime?
+    }  else if (currentEpiweekPos < allEpiweeks.length && currentEpiweekPos>=0){  //if autoplay is on but not on final value of x-axis
+        $('#filters_qf-'+g.viz_rangechart).html("Currently playing epiweek: " + g.module_epitime.all_epiweeks[currentEpiweekPos]); 
+        g.viz_timeshare.forEach(function(key) {
+            g.viz_definition[key].chart.filterAll();
+            g.viz_definition[key].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1])); 
+        })
+        dc.redrawAll();
+    }
+
+    /*if(currentEpiweekPos == 0){   //if autoplay is on first round
+        g.viz_timeshare.forEach(function(key) {
+            g.viz_definition[key].chart.filterAll();
+            g.viz_definition[key].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1])); 
+        });
+        dc.redrawAll();                
+    } */                        
+
+   g.module_interface.autoplaytimer = setTimeout(rangePlayUpdate, delay);
+}
+
+var delay = (g.dev_defined.autoplay_delay)? g.dev_defined.autoplay_delay : 2000;
+var autoRewind = (g.dev_defined.autoplay_rewind)? g.dev_defined.autoplay_rewind : false;
+var currentEpiweekPos = -1;
+module_interface.menu_autoRangePlay = function(){
 
     g.viz_timeshare.forEach(function(key) {
         g.viz_definition[key].chart.on('renderlet.autoplay', function(chart) {      //draw vertical line for autoplay with rangeChart
-        //console.log("in renderlet.autoplay");    
+  
         if ((g.module_interface.autoplayon==true) && (currentEpiweekPos >= 0)) {
             if ((currentEpiweekPos >= 0) && (currentEpiweekPos < g.module_epitime.epitime_all.length)) {
                 temp_pos = currentEpiweekPos;
@@ -887,7 +945,7 @@ module_interface.menu_autoRangePlay = function(){
             };
             var x_vertical = new Date(g.module_epitime.epitime_all[temp_pos].epiDate);
             var extra_data = [{x: chart.x()(x_vertical), y: chart.y()(0)}, {x: chart.x()(x_vertical), y: chart.y().range()[1]}];
-            //console.log("extra_data: ", extra_data);
+
             var line = d3.svg.line()
                 .x(function(d) { return d.x; })
                 .y(function(d) { return d.y; })
@@ -900,122 +958,19 @@ module_interface.menu_autoRangePlay = function(){
                 id: key+'-extra-line'
             });
             path.attr('d', line);
-            // and perhaps you'd like to label it?
-            /*var text = chartBody.selectAll('text.extra-label').data([0]);
-            text.enter().append('text')
-                .attr('text-anchor', 'right')
-                .append('textPath').attr({
-                    class: 'extra-label',
-                    'xlink:href': '#extra-line',
-                    startOffset: '50%'
-                })
-                .text(g.module_epitime.epitime_all[temp_pos].epi_id);*/
+
         } else {
         //if (g.viz_rangechart) {
             g.viz_timeshare.forEach(function(key) {
                 $('#'+key+'-extra-line').remove();
-                //console.log("REMOVING " + '#'+key+'-extra-line NOW');
             });
         //}
         }
 
         });
     })
-                
-    d = new Date();
-    //console.log("calling menu_autoRangePlay(): ", d.getSeconds());
 
-
-
-    g.module_interface.autoplaytimer = setInterval(function () {  //HEIDI - blanking here before starts autoplaytimer
-
-        d = new Date();
-        //console.log("calling menu_autoRangePlay(): ", d.getSeconds());
-        currentEpiweekPos++;
-        //console.log("IN menu_autoRangePlay, current play = ", currentEpiweekPos, " = ", allEpiweeks[currentEpiweekPos]);
-        if (currentEpiweekPos > allEpiweeks.length-1) {    //if we reach the final year
-            //console.log("in final year, current play = ", currentEpiweekPos, " > ", allEpiweeks.length-1);
-            if (autoRewind) {               //if we loop (autoRewind) then go back to beginning
-                currentEpiweekPos = 0;
-            }
-            else {                          //if we don't loop (autoRewind) then stop and clear 
-                //console.log("IN menu_autoRangePlay, current play = ", currentEpiweekPos, " = ", g.module_interface.autoplaytimer);
-                clearInterval(g.module_interface.autoplaytimer);
-                g.module_interface.autoplaytimer = undefined;
-                module_interface.menu_pausePlay();
-                $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.play);
-                return;
-            }
-        }    
-
-        var startWeek = parseInt(allEpiweeks[currentEpiweekPos].substr(5,2));
-        var startYr = parseInt(allEpiweeks[currentEpiweekPos].substr(0,4));
-        var dateRange = module_epitime.filterDates("lastXepiweeks",  startYr, startYr,'', '', startWeek, startWeek, '');  //HEIDI - do we need this here? can't we just assign to .epidate?
-        //console.log("IN menu_autoRangePlay, now filtering to ", dateRange[0], dateRange[1]);
-
-        if(currentEpiweekPos == allEpiweeks.length) {   //if autoplay has completed
-            //console.log("IN menu_autoRangePlay, current play = ", currentEpiweekPos, " = ", allEpiweeks[currentEpiweekPos], "(in if 1)");
-            //g.module_interface.autoplaytime += 1;
-            module_interface.menu_pausePlay();
-            //clearInterval(playInterval);
-            dc.redrawAll(); //should this be before incrementing autoplaytime?
-        }    
-
-        if(currentEpiweekPos < allEpiweeks.length && currentEpiweekPos>0){  //if autoplay is on but not on first or final value of x-axis
-            //console.log("IN menu_autoRangePlay, current play = ", currentEpiweekPos, " = ", allEpiweeks[currentEpiweekPos], "(in if 2)");
-            //console.log("in if 2a");   //d3.time.day.offset(temp_dateExtent[0], -3)
-            //g.viz_definition[g.viz_timeline].chart.filter([g.module_epitime.epitime_all[currentEpiweekPos-1].epiDate, g.module_epitime.epitime_all[currentEpiweekPos].epiDate]);
-            //g.viz_definition[g.viz_timeline].chart.filter([g.module_epitime.epitime_all[currentEpiweekPos].epiDate, g.module_epitime.epitime_all[currentEpiweekPos+1].epiDate]);
-
-            g.viz_timeshare.forEach(function(key) {
-                g.viz_definition[key].chart.filterAll();
-                g.viz_definition[key].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1])); 
-            })
-            /*if ((!(g.viz_rangechart)) && (g.viz_timeshare)) {
-                //console.log("in if 2b");
-                g.viz_timeshare.forEach(function(key) {
-                    //console.log("filter chart ", key);
-                    g.viz_definition[key].chart.filter([g.module_epitime.epitime_all[currentEpiweekPos-1].epiDate, g.module_epitime.epitime_all[currentEpiweekPos].epiDate]);
-                    g.viz_definition[key].chart.filter([g.module_epitime.epitime_all[currentEpiweekPos].epiDate, g.module_epitime.epitime_all[currentEpiweekPos+1].epiDate]);
-                });
-            };*/
-            dc.redrawAll();
-            //g.module_interface.autoplaytime += 1;
-        }
-
-        if(currentEpiweekPos == 0){   //if autoplay is on first round
-            //console.log("IN menu_autoRangePlay, current play = ", currentEpiweekPos, " = ", allEpiweeks[currentEpiweekPos], "(in if 3)");
-            //console.log("in if 3a");
-            //g.viz_definition[g.viz_timeline].chart.filter([g.module_epitime.epitime_all[g.module_interface.autoplaytime].epiDate, g.module_epitime.epitime_all[g.module_interface.autoplaytime+1].epiDate]);
-
-            g.viz_timeshare.forEach(function(key) {
-                g.viz_definition[key].chart.filterAll();
-                g.viz_definition[key].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1])); 
-            });
-
-            /*if ((!(g.viz_rangechart)) && (g.viz_timeshare)) {
-                //console.log("in if 3b");
-                g.viz_timeshare.forEach(function(key) {
-                    //console.log("filter chart ", key);
-                    g.viz_definition[key].chart.filter([g.module_epitime.epitime_all[0].epiDate, g.module_epitime.epitime_all[1].epiDate]);
-                });
-            };*/
-            dc.redrawAll();                                
-            //g.module_interface.autoplaytime += 1;
-        }    
-
-
-        //g.viz_definition[g.viz_timeline].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1])); 
-        /*g.viz_timeshare.forEach(function(key) {
-            g.viz_definition[key].chart.filterAll();
-            g.viz_definition[key].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1])); 
-        });*/
-        //dc.redrawAll();                       
-
-    }, slideDuration);
-    //module_interface.menu_pausePlay();
-    //clearInterval(playInterval);
-    //console.log("IN menu_autoRangePlay - end of function, current play = ", currentEpiweekPos, " = ", allEpiweeks[currentEpiweekPos]);
+    rangePlayUpdate();
 };
 
 
@@ -1039,6 +994,7 @@ module_interface.menu_autoRangePlay = function(){
  * @todo Rename 'Stop'?
  */
 module_interface.menu_pausePlay = function(){
+    //console.log("now in menu_pausePlay");
     g.module_interface.autoplayon = false;
     $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.play);
 
@@ -1048,11 +1004,13 @@ module_interface.menu_pausePlay = function(){
     if(g.viz_timeshare){
         g.viz_timeshare.forEach(function(key) {
             $('#chart-'+ key).removeClass("noclick");    
-            g.viz_definition[key].chart.filterAll();  
+            g.viz_definition[key].chart.filterAll();
+            //console.log("filtered all for ", key);  
         });
     } 
 
-    clearInterval(g.module_interface.autoplaytimer);
+    //clearInterval(g.module_interface.autoplaytimer);
+    clearTimeout(g.module_interface.autoplaytimer);
 
     if (g.viz_rangechart) {
         g.viz_timeshare.forEach(function(key) {

@@ -226,7 +226,7 @@ function generateDashboard(){
                 temp_dateExtent = d3.extent(g.medical_data, dateAccessor);  
                 dateExtent = [d3.time.day.offset(temp_dateExtent[0], -3), d3.time.day.offset(temp_dateExtent[1], 6)];
                 g.module_epitime.date_extent = dateExtent;
-                //console.log("dateExtent: ", dateExtent);
+                //console.log("domainBuilder for dateExtent: ", dateExtent);
                 return dateExtent;
             },
             readcat : function(){
@@ -1065,14 +1065,17 @@ function generateDashboard(){
 
 
                            if (chart.filter()==null) {
-                                $('.button_qf').removeClass('on');
-                                $('#filters_qf-'+key1).html("Epiweeks selected: All"); 
+                                if (!g.module_interface.autoplayon==true) {
+                                    $('.button_qf').removeClass('on');
+                                    $('#filters_qf-'+key1).html("Epiweeks selected: All"); 
+                                }
+                                
                                 //console.log("in filter==null i.e. removed all range zoom"); 
                             } else {
                                 var dates = chart.filter();
-                                //console.log("filtered to ", dates);
+                                //console.log("*** Filtered range chart to ", dates);
 
-                                // fix dates to be outputted to screen as filter (not changing actual filtered dates):
+                                /*// fix dates to be written to screen as filter (not changing actual filtered dates):
                                 if (dates[0].getDay() != 1) {     //if first day is not Monday 
                                     //dates[0] = d3.time.day.offset(dates[0], 7);   //offset 7 days
                                 };
@@ -1080,12 +1083,29 @@ function generateDashboard(){
                                     //dates[1] = d3.time.day.offset(dates[1], -1);   //offset -1 days
                                 };
                                 var epi_id_0 = module_epitime.get_epi_id(dates[0]);    //HEIDI - PROBLEM HERE WITH dates[0] being undefined in get_epi_id
-                                var epi_id_1 = module_epitime.get_epi_id(dates[1]);
-                                if (epi_id_0 == epi_id_1) {
-                                    $('#filters_qf-'+key1).html("Epiweeks selected: " + module_epitime.get_epi_id(dates[0]));  
+                                var epi_id_1 = module_epitime.get_epi_id(dates[1]);*/
+
+                                var select_weeks = module_epitime.getEpiweeksInRange(dates[0], dates[1]);
+                                //console.log("select_weeks: ", select_weeks);
+                         
+                                if (select_weeks.length==0) {
+                                    $('#filters_qf-'+key1).html("Epiweeks selected: None");
+                                } else if (select_weeks.length==1) {
+                                    $('#filters_qf-'+key1).html("Epiweeks selected: " + select_weeks[0]);  
                                 } else {
-                                    $('#filters_qf-'+key1).html("Epiweeks selected: " + module_epitime.get_epi_id(dates[0]) + ' - ' + module_epitime.get_epi_id(dates[1])); 
-                                }
+                                    $('#filters_qf-'+key1).html("Epiweeks selected: " + select_weeks[0] + ' - ' + select_weeks[select_weeks.length-1]); 
+                                };
+
+                                //var epi_id_0 = select_weeks[0];    //HEIDI - PROBLEM HERE WITH dates[0] being undefined in get_epi_id
+                                //var epi_id_1 = select_weeks[select_weeks.length-1];
+                                /*if (epi_id_0 == epi_id_1) {
+                                    //$('#filters_qf-'+key1).html("Epiweeks selected: " + module_epitime.get_epi_id(dates[0]));
+                                    $('#filters_qf-'+key1).html("Epiweeks selected: " + select_weeks[0]);  
+                                } else {
+                                    $('#filters_qf-'+key1).html("Epiweeks selected: " + select_weeks[0] + ' - ' + select_weeks[select_weeks.length-1]); 
+                                }*/
+
+                                
 
 
                                 //check whether button should still be 'on' - i.e. if user dragged brush then all buttons should be turned off                               

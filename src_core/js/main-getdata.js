@@ -302,7 +302,7 @@ module_getdata.process_population = function(){
      * @type {Object.<Array.<String>>}
      * @alias module:g.population_databyloc
      */
-    g.population_databyloc = {};
+    g.population_databyloc = {};   //HEIDI - normally here is only 1 value per location, need to change this
 
     /**
      * Stores keys of each administrative level extracted from the {@link module:g.module_getdata.population}.
