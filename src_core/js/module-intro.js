@@ -81,6 +81,7 @@ module_intro.setup = function() {
      * @alias module:module_intro.step
      */
 	g.module_intro.step = {};
+    //console.log("Setting up g.module_intro.step");
 	var steps = [{
 			  	element: '#title',
 				intro: g.module_lang.text[g.module_lang.current].intro_intro,
@@ -88,7 +89,9 @@ module_intro.setup = function() {
 			  }];
 	var keynum = 0;
 	g.viz_keylist.forEach(function(key){
+        //console.log(keynum, key, g.viz_definition[key].display_intro);
 		if(!(g.viz_definition[key].display_intro == 'none')){
+            //console.log(keynum, key, g.viz_definition[key].display_intro, " != none");
 			if(g.viz_definition[key].display_idcontainer){
                 var element = '#' + g.viz_definition[key].display_idcontainer;
             }else{
@@ -96,13 +99,17 @@ module_intro.setup = function() {
             }
             keynum++;
 			g.module_intro.step[key] = keynum;
+            //console.log(key, keynum);
 			steps.push({
 				  	element: element,
 					intro: g.module_lang.text[g.module_lang.current]['intro_'+key],
 					position: g.viz_definition[key].display_intro
 			});
+            //console.log("in g.module_intro.step: ", element, steps);
+            //console.log("in g.module_intro.step: ", element, g.viz_definition[key].display_intro);
 		}
 	});
+    //console.log("steps: ", steps);
 
 	g.module_intro.definition.setOptions({
 			steps: steps

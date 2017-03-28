@@ -313,14 +313,33 @@ module_getdata.process_population = function(){
      * @alias module:g.population_keylist
      */
     g.population_keylist = Object.keys(g.module_getdata.population);
-    g.population_keylist.forEach(function(key){
-        g.population_loclists[key] = [];
-        g.population_databyloc[key] = {};
-        g.population_data[key].forEach(function(f){
-            g.population_loclists[key].push(f[g.population_headerlist.admNx.trim()]);
-            g.population_databyloc[key][f[g.population_headerlist.admNx.trim()]] = parseInt(f[g.population_headerlist.pop]);
+    if (g.pop_new_format) {
+        //console.log("PREPPING NEW POPULATION DATA FORMAT");
+        g.population_keylist.forEach(function(key){
+            g.population_loclists[key] = [];
+            g.population_databyloc[key] = {};
+            g.population_data[key].forEach(function(f){
+                g.population_loclists[key].push(f[g.population_headerlist.admNx.trim()]);
+                //console.log("f[g.population_headerlist.admNx.trim()] = ", f[g.population_headerlist.admNx.trim()]);
+                temp={};
+                for (pop_yr in g.population_headerlist.pop) {
+                    //console.log(g.population_headerlist.pop, pop_yr, g.population_headerlist.pop[pop_yr], parseInt(f[pop_yr]));
+                    temp[pop_yr] = parseInt(f[pop_yr]);
+                };
+                g.population_databyloc[key][f[g.population_headerlist.admNx.trim()]] = temp;
+            });            
         });
-    });
+    } else {        
+        g.population_keylist.forEach(function(key){
+            g.population_loclists[key] = [];
+            g.population_databyloc[key] = {};
+            g.population_data[key].forEach(function(f){
+                g.population_loclists[key].push(f[g.population_headerlist.admNx.trim()]);
+                g.population_databyloc[key][f[g.population_headerlist.admNx.trim()]] = parseInt(f[g.population_headerlist.pop]);
+            });
+        });
+    }
+    
 };
 
 /*--------------------------------------------------------------------

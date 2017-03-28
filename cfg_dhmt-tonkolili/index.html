@@ -9,7 +9,8 @@
     <head>
         <title>MSF Dashboard v1.1.0pre-alpha</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+        <meta name="viewport" content="width=device-width, initial-scale=0.2, maximum-scale=1.0, user-scalable=no" /> 
 
         <script>
             // Librairies
@@ -70,11 +71,22 @@
                                 <div class="col-md-12">
                                     <div id="chart-death_ser" class="viz"></div>
                                 </div>
+                            </div> 
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div id="chart-casedeath_ser_range" class="viz"></div>
+                                </div>
+                                <div class="col-md-12">
+                                    <p><span id="filters_qf-casedeath_ser_range"></span></p> 
+                                    <div id="buttons_qf-casedeath_ser_range">
+                                        <!-- <p style="height: 30px;"><span id="filters_qf-casedeath_ser_range">Current selection: All</span> <span class="filter"> </span></p>-->
+                                    </div>
+                                </div>
                             </div>                                                    
                         </div>
                     </div>
 
-                    <div id="containter_bar">
+                   <!--  <div id="containter_bar">
                         <div class="col-md-12" id="container_casedeath_bar">
                             <div class="row">                        
                                 <div class="col-md-12">
@@ -90,7 +102,7 @@
                                 </div>
                             </div>                                                    
                         </div>
-                    </div>
+                    </div> -->
 
                     <div id="containter_lin">
                         <div class="col-md-12" id="container_casedeath_lin">

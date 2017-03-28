@@ -99,7 +99,19 @@ function generateDashboard(){
     module_epitime.createEpiTime();     //HEIDI - where should this go???
     console.log("g.module_epitime.epitime_all = ", g.module_epitime.epitime_all);
     g.module_epitime.all_epiweeks = module_epitime.getEpiweeksInData().sort();
+    g.module_epitime.all_years = module_epitime.getYearsInData().sort();
     //console.log("g.module_epitime.all_epiweeks = ", g.module_epitime.all_epiweeks);
+
+    //HEIDI - here for Tonkolili only - upload new PHU name file and convert old PHU names to new
+    /*console.log("HEIDI - here convert old PHU names to new ones");  //ONLY FOR TONKOLILI!!!!
+    for (var i=0; i<=g.medical_data.length-1; i++) {
+        for (var j=0; j<=PHU_matches.length-1; j++) {
+            if (g.medical_data[i].PHU==PHU_matches[j].PHU_prev) {
+                g.medical_data[i].PHU = PHU_matches[j].PHU;
+            };
+            break;
+        }  
+    };*/
 
     // *) Checks Modules actives
     //------------------------------------------------------------------------------------
@@ -397,6 +409,35 @@ function generateDashboard(){
             multiadm: function(none){
                 var mapDimension = {};
                 g.geometry_keylist.forEach(function(key2,key2num,key2list) {
+                    //console.log ("multiadm dimension parameters: ", key2,key2num,key2list); 
+                    mapDimension[key2] = cf.dimension(function(rec){ 
+                        //console.log ("multiadm dimension: ", key2, rec);
+                        var count = key2num;
+                        if(g.module_datacheck.definition_value[key2].setup == 'normalize'){      
+                            var loc_current = toTitleCase(rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' '));
+                        }else{
+                            var loc_current = rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' ');
+                        }
+                        while(count > 0){
+                            count--;
+                            if(g.module_datacheck.definition_value[key2].setup == 'normalize'){      
+                                loc_current = toTitleCase(rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' '))+', '+loc_current;
+                            }else{
+                                loc_current = rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' ')+', '+loc_current;
+                            }
+                        }
+                        //console.log ("multiadm dimension: ", loc_current);   //one for each row in spreadsheet - so here could do IF mapcurrent=Cases etc?
+                        return loc_current;
+                    });
+                })
+                //console.log ("multiadm dimension: ", mapDimension);   
+                return mapDimension;                        //one for each adm level
+            },
+
+            //HEIDI - BRUNO's ORIGINAL MULTIADM DIM
+            /*multiadm: function(none){
+                var mapDimension = {};
+                g.geometry_keylist.forEach(function(key2,key2num,key2list) {
                     mapDimension[key2] = cf.dimension(function(rec){ 
                         var count = key2num;
                         if(g.module_datacheck.definition_value[key2].setup == 'normalize'){      
@@ -412,11 +453,13 @@ function generateDashboard(){
                                 loc_current = rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' ')+', '+loc_current;
                             }
                         }
+                        console.log ("multiadm dimension: ", loc_current);   //one for each row in spreadsheet - so here could do IF mapcurrent=Cases etc?
                         return loc_current;
                     });
                 })
-                return mapDimension;
-            },
+                console.log ("multiadm dimension: ", mapDimension);   
+                return mapDimension;                        //one for each adm level
+            },*/
             integer: function(key){ 
                 var dimension = cf.dimension(function(rec) {
                     if(rec[g.medical_headerlist[key]]){
@@ -485,20 +528,24 @@ function generateDashboard(){
             epidate: function(key){
                 var dimension = cf.dimension(function(rec) {
                     var epidt = module_epitime.get_epiDate(rec[g.medical_headerlist[key]]);
-                    //console.log("epidate dim: ", epidt);
+                    //console.log ("epidate dimension: ", epidt);         //one per row in spreadsheet
                     return epidt;
                 });
-                return dimension;
+                //console.log ("epidate dimension: ", dimension);         //single epidate dimension
+                return dimension;                                       
             },
             auto: function(key){
                 var dimension = cf.dimension(function(rec) {
-                    if(rec[g.medical_headerlist[key]]){
+                    if (rec[g.medical_headerlist[key]]) {
+                        //console.log ("auto dimension: ", rec[g.medical_headerlist[key]]);    //one per row in spreadsheet
                         return rec[g.medical_headerlist[key]];
-                    }else{
+                    } else {
+                        //console.log ("auto dimension: NA");
                         return 'NA';
                     }
                 });
                 //console.log("building auto dimension for ", key, " = ", dimension.bottom(Infinity).map(function(d) {return (d.epiweek)}));
+                //console.log("building auto dimension for ", key, " = ", dimension.bottom(Infinity).map(function(d) {return (d)}));
                 return dimension;
             },
             readcat: function(key){
@@ -641,35 +688,6 @@ function generateDashboard(){
                 });
                 return mapGroup;
             },
-            multiadm_heidi: function(dimkey,keylistgroup){
-                console.log("dimkey: ", dimkey);
-                console.log("keylistgroup: ", keylistgroup);
-                var mapGroup = {};
-                g.geometry_keylist.forEach(function(key2) {
-                    mapGroup[key2] = g.viz_definition[dimkey].dimension[key2].group().reduce(
-                    function(p,v) {
-                        p['Records']++;
-                        p['Values_c'] += +v[g.medical_headerlist[keylistgroup[0]]];
-                        p['Values_d'] += +v[g.medical_headerlist[keylistgroup[1]]];
-                        return p;
-                    },
-                    function(p,v) {
-                        p['Records']--;
-                        p['Values_c'] -= +v[g.medical_headerlist[keylistgroup[0]]];
-                        p['Values_d'] -= +v[g.medical_headerlist[keylistgroup[1]]];
-                        return p;
-                    },
-                    function() {
-                        var temp = {};
-                        temp['Records'] = 0;
-                        temp['Values_c'] = 0;
-                        temp['Values_d'] = 0;
-                        return temp;
-                    }
-                    );                
-                });
-                return mapGroup;
-            },
             // /!\ "u" & "o" are hardcoded!
             stackedbar: function(dimkey,keylistgroup){
                 var group = {};
@@ -691,43 +709,33 @@ function generateDashboard(){
                 //console.log("groupBuilder series_age, dimkey = ", dimkey);
                 //console.log("groupBuilder series_age, keylistgroup = ", keylistgroup);
                 var group = {};
-                /*group.u = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){
-                    if ((g.module_colorscale.mapunitcurrent == 'Cases') || (g.module_colorscale.mapunitcurrent == 'Deaths')) {
-                        var therewego = d[keylistgroup[1]]=="u"?d[g.medical_headerlist[keylistgroup[0]]]*10000:0;
-                        //return d[keylistgroup[1]]=="u"?d[g.medical_headerlist[keylistgroup[0]]]*10000:0;
-                    } else if ((g.module_colorscale.mapunitcurrent == 'IncidenceProp') || (g.module_colorscale.mapunitcurrent == 'MortalityProp')) {
-                        var therewego = d[keylistgroup[1]]=="u"?d[g.medical_headerlist[keylistgroup[0]]]*1000:0;
-                        //return d[keylistgroup[1]]=="u"?d[g.medical_headerlist[keylistgroup[0]]]*1000:0;
-                    };    
-                    //console.log("therewego: ", therewego); 
-                    return therewego;             
-                });*/
+                
                 group.u = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="u"?d[g.medical_headerlist[keylistgroup[0]]]:0;});
                 group.o = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="o"?d[g.medical_headerlist[keylistgroup[0]]]:0;});
                 group.a = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[g.medical_headerlist[keylistgroup[0]]]});
-
-                //group.u_ir = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="u"?1000*d[g.medical_headerlist[keylistgroup[0]]]:0;});
-                //group.o_ir = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[keylistgroup[1]]=="o"?1000*d[g.medical_headerlist[keylistgroup[0]]]:0;});
-                //group.a_ir = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return 1000*d[g.medical_headerlist[keylistgroup[0]]]});
-                //console.log("in groupBuilder.surveillance - series option, group.u = ", group.u);
-                //console.log("in groupBuilder.surveillance - series option, group.o = ", group.o);
-                //console.log("RETURNING GROUP series_age");
                 return group;
             },
             series_all: function(dimkey,keylistgroup){
                 group = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[g.medical_headerlist[keylistgroup[0]]]});
                 return group;
             },
-            series_yr: function(dimkey,keylistgroup){
-                //console.log("groupBuilder series_yr, dimkey = ", dimkey);
-                //console.log("groupBuilder series_yr, keylistgroup = ", keylistgroup);
+            series_yr: function(dimkey, keylistgroup) {
+                var createGroup = function(dimkey,keylistgroup,yr){
+                    return g.viz_definition[dimkey].dimension.group().reduceSum(function (d) {
+                        return d[g.medical_headerlist[keylistgroup[1]]].substring(0,4)==yr?d[g.medical_headerlist[keylistgroup[0]]]:"";
+                    });
+                };
                 var group = {};
-                group.yr2015 = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[g.medical_headerlist[keylistgroup[1]]].substring(0,4)=="2015"?d[g.medical_headerlist[keylistgroup[0]]]:"";});
-                group.yr2016 = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[g.medical_headerlist[keylistgroup[1]]].substring(0,4)=="2016"?d[g.medical_headerlist[keylistgroup[0]]]:"";});
-                
-                //console.log("in groupBuilder.surveillance - series_yr option, group.yr2015 = ", group.yr2015);
-                //console.log("in groupBuilder.surveillance - series_yr option, group.yr2016 = ", group.yr2016);
-                return group;
+                var all_years = g.module_epitime.all_years;
+                for (var i=0; i<=all_years.length-1; i++) {
+                    //console.log(i, all_years[i]);
+                    var groupName = "yr_"+all_years[i];
+                    group[groupName] = createGroup(dimkey, keylistgroup, all_years[i]);
+                }
+                //group.yr_2015 = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[g.medical_headerlist[keylistgroup[1]]].substring(0,4)=="2015"?d[g.medical_headerlist[keylistgroup[0]]]:"";});
+                //group.yr_2016 = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[g.medical_headerlist[keylistgroup[1]]].substring(0,4)=="2016"?d[g.medical_headerlist[keylistgroup[0]]]:"";});
+                //console.log("group = ", group);
+                return group;                    
             },
         };
 
@@ -760,15 +768,19 @@ function generateDashboard(){
 
         var color_list = [];
         if (g.viz_definition[key1].display_colors) {
-            if (g.viz_definition[key1].display_colors[0]==999) {     //HEIDI - temporary fix, need to formalize this
-                var temp_color_list = ['#17becf', '#bcbd22', '#9467bd'];
-                g.viz_definition[key1].display_colors.forEach(function(num) {
-                    if (num!=999) {
-                        color_list.push(temp_color_list[num]);
-                    }
-                    
-                });
-                //var color_domain = [0,color_list.length - 1];
+            if (g.viz_definition[key1].color_group) {     //HEIDI - temporary fix, need to formalize this
+                if (g.viz_definition[key1].color_group == 'age_classes') {
+                    //var temp_color_list = ['#17becf', '#bcbd22', '#9467bd'];
+                    g.viz_definition[key1].display_colors.forEach(function(num) {
+                        //if (num!=999) {
+                            //color_list.push(temp_color_list[num]);
+                        //}
+                        color_list.push(g.module_colorscale.colors['Composite'][num]);
+                        
+                    });
+                    //var color_domain = [0,color_list.length - 1];
+                }
+                
             } else {
                 /**
                  * Stores color values converted from <code>display_colors</code> ({@link module:g.viz_definition}) to actual colors picked up in the current colorscale {@link module:g.module_colorscale.colors} > {@link module:g.module_colorscale.colorscurrent}.
@@ -790,6 +802,8 @@ function generateDashboard(){
             var color_list = d3.scale.category10().range();
             //var color_domain = [0,color_list.length - 1]; 
         }
+
+        //console.log("chart ", key1, ", color_list = ", color_list);
         /**
              * Stores the number of values in {@link module:main_core~color_list}.
              * @type {Array} 
@@ -889,29 +903,36 @@ function generateDashboard(){
                 var width = $(div_id).parent().width();
                 var height = (g.viz_definition[key1].range_chart)? 100 : 180;
 
+                //console.log("1 - in BAR chart (testing)");
+
                 // Shared dimension
                 if(g.viz_definition[key1].dimension_parameter.shared){
                     var dim_namespace = g.viz_definition[key1].dimension_parameter.namespace;
                 }else{
                     var dim_namespace = key1;
                 }
-
+                //console.log("2 - in BAR chart (testing)");
 
                 g.viz_definition[key1].chart             
                     .margins({top: 10, right: 50, bottom: 20, left: 40})
                     .width(width)
                     .height(height)
-                    //.dimension(g.viz_definition[dim_namespace].dimension)    //HEIDI - need to redefine these for each domain parameter? or will it work for heidi_custom_time to take them out?
-                    //.group(g.viz_definition[key1].group)
+                    .dimension(g.viz_definition[dim_namespace].dimension)    //HEIDI - need to redefine these for each domain parameter? or will it work for heidi_custom_time to take them out?
+                    .group(g.viz_definition[key1].group)
                     .elasticY(true);
                     //.elasticX(true)
-                    //.centerBar(true); 
+                    //.centerBar(true);
+
+                //console.log("3 - in BAR chart (testing)"); 
 
                 // Domain parameters
                 if (g.viz_definition[key1].domain_parameter == 'custom_ordinal') {
+                    //console.log("4a - in BAR chart (testing)");
                     var xScaleRange = d3.scale.ordinal().domain(g.viz_definition[key1].domain); 
                     g.viz_definition[key1].chart
                         .x(xScaleRange)
+                        //.dimension(g.viz_definition[dim_namespace].dimension)    //HEIDI - need to redefine these for each domain parameter? or will it work for heidi_custom_time to take them out?
+                        //.group(g.viz_definition[key1].group)
                         .xUnits(dc.units.ordinal)
                         .title(function(d) { return d.key + ": " + d.value; });
 
@@ -919,8 +940,8 @@ function generateDashboard(){
                     var xScaleRange = d3.time.scale().domain(g.viz_definition[key1].domain)
                     g.viz_definition[key1].chart
                         .x(xScaleRange)
-                        .dimension(g.viz_definition[dim_namespace].dimension)
-                        .group(g.viz_definition[key1].group)
+                        //.dimension(g.viz_definition[dim_namespace].dimension)
+                        //.group(g.viz_definition[key1].group)
                         //.focusCharts(g.viz_definition['case_ser'].chart, g.viz_definition['death_ser'].chart)
                         //.centerBar(true)
                         .xUnits(function(){return g.module_epitime.epitime_all.length;})
@@ -975,7 +996,7 @@ function generateDashboard(){
                         .filterPrinter(filterPrinterCustom);
                 }
 
-                //console.log("IN BAR CHART 4");
+                //console.log("4b - in BAR chart (testing)");
 
                 if (g.viz_definition[key1].range_chart) {
                     g.viz_definition[key1].chart
@@ -1052,6 +1073,8 @@ function generateDashboard(){
                             //console.log(x_label, d);
                             return x_label;
                         }); 
+
+                    //console.log("5 - in BAR chart (testing)");
 
                     g.viz_definition[key1].chart
                         .yAxis().ticks(0); 
@@ -1140,11 +1163,11 @@ function generateDashboard(){
                         .yAxis().ticks(5);    
                 }
                 
-
+                //console.log("6 - in BAR chart (testing)");
                 //console.log("IN BAR CHART 5");
 
                 // HEIDI - ADDED THIS - for bar charts where domainBuilder = epiweek, and domain length >=53:   //HEIDI - also for domain_builder = date_extent?
-                if ((g.viz_definition[key1].domain_builder == 'epiweek') && (g.viz_definition[key1].domain.length >= 53)) {  //ideally make this dependent on chart width, not domain length
+                if (((g.viz_definition[key1].domain_builder == 'epiweek') || (g.viz_definition[key1].domain_builder == 'date_extent')) && (g.viz_definition[key1].domain.length >= 53)) {  //ideally make this dependent on chart width, not domain length
                     //console.log("should adapt x axis here = ", g.viz_definition[key1].domain_builder, g.viz_definition[key1].domain.length);
                     g.viz_definition[key1].chart
                         .xAxis().tickFormat(function(d, i) {
@@ -1165,6 +1188,7 @@ function generateDashboard(){
                 };
 
                 //console.log("IN BAR CHART 6");
+                //console.log("7 - in BAR chart (testing)");
 
                 //HEIDI - added this for multi-focus charts when using rangechart
                 if (g.viz_definition[key1].range_chart) {
@@ -1300,9 +1324,11 @@ function generateDashboard(){
                     };
                 };
             
+                //console.log("8 - in BAR chart (testing)");
                 g.viz_definition[key1].chart.render();
 
                 //console.log("IN BAR CHART 7");
+                //console.log("9 - in BAR chart (testing)");
             
                 // Add labels for small bars (difficult or sometimes impossible to click)
                 /*g.viz_definition[key1].chart
@@ -1355,6 +1381,7 @@ function generateDashboard(){
                     console.log('main-core.js ~l1020: Special label margin: #chart-'+key1);
                 } 
                 //console.log("IN BAR CHART 9 - END");
+                //console.log("10 END - in BAR chart (testing)");
                 break;
 
             //------------------------------------------------------------------------------------
@@ -1426,10 +1453,16 @@ function generateDashboard(){
                  * @alias module:main_core~valueAccessor
                  * @todo Implement completeness without year chart...
                  */
+
+               /* function getPopNum(region, yr, age_group) {
+
+                }*/
+
                 function valueAccessor(d){
-                    //console.log("IN VALUE ACCESSOR FOR MULTIADM - ", g.module_colorscale.mapunitcurrent);
+                    //console.log("IN VALUE ACCESSOR FOR MULTIADM - ", g.module_colorscale.mapunitcurrent, d);
                     temp_adm = g.geometry_keylist[d.key.split(', ').length - 1];
-                    if (g.module_colorscale.mapunitcurrent == 'IncidenceProp') {
+
+                    if ((g.module_colorscale.mapunitcurrent == 'IncidenceProp') || (g.module_colorscale.mapunitcurrent == 'MortalityProp')) {
 
                         if (g.viz_rangechart) {
                             //console.log("filters: ", g.viz_definition[g.viz_timeline].chart.filters());
@@ -1443,13 +1476,22 @@ function generateDashboard(){
                             //var select_weeks = g.module_epitime.current_epiweeks;
                         } else {
                             var select_weeks = g.viz_definition[g.viz_timeline].chart.filters();        //currently filtered epiweeks
-                            //var select_weeks = g.viz_definition[g.viz_timeline].chart.filters()[0];  //HEIDI - should it be this if no rangechart? 
+                            //console.log("filters: ", g.viz_definition[g.viz_timeline].chart.filters());
+                            //var select_weeks = g.viz_definition[g.viz_timeline].chart.filters()[0];  //HEIDI - should it be this if no rangechart?
+                            if (select_weeks.length == 0) {                                                   //if no filter applied then...
+                                select_weeks = $.extend(true, [], g.viz_definition[g.viz_timeline].domain);
+                                //console.log("CURRENTLY FILTERED EPIWEEKS (was 0): ", select_weeks);
+                                select_weeks.pop();                                                     //remove last element of array (i.e. 'NA')
+                                //console.log("CURRENTLY FILTERED EPIWEEKS (was 0): ", select_weeks);
+                                //filterswklength = select_weeks.length;
+                                //console.log("NUMBER OF FILTERED EPIWEEKS (was 0): ", filterswklength);
+                            }   
                         };
-                        //console.log("CURRENTLY FILTERED EPIWEEKS: ", select_weeks);
+                        //console.log("CURRENTLY FILTERED EPIWEEKS: ", select_weeks);       //HEIDI - I think we don't need filterswklength for Incidence or Mortality rate calculations anymore
                         var filterswklength = select_weeks.length;                                  //number of filtered epiweeks
                         //console.log("NUMBER OF FILTERED EPIWEEKS: ", filterswklength);
 
-                        if (!(g.viz_rangechart)) { 
+                        /*if (!(g.viz_rangechart)) { 
                             if (filterswklength == 0) {                                                   //if no filter applied then...
                                 select_weeks = $.extend(true, [], g.viz_definition[g.viz_timeline].domain);
                                 //console.log("CURRENTLY FILTERED EPIWEEKS (was 0): ", select_weeks);
@@ -1458,48 +1500,225 @@ function generateDashboard(){
                                 filterswklength = select_weeks.length;
                                 //console.log("NUMBER OF FILTERED EPIWEEKS (was 0): ", filterswklength);
                             }  
-                        }
+                        }*/
+
 
                         //Deals with filtering by years
                         if(g.viz_definition.year){
-                            var select_years = g.viz_definition.year.chart.filters();
+                            //var current_epiweeks = [];
+                            var current_epiweeks = new Array(select_weeks.length);
+                            for (var i = 0; i < select_weeks.length; i++) {
+                                current_epiweeks[i] = select_weeks[i];
+                            }
+                            var select_years = g.viz_definition.year.chart.filters();  //years currently selected
+                            //console.log("select_years: ", select_years);
+                            //console.log("select_weeks: ", select_weeks);
+                            //console.log("current_epiweeks: ", current_epiweeks);
                             var filtersyrlength = select_years.length;
-                            if(!(filtersyrlength == 0)){                      //if a year has been filtered - remove any epiweeks that don't match year
+                            //if(!(filtersyrlength == 0)){                      //if a year has been filtered - remove any epiweeks that don't match year
+                            if (select_years.length != 0) {
                                 select_weeks.forEach(function(wk) {
-                                    select_years.forEach(function(yr) {
-                                       if(wk.substr(0,4) !== yr){
-                                            filterswklength--;
-                                        }
-                                    });
+                                    //console.log("select_week: ", parseInt(wk.substr(0,4)), " in years: ", select_years, " = ", select_years.indexOf(wk.substr(0,4)));
+                                    if (select_years.indexOf(wk.substr(0,4)) == -1) {
+                                        //console.log("want to remove ", wk, " due to year ", select_years);
+                                        remove(current_epiweeks, wk);
+                                        filterswklength--;
+                                    }
                                 });
+                            } /*else {
+                                var current_epiweeks = select_weeks;
+                            }*/
+                        } else {
+                            var current_epiweeks = select_weeks;
+                        }
+                        //console.log("CURRENTLY FILTERED EPIWEEKS (accounted for filtered years): ", filterswklength, current_epiweeks.length, current_epiweeks);
+                        
+
+                        var definedPopYears = [];
+                        for (var year in g.population_databyloc.pop[d.key]) {  //1 - get the years for which pop is defined for this location
+                            //console.log(year, g.population_databyloc.pop[d.key], g.population_databyloc.pop[d.key][year]);
+                            //definedPopYears.push(parseInt(year.substr(3,6)));
+                            definedPopYears.push(g.population_headerlist.pop[year]);
+                        }
+                        //console.log(g.population_databyloc.pop[d.key], definedPopYears);
+
+                        var pop = 0;
+                        for (i=0; i<=current_epiweeks.length-1;i++) {       //get sum of total population throughout time period
+                            
+                            if (g.pop_new_format) {
+
+                                //console.log("i = ", i, "   add in ", current_epiweeks[i], g.population_databyloc.pop[d.key]);
+                                //pop += g.population_databyloc.pop[d.key];
+
+                                /*var definedPopYears = [];
+                                for (var year in g.population_databyloc.pop[d.key]) {  //1 - get the years for which pop is defined for this location
+                                    //console.log(year, g.population_databyloc.pop[d.key], g.population_databyloc.pop[d.key][year]);
+                                    //definedPopYears.push(parseInt(year.substr(3,6)));
+                                    definedPopYears.push(g.population_headerlist.pop[year]);
+                                }
+                                console.log(current_epiweeks[i], definedPopYears);*/
+
+                                //yr = parseInt(yr);
+                                yr = parseInt(current_epiweeks[i].substr(0,4));
+                                //console.log("yr: ", yr);
+                                if (definedPopYears.indexOf(yr)!=-1) {     //2 - if year 'yr' is in this then take that value
+                                    //var pop_temp = g.population_databyloc.pop[select_locs[i]]['yr_'+yr]; 
+
+                                    for (var key in g.population_headerlist.pop) {
+                                        //console.log(key, g.population_headerlist.pop);
+                                        if (g.population_headerlist.pop[key]==yr) {
+                                            //console.log(g.population_headerlist.pop[key], prevYr);
+                                            var currKey = key;
+                                        };
+                                    }
+                                    //console.log("key ref: ", currKey);
+
+                                    //get pop
+                                    var pop_temp = g.population_databyloc.pop[d.key][currKey]; 
+                                    //console.log(yr, " is in ", definedPopYears, "  pop_temp = ", pop_temp);
+                                } else {
+                                    //console.log(yr, " is NOT in ", definedPopYears);
+                                    var minDefinedPopYear = Math.min(...definedPopYears);
+                                    var maxDefinedPopYear = Math.max(...definedPopYears);
+                                    //console.log("minYear: ", minDefinedPopYear, "   maxYear: ", maxDefinedPopYear);
+
+                                    if ((yr > minDefinedPopYear) && (yr < maxDefinedPopYear)) {   //3 - if year 'yr' is between two values then do linear interpolation
+                                        
+                                        function getNearestYrs() {
+                                            var prev = definedPopYears[0];
+                                            var next = definedPopYears[0];
+                                            for (var i=0; i<=definedPopYears.length-1; i++) {
+                                                //if (Math.abs(yr-definedPopYears[i]) < Math.abs(yr-curr)) {
+                                                //console.log(i, yr, definedPopYears[i], prev, next);
+                                                if (((yr-definedPopYears[i])<(yr-prev)) && ((yr-definedPopYears[i])>0)) {
+                                                    prev = definedPopYears[i];
+                                                };
+                                                if (((yr-definedPopYears[i])<(yr-next)) && ((yr-definedPopYears[i])<0)) {
+                                                    next = definedPopYears[i];
+                                                };
+                                            }
+                                            return [prev, next];
+                                        };
+                                        var prevYr, nextYr = 0;
+                                        [prevYr, nextYr] = getNearestYrs();
+                                        //console.log("prev & next years: ", prevYr, nextYr);
+
+                                        for (var key in g.population_headerlist.pop) {
+                                            //console.log(key, g.population_headerlist.pop);
+                                            if (g.population_headerlist.pop[key]==prevYr) {
+                                                //console.log(g.population_headerlist.pop[key], prevYr);
+                                                var prevKey = key;
+                                            } else if (g.population_headerlist.pop[key]==nextYr) {
+                                                var nextKey = key;
+                                            };
+                                        }
+                                        //console.log("prev & next refs: ", prevKey, nextKey);
+
+                                        //get both pops
+                                        //console.log(g.population_databyloc.pop[select_locs[i]]);
+                                        var prevPop = g.population_databyloc.pop[d.key][prevKey]; 
+                                        var nextPop = g.population_databyloc.pop[d.key][nextKey];
+                                        //console.log("prev & next pops: ", prevPop, nextPop);
+
+                                        //interpolate
+                                        var pop_temp = ((yr-prevYr)*((nextPop-prevPop)/(nextYr-prevYr))) + prevPop;
+                                        //console.log(yr, " interpolated pop: ", pop_temp);
+
+
+                                    } else if (yr < minDefinedPopYear) {  //4 - if year 'yr' is less than lowest year then do 3% increment
+                                        var yearDiff = minDefinedPopYear - yr;      //get difference in years
+
+                                        for (var key in g.population_headerlist.pop) {
+                                            //console.log(key, g.population_headerlist.pop);
+                                            if (g.population_headerlist.pop[key]==minDefinedPopYear) {
+                                                //console.log(g.population_headerlist.pop[key], minDefinedPopYear);
+                                                var minKey = key;
+                                            };
+                                        }
+                                        //console.log("min ref: ", minKey);
+
+                                        var minPop = g.population_databyloc.pop[d.key][minKey]; 
+                                        //console.log("min pop: ", minPop);
+
+                                        //calculate pop
+                                        var pop_temp = minPop/Math.pow((1+(g.pop_annual_growth/100)),yearDiff);
+                                        //console.log("min pop: ", minPop, " in yr ", minDefinedPopYear);
+                                        //console.log("in year ", yr, " pop = ", pop_temp);
+
+                                    } else if (yr > maxDefinedPopYear) {  //5 - if year 'yr' is more than highest year then do 3% increment
+                                        var yearDiff = yr - maxDefinedPopYear;      //get difference in years
+
+                                        for (var key in g.population_headerlist.pop) {
+                                            //console.log(key, g.population_headerlist.pop);
+                                            if (g.population_headerlist.pop[key]==maxDefinedPopYear) {
+                                                //console.log(g.population_headerlist.pop[key], maxDefinedPopYear);
+                                                var maxKey = key;
+                                            };
+                                        }
+                                        //console.log("max ref: ", maxKey);
+
+                                        var maxPop = g.population_databyloc.pop[d.key][maxKey]; 
+                                        //console.log("max pop: ", maxPop);
+
+                                        //calculate pop
+                                        var pop_temp = maxPop*Math.pow((1+(g.pop_annual_growth/100)),yearDiff);
+                                        //console.log("max pop: ", maxPop, " in yr ", maxDefinedPopYear);
+                                        //console.log("in year ", yr, " pop = ", pop_temp);
+                                    } else {
+                                        console.log("ERROR - cannot find population data for year ", yr);
+                                    }
+                                } 
+
+                               // console.log(g.population_databyloc.pop[d.key], yr, ": pop = ", pop_temp);
+                                pop += pop_temp;
+                                //console.log("total so far = ", pop);
+
+                            } else {
+                                pop += g.population_databyloc.pop[d.key];
+                                //console.log("total so far (not new pop format) = ", pop);
                             }
                         }
-                           // console.log("NUMBER OF FILTERED EPIWEEKS (accounted for filtered years): ", filterswklength);
-                     
-                        //Deals with getting population for appropriate age class
+                        //console.log("total pop = ", pop);
+
+
+                        //Deals with getting population for appropriate age class, year
                         if (g.viz_definition.fyo) {     //HEIDI - 'fyo' now hard-coded for age classes - need to convert to changeable parameter
+                            //console.log("g.pop_perc_u5 = ", g.pop_perc_u5);
                             var select_age_class = g.viz_definition.fyo.chart.filters();  //=[] or ['Under 5'] or ['Over 5'] or ['Under 5', 'Over 5']
                             //console.log("select_age_class = ", select_age_class);
                             if ((select_age_class.indexOf('Under 5')>-1) && (select_age_class.length==1)) {  //filtered to only Under 5s
                                 //console.log("in Under 5 only");
-                                var popAgeClass = g.population_databyloc.pop[d.key] * (g.pop_perc_u5/100);
+                                //var popAgeClass = g.population_databyloc.pop[d.key] * (g.pop_perc_u5/100);
+                                var popAgeClass = pop * (g.pop_perc_u5/100);
                             } else if ((select_age_class.indexOf('Over 5')>-1) && (select_age_class.length==1)) {   //filtered to only Over 5s
                                 //console.log("in Over 5 only");
-                                var popAgeClass = g.population_databyloc.pop[d.key] * ((100-g.pop_perc_u5)/100);  
+                                //var popAgeClass = g.population_databyloc.pop[d.key] * ((100-g.pop_perc_u5)/100); 
+                                var popAgeClass = pop * ((100-g.pop_perc_u5)/100);  
                             } else {                                                                          //filtered to both or neither
                                 //console.log("in neither or both: ");
-                                var popAgeClass = g.population_databyloc.pop[d.key];
+                                //var popAgeClass = g.population_databyloc.pop[d.key];
+                                var popAgeClass = pop;
                             }                       
                         } else {                //no age class chart
                             //console.log("no age class chart");
-                            var popAgeClass = g.population_databyloc.pop[d.key];
+                            //var popAgeClass = g.population_databyloc.pop[d.key];
+                            var popAgeClass = pop;
                         }
 
                         // Incidence definition                                                     //calculate incidence using (value, pop, periode)
-                        var accessed_value = g.dev_defined.definition_incidence(d.value.Values_c,popAgeClass,filterswklength);
-                        //console.log("INCDIENCE RATE (Inc Prop):  (", d.value.Values_c,"*10,000) / (",popAgeClass,"*",filterswklength,") = ", accessed_value);
-                        
-                    }else if (g.module_colorscale.mapunitcurrent == 'MortalityProp') {
+
+                        if (g.module_colorscale.mapunitcurrent == 'IncidenceProp') {
+                            //var accessed_value = g.dev_defined.definition_incidence(d.value.Values_c,popAgeClass,filterswklength);
+                            var accessed_value = g.dev_defined.definition_incidence(d.value.Values_c,popAgeClass,1);
+                            //console.log("INCDIENCE RATE (Inc Prop):  (", d.value.Values_c,"*10,000) / (",popAgeClass,"*",filterswklength,") = ", accessed_value);
+                            //console.log("INCDIENCE RATE:  (", d.value.Values_c,"*10,000) / (",popAgeClass,"*1) = ", accessed_value);
+                        } else if (g.module_colorscale.mapunitcurrent == 'MortalityProp') {
+                            var accessed_value = g.dev_defined.definition_incidence(d.value.Values_d,popAgeClass,1);
+                            //console.log("MORTALITY RATE:  (", d.value.Values_d,"*10,000) / (",popAgeClass,"*1) = ", accessed_value);
+                        }
+
+                    //} else if (g.module_colorscale.mapunitcurrent == 'MortalityProp') {
+                    } else if (g.module_colorscale.mapunitcurrent == 'XXXXXXXXXXXXXXXX') {  //HEIDI - testing by removing this - ok to delete 
 
                         if (g.viz_rangechart) {
                             if (g.viz_definition[g.viz_timeline].chart.filters().length==0) {
@@ -1510,20 +1729,23 @@ function generateDashboard(){
                             var select_weeks = module_epitime.getEpiweeksInRange(dateRange[0], dateRange[1]);
                         } else {
                             var select_weeks = g.viz_definition[g.viz_timeline].chart.filters();        //currently filtered epiweeks
-                            //var select_weeks = g.viz_definition[g.viz_timeline].chart.filters()[0];  //HEIDI - should it be this if no rangechart? 
+                            if (select_weeks.length == 0) {                                                   //if no filter applied then...
+                                select_weeks = $.extend(true, [], g.viz_definition[g.viz_timeline].domain);
+                                select_weeks.pop();                                                     //remove last element of array (i.e. 'NA')
+                            };
                         };
                         var filterswklength = select_weeks.length;                          
 
-                        if (!(g.viz_rangechart)) { 
+                        /*if (!(g.viz_rangechart)) { 
                             if(filterswklength == 0){
                                 select_weeks = $.extend(true, [], g.viz_definition[g.viz_timeline].domain);
                                 select_weeks.pop();
                                 filterswklength = select_weeks.length;
                             }
-                        };
+                        };*/
 
                         // Deals with filtering by years
-                        if(g.viz_definition.year){
+                        /*if(g.viz_definition.year){
                             var select_years = g.viz_definition.year.chart.filters();
                             var filtersyrlength = select_years.length;
                             if(!(filtersyrlength == 0)){
@@ -1535,9 +1757,209 @@ function generateDashboard(){
                                     });
                                 });
                             }
+                        }*/
+
+                        //Deals with filtering by years
+                        if(g.viz_definition.year){
+                            //var current_epiweeks = [];
+                            var current_epiweeks = new Array(select_weeks.length);
+                            for (var i = 0; i < select_weeks.length; i++) {
+                                current_epiweeks[i] = select_weeks[i];
+                            }
+                            var select_years = g.viz_definition.year.chart.filters();  //years currently selected
+                            var filtersyrlength = select_years.length;
+                            if (select_years.length != 0) {
+                                select_weeks.forEach(function(wk) {
+                                    if (select_years.indexOf(wk.substr(0,4)) == -1) {
+                                        remove(current_epiweeks, wk);
+                                        filterswklength--;
+                                    }
+                                });
+                            } 
+                        }
+                        //console.log("CURRENTLY FILTERED EPIWEEKS (accounted for filtered years): ", filterswklength, current_epiweeks.length, current_epiweeks);
+                        
+
+                        var definedPopYears = [];
+                        for (var year in g.population_databyloc.pop[d.key]) {  //1 - get the years for which pop is defined for this location
+                            //console.log(year, g.population_databyloc.pop[d.key], g.population_databyloc.pop[d.key][year]);
+                            //definedPopYears.push(parseInt(year.substr(3,6)));
+                            definedPopYears.push(g.population_headerlist.pop[year]);
+                        }
+                        //console.log(g.population_databyloc.pop[d.key], definedPopYears);
+
+                        var pop = 0;
+                        for (i=0; i<=current_epiweeks.length-1;i++) {       //get sum of total population throughout time period
+                            
+                            if (g.pop_new_format) {
+
+                                //console.log("i = ", i, "   add in ", current_epiweeks[i], g.population_databyloc.pop[d.key]);
+                                //pop += g.population_databyloc.pop[d.key];
+
+                                /*var definedPopYears = [];
+                                for (var year in g.population_databyloc.pop[d.key]) {  //1 - get the years for which pop is defined for this location
+                                    //console.log(year, g.population_databyloc.pop[d.key], g.population_databyloc.pop[d.key][year]);
+                                    //definedPopYears.push(parseInt(year.substr(3,6)));
+                                    definedPopYears.push(g.population_headerlist.pop[year]);
+                                }
+                                console.log(current_epiweeks[i], definedPopYears);*/
+
+                                //yr = parseInt(yr);
+                                yr = parseInt(current_epiweeks[i].substr(0,4));
+                                //console.log("yr: ", yr);
+                                if (definedPopYears.indexOf(yr)!=-1) {     //2 - if year 'yr' is in this then take that value
+                                    //var pop_temp = g.population_databyloc.pop[select_locs[i]]['yr_'+yr]; 
+
+                                    for (var key in g.population_headerlist.pop) {
+                                        //console.log(key, g.population_headerlist.pop);
+                                        if (g.population_headerlist.pop[key]==yr) {
+                                            //console.log(g.population_headerlist.pop[key], prevYr);
+                                            var currKey = key;
+                                        };
+                                    }
+                                    //console.log("key ref: ", currKey);
+
+                                    //get pop
+                                    var pop_temp = g.population_databyloc.pop[d.key][currKey]; 
+                                    //console.log(yr, " is in ", definedPopYears, "  pop_temp = ", pop_temp);
+                                } else {
+                                    //console.log(yr, " is NOT in ", definedPopYears);
+                                    var minDefinedPopYear = Math.min(...definedPopYears);
+                                    var maxDefinedPopYear = Math.max(...definedPopYears);
+                                    //console.log("minYear: ", minDefinedPopYear, "   maxYear: ", maxDefinedPopYear);
+
+                                    if ((yr > minDefinedPopYear) && (yr < maxDefinedPopYear)) {   //3 - if year 'yr' is between two values then do linear interpolation
+                                        
+                                        function getNearestYrs() {
+                                            var prev = definedPopYears[0];
+                                            var next = definedPopYears[0];
+                                            for (var i=0; i<=definedPopYears.length-1; i++) {
+                                                //if (Math.abs(yr-definedPopYears[i]) < Math.abs(yr-curr)) {
+                                                //console.log(i, yr, definedPopYears[i], prev, next);
+                                                if (((yr-definedPopYears[i])<(yr-prev)) && ((yr-definedPopYears[i])>0)) {
+                                                    prev = definedPopYears[i];
+                                                };
+                                                if (((yr-definedPopYears[i])<(yr-next)) && ((yr-definedPopYears[i])<0)) {
+                                                    next = definedPopYears[i];
+                                                };
+                                            }
+                                            return [prev, next];
+                                        };
+                                        var prevYr, nextYr = 0;
+                                        [prevYr, nextYr] = getNearestYrs();
+                                        //console.log("prev & next years: ", prevYr, nextYr);
+
+                                        for (var key in g.population_headerlist.pop) {
+                                            //console.log(key, g.population_headerlist.pop);
+                                            if (g.population_headerlist.pop[key]==prevYr) {
+                                                //console.log(g.population_headerlist.pop[key], prevYr);
+                                                var prevKey = key;
+                                            } else if (g.population_headerlist.pop[key]==nextYr) {
+                                                var nextKey = key;
+                                            };
+                                        }
+                                        //console.log("prev & next refs: ", prevKey, nextKey);
+
+                                        //get both pops
+                                        //console.log(g.population_databyloc.pop[select_locs[i]]);
+                                        var prevPop = g.population_databyloc.pop[d.key][prevKey]; 
+                                        var nextPop = g.population_databyloc.pop[d.key][nextKey];
+                                        //console.log("prev & next pops: ", prevPop, nextPop);
+
+                                        //interpolate
+                                        var pop_temp = ((yr-prevYr)*((nextPop-prevPop)/(nextYr-prevYr))) + prevPop;
+                                        //console.log(yr, " interpolated pop: ", pop_temp);
+
+
+                                    } else if (yr < minDefinedPopYear) {  //4 - if year 'yr' is less than lowest year then do 3% increment
+                                        var yearDiff = minDefinedPopYear - yr;      //get difference in years
+
+                                        for (var key in g.population_headerlist.pop) {
+                                            //console.log(key, g.population_headerlist.pop);
+                                            if (g.population_headerlist.pop[key]==minDefinedPopYear) {
+                                                //console.log(g.population_headerlist.pop[key], minDefinedPopYear);
+                                                var minKey = key;
+                                            };
+                                        }
+                                        //console.log("min ref: ", minKey);
+
+                                        var minPop = g.population_databyloc.pop[d.key][minKey]; 
+                                        //console.log("min pop: ", minPop);
+
+                                        //calculate pop
+                                        var pop_temp = minPop/Math.pow((1+(g.pop_annual_growth/100)),yearDiff);
+                                        //console.log("min pop: ", minPop, " in yr ", minDefinedPopYear);
+                                        //console.log("in year ", yr, " pop = ", pop_temp);
+
+                                    } else if (yr > maxDefinedPopYear) {  //5 - if year 'yr' is more than highest year then do 3% increment
+                                        var yearDiff = yr - maxDefinedPopYear;      //get difference in years
+
+                                        for (var key in g.population_headerlist.pop) {
+                                            //console.log(key, g.population_headerlist.pop);
+                                            if (g.population_headerlist.pop[key]==maxDefinedPopYear) {
+                                                //console.log(g.population_headerlist.pop[key], maxDefinedPopYear);
+                                                var maxKey = key;
+                                            };
+                                        }
+                                        //console.log("max ref: ", maxKey);
+
+                                        var maxPop = g.population_databyloc.pop[d.key][maxKey]; 
+                                        //console.log("max pop: ", maxPop);
+
+                                        //calculate pop
+                                        var pop_temp = maxPop*Math.pow((1+(g.pop_annual_growth/100)),yearDiff);
+                                        //console.log("max pop: ", maxPop, " in yr ", maxDefinedPopYear);
+                                        //console.log("in year ", yr, " pop = ", pop_temp);
+                                    } else {
+                                        console.log("ERROR - cannot find population data for year ", yr);
+                                    }
+                                } 
+
+                               // console.log(g.population_databyloc.pop[d.key], yr, ": pop = ", pop_temp);
+                                pop += pop_temp;
+                                //console.log("total so far = ", pop);
+
+                            } else {
+                                pop += g.population_databyloc.pop[d.key];
+                                //console.log("total so far (not new pop format) = ", pop);
+                            }
+                        }
+                        
+                        //console.log("total pop = ", pop);
+
+
+
+                        //Deals with getting population for appropriate age class, year
+                        if (g.viz_definition.fyo) {     //HEIDI - 'fyo' now hard-coded for age classes - need to convert to changeable parameter
+                            //console.log("g.pop_perc_u5 = ", g.pop_perc_u5);
+                            var select_age_class = g.viz_definition.fyo.chart.filters();  //=[] or ['Under 5'] or ['Over 5'] or ['Under 5', 'Over 5']
+                            //console.log("select_age_class = ", select_age_class);
+                            if ((select_age_class.indexOf('Under 5')>-1) && (select_age_class.length==1)) {  //filtered to only Under 5s
+                                //console.log("in Under 5 only");
+                                //var popAgeClass = g.population_databyloc.pop[d.key] * (g.pop_perc_u5/100);
+                                var popAgeClass = pop * (g.pop_perc_u5/100);
+                            } else if ((select_age_class.indexOf('Over 5')>-1) && (select_age_class.length==1)) {   //filtered to only Over 5s
+                                //console.log("in Over 5 only");
+                                //var popAgeClass = g.population_databyloc.pop[d.key] * ((100-g.pop_perc_u5)/100); 
+                                var popAgeClass = pop * ((100-g.pop_perc_u5)/100);  
+                            } else {                                                                          //filtered to both or neither
+                                //console.log("in neither or both: ");
+                                //var popAgeClass = g.population_databyloc.pop[d.key];
+                                var popAgeClass = pop;
+                            }                       
+                        } else {                //no age class chart
+                            //console.log("no age class chart");
+                            //var popAgeClass = g.population_databyloc.pop[d.key];
+                            var popAgeClass = pop;
                         }
 
-                        //Deals with getting population for appropriate age class
+                        // Incidence definition                                                     //calculate incidence using (value, pop, periode)
+                        //var accessed_value = g.dev_defined.definition_incidence(d.value.Values_c,popAgeClass,filterswklength);
+                        var accessed_value = g.dev_defined.definition_incidence(d.value.Values_d,popAgeClass,1);
+                        //console.log("INCDIENCE RATE (Inc Prop):  (", d.value.Values_d,"*10,000) / (",popAgeClass,"*",filterswklength,") = ", accessed_value);
+                        
+
+/*                        //Deals with getting population for appropriate age class
                         if (g.viz_definition.fyo) {     //HEIDI - 'fyo' now hard-coded for age classes - need to convert to changeable parameter
                             var select_age_class = g.viz_definition.fyo.chart.filters();  //=[] or ['Under 5'] or ['Over 5'] or ['Under 5', 'Over 5']
                             //console.log("select_age_class = ", select_age_class);
@@ -1554,12 +1976,12 @@ function generateDashboard(){
                         } else {                //no age class chart
                             //console.log("no age class chart");
                             var popAgeClass = g.population_databyloc.pop[d.key];
-                        }
+                        }*/
 
 
                         // Mortality == Incidence definition
-                        var accessed_value = g.dev_defined.definition_incidence(d.value.Values_d,popAgeClass,filterswklength);
-                        console.log("INCDIENCE RATE (Mort Prop):  (", d.value.Values_d,"*10,000) / (",popAgeClass,"*",filterswklength,") = ", accessed_value);
+                        //var accessed_value = g.dev_defined.definition_incidence(d.value.Values_d,popAgeClass,filterswklength);
+                        //console.log("INCDIENCE RATE (Mort Prop):  (", d.value.Values_d,"*10,000) / (",popAgeClass,"*",filterswklength,") = ", accessed_value);
                         
 
                     }else if (g.module_colorscale.mapunitcurrent == 'Completeness') {
@@ -1638,6 +2060,7 @@ function generateDashboard(){
                  * @alias module:main_core~colorAccessor
                  */
                 function colorAccessor(d){
+                    //console.log("in colorAccessor, d = ", d);
                     //console.log('from module-colorscale');
                     var col = g.module_colorscale.valuescurrent.length - 1;
                     if(d || (!(d == undefined) && g.module_colorscale.mapunitcurrent == 'Completeness')){
@@ -1663,7 +2086,10 @@ function generateDashboard(){
                         .group(g.viz_definition[key1].group[key2])
                         .geojson(g.geometry_data[key2]) 
                         .colors(color_list)
-                        .valueAccessor(valueAccessor)
+                        .valueAccessor(function(d) {
+                            //console.log("in valueAccessor for ", key1, key2, d);
+                            return valueAccessor(d);
+                        })
                         .colorDomain(color_domain)
                         .colorAccessor(colorAccessor)                          
                         .featureKeyAccessor(function(feature){
@@ -2134,16 +2560,17 @@ function generateDashboard(){
 
                 if ((g.viz_definition[key1].domain_parameter == 'custom_ordinal') || (g.viz_definition[key1].domain_parameter == 'heidi_move_custom_ordinal')){
                     var xScaleRange = d3.scale.ordinal().domain(g.viz_definition[key1].domain);  
-                    var group0 =  g.viz_definition[key1].group.a;
+                    //var group0 =  g.viz_definition[key1].group.a;
                 } else if (g.viz_definition[key1].domain_parameter == 'custom_linear'){
                     var xScaleRange = d3.scale.linear().domain(g.viz_definition[key1].domain); 
-                    var group0 = g.viz_definition[key1].group.yr2015;   //HEIDI - need to replace these groups with references - define keygroup?
+                    //var group0 = g.viz_definition[key1].group.yr2015;   //HEIDI - need to replace these groups with references - define keygroup?
                 } else if (g.viz_definition[key1].domain_parameter == 'heidi_custom_time') {
                     var xScaleRange = d3.time.scale().domain(g.viz_definition[key1].domain);
-                    var group0 =  g.viz_definition[key1].group.a;
+                    //var group0 =  g.viz_definition[key1].group.a;
                 };
 
-                function getPopNum() {       //return population for all currently selected regions & age classes
+                function getPopNum(yr) {       //return population for all currently selected regions for given year
+                    //console.log("in getPopNum for yr: ", yr);
                     var pop = 0;
                     //if selected adm level in map is one of those defined - i.e. an integer between 0 and g.geometry_keylist.length-1
                     //console.log("tabcurrentnum is an integer ", Number.isInteger(g.module_multiadm.tabcurrentnum));
@@ -2167,7 +2594,137 @@ function generateDashboard(){
                     //loop through locations adding them up
                     for (i=0; i<=select_locs.length-1; i++) {
                         //console.log("i = ", i, "   add in ", select_locs[i], g.population_databyloc.pop[select_locs[i]]);
-                        pop += g.population_databyloc.pop[select_locs[i]];
+                        //pop += g.population_databyloc.pop[select_locs[i]];
+
+                        if (g.pop_new_format) {
+
+                            var definedPopYears = [];
+                            for (var year in g.population_databyloc.pop[select_locs[i]]) {  //1 - get the years for which pop is defined for this location
+                                //console.log(year, g.population_databyloc.pop[select_locs[i]], g.population_databyloc.pop[select_locs[i]][year]);
+                                //definedPopYears.push(parseInt(year.substr(3,6)));
+                                definedPopYears.push(g.population_headerlist.pop[year]);
+                            }
+                            //console.log(select_locs[i], definedPopYears);
+
+                            /*var minYear = Math.min(...definedPopYears);
+                            var maxYear = Math.max(...definedPopYears);
+                            console.log("minYear: ", minYear, "   maxYear: ", maxYear);*/
+
+                            
+
+                            yr = parseInt(yr);
+                            if (definedPopYears.indexOf(yr)!=-1) {     //2 - if year 'yr' is in this then take that value
+                                //var pop_temp = g.population_databyloc.pop[select_locs[i]]['yr_'+yr]; 
+
+                                for (var key in g.population_headerlist.pop) {
+                                    //console.log(key, g.population_headerlist.pop);
+                                    if (g.population_headerlist.pop[key]==yr) {
+                                        //console.log(g.population_headerlist.pop[key], prevYr);
+                                        var currKey = key;
+                                    };
+                                }
+                                //console.log("key ref: ", currKey);
+
+                                //get pop
+                                var pop_temp = g.population_databyloc.pop[select_locs[i]][currKey]; 
+                                //console.log(yr, " is in ", definedPopYears, "  pop_temp = ", pop_temp);
+                            } else {
+                                //console.log(yr, " is NOT in ", definedPopYears);
+                                var minDefinedPopYear = Math.min(...definedPopYears);
+                                var maxDefinedPopYear = Math.max(...definedPopYears);
+                                //console.log("minYear: ", minDefinedPopYear, "   maxYear: ", maxDefinedPopYear);
+
+                                if ((yr > minDefinedPopYear) && (yr < maxDefinedPopYear)) {   //3 - if year 'yr' is between two values then do linear interpolation
+                                    
+                                    function getNearestYrs() {
+                                        var prev = definedPopYears[0];
+                                        var next = definedPopYears[0];
+                                        for (var i=0; i<=definedPopYears.length-1; i++) {
+                                            //if (Math.abs(yr-definedPopYears[i]) < Math.abs(yr-curr)) {
+                                            //console.log(i, yr, definedPopYears[i], prev, next);
+                                            if (((yr-definedPopYears[i])<(yr-prev)) && ((yr-definedPopYears[i])>0)) {
+                                                prev = definedPopYears[i];
+                                            };
+                                            if (((yr-definedPopYears[i])<(yr-next)) && ((yr-definedPopYears[i])<0)) {
+                                                next = definedPopYears[i];
+                                            };
+                                        }
+                                        return [prev, next];
+                                    };
+                                    var prevYr, nextYr = 0;
+                                    [prevYr, nextYr] = getNearestYrs();
+                                    //console.log("prev & next years: ", prevYr, nextYr);
+
+                                    for (var key in g.population_headerlist.pop) {
+                                        //console.log(key, g.population_headerlist.pop);
+                                        if (g.population_headerlist.pop[key]==prevYr) {
+                                            //console.log(g.population_headerlist.pop[key], prevYr);
+                                            var prevKey = key;
+                                        } else if (g.population_headerlist.pop[key]==nextYr) {
+                                            var nextKey = key;
+                                        };
+                                    }
+                                    //console.log("prev & next refs: ", prevKey, nextKey);
+
+                                    //get both pops
+                                    //console.log(g.population_databyloc.pop[select_locs[i]]);
+                                    var prevPop = g.population_databyloc.pop[select_locs[i]][prevKey]; 
+                                    var nextPop = g.population_databyloc.pop[select_locs[i]][nextKey];
+                                    //console.log("prev & next pops: ", prevPop, nextPop);
+
+                                    //interpolate
+                                    var pop_temp = ((yr-prevYr)*((nextPop-prevPop)/(nextYr-prevYr))) + prevPop;
+                                    //console.log(yr, " interpolated pop: ", pop_temp);
+
+
+                                } else if (yr < minDefinedPopYear) {  //4 - if year 'yr' is less than lowest year then do 3% increment
+                                    var yearDiff = minDefinedPopYear - yr;      //get difference in years
+
+                                    for (var key in g.population_headerlist.pop) {
+                                        //console.log(key, g.population_headerlist.pop);
+                                        if (g.population_headerlist.pop[key]==minDefinedPopYear) {
+                                            //console.log(g.population_headerlist.pop[key], minDefinedPopYear);
+                                            var minKey = key;
+                                        };
+                                    }
+                                    //console.log("min ref: ", minKey);
+
+                                    var minPop = g.population_databyloc.pop[select_locs[i]][minKey]; 
+                                    //console.log("min pop: ", minPop);
+
+                                    //calculate pop
+                                    var pop_temp = minPop/Math.pow((1+(g.pop_annual_growth/100)),yearDiff);
+                                    //console.log("min pop: ", minPop, " in yr ", minDefinedPopYear);
+                                    //console.log("in year ", yr, " pop = ", pop_temp);
+
+                                } else if (yr > maxDefinedPopYear) {  //5 - if year 'yr' is more than highest year then do 3% increment
+                                    var yearDiff = yr - maxDefinedPopYear;      //get difference in years
+
+                                    for (var key in g.population_headerlist.pop) {
+                                        //console.log(key, g.population_headerlist.pop);
+                                        if (g.population_headerlist.pop[key]==maxDefinedPopYear) {
+                                            //console.log(g.population_headerlist.pop[key], maxDefinedPopYear);
+                                            var maxKey = key;
+                                        };
+                                    }
+                                    //console.log("max ref: ", maxKey);
+
+                                    var maxPop = g.population_databyloc.pop[select_locs[i]][maxKey]; 
+                                    //console.log("max pop: ", maxPop);
+
+                                    //calculate pop
+                                    var pop_temp = maxPop*Math.pow((1+(g.pop_annual_growth/100)),yearDiff);
+                                    //console.log("max pop: ", maxPop, " in yr ", maxDefinedPopYear);
+                                    //console.log("in year ", yr, " pop = ", pop_temp);
+                                } else {
+                                    console.log("ERROR - cannot find population data for year ", yr);
+                                }
+                            } 
+
+                        } else {        //not g.new_pop_format
+                            pop_temp = g.population_databyloc.pop[select_locs[i]];
+                        }
+                        pop += pop_temp;
                     }
 
                     //Deals with getting population for appropriate age class
@@ -2190,13 +2747,14 @@ function generateDashboard(){
                     }
 
 
-                    var final_pop = pop * ageClassMultiplier;
-                    console.log("FINAL POP = ", pop, " * ", ageClassMultiplier, " = ", final_pop);*/
+                    var final_pop = pop * ageClassMultiplier;*/
+                    //console.log("FINAL POP = ", pop);
                     
                     return pop;
                 };
 
-                function getValue(d, group) {
+                function getValue(d, group, yr) {
+                    //console.log("in getValue: ", d, group, yr);
                     if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {    
                         switch (group) {
                             case 'all': if (g.viz_definition.fyo) {
@@ -2206,7 +2764,7 @@ function generateDashboard(){
                                                 //console.log("in Under 5 only");
                                                 if (g.pop_perc_u5) {         //if this value is defined in dev-defined.js
                                                        //var pop = getPopNum()*(g.pop_perc_u5/100);
-                                                       var v =  g.dev_defined.definition_incidence(+d.value, getPopNum()*(g.pop_perc_u5/100), 1);  //HEIDI - for under 5s
+                                                       var v =  g.dev_defined.definition_incidence(+d.value, getPopNum(yr)*(g.pop_perc_u5/100), 1);  //HEIDI - for under 5s
                                                        //console.log("in getValue u5:  (", +d.value,"*10,000) / (",getPopNum(),"*(",g.pop_perc_u5,"/100)*",1," = ", v);
                                                     } else {
                                                        var v = null;
@@ -2215,23 +2773,23 @@ function generateDashboard(){
                                                 //console.log("in Over 5 only");
                                                 if (g.pop_perc_u5) {
                                                        //var pop = getPopNum()*((100-g.pop_perc_u5)/100);
-                                                       var v = g.dev_defined.definition_incidence(+d.value, getPopNum()*((100-g.pop_perc_u5)/100), 1);
+                                                       var v = g.dev_defined.definition_incidence(+d.value, getPopNum(yr)*((100-g.pop_perc_u5)/100), 1);
                                                        //console.log("in getValue o5:  (", +d.value,"*10,000) / (",getPopNum(),"*(",g.pop_perc_u5,"/100)*",1," = ", v);
                                                     } else {
                                                        var v = null;
                                                     };
                                             } else {                                                                          //filtered to both or neither
                                                 //console.log("in neither or both: ");
-                                                var v = g.dev_defined.definition_incidence(+d.value, getPopNum(), 1);  
+                                                var v = g.dev_defined.definition_incidence(+d.value, getPopNum(yr), 1);  
                                             };
                                         } else {
-                                            var v = g.dev_defined.definition_incidence(+d.value, getPopNum(), 1);   
+                                            var v = g.dev_defined.definition_incidence(+d.value, getPopNum(yr), 1);   
                                         };
-                                        //console.log("in getValue all:  (", +d.value,"*10,000) / (",getPopNum(),"*",1,") = ", v);
+                                        //console.log("in getValue all:  (", +d.value,"*10,000) / (",getPopNum(yr),"*",1,") = ", v);
                                         break;
                             case 'u5': if (g.pop_perc_u5) {         //if this value is defined in dev-defined.js
                                            //var pop = getPopNum()*(g.pop_perc_u5/100);
-                                           var v =  g.dev_defined.definition_incidence(+d.value, getPopNum()*(g.pop_perc_u5/100), 1);  //HEIDI - for under 5s
+                                           var v =  g.dev_defined.definition_incidence(+d.value, getPopNum(yr)*(g.pop_perc_u5/100), 1);  //HEIDI - for under 5s
                                            //console.log("in getValue u5:  (", +d.value,"*10,000) / (",getPopNum(),"*(",g.pop_perc_u5,"/100)*",1," = ", v);
                                         } else {
                                            var v = null;
@@ -2239,28 +2797,57 @@ function generateDashboard(){
                                         break;
                             case 'o5': if (g.pop_perc_u5) {
                                            //var pop = getPopNum()*((100-g.pop_perc_u5)/100);
-                                           var v = g.dev_defined.definition_incidence(+d.value, getPopNum()*((100-g.pop_perc_u5)/100), 1);
+                                           var v = g.dev_defined.definition_incidence(+d.value, getPopNum(yr)*((100-g.pop_perc_u5)/100), 1);
                                            //console.log("in getValue o5:  (", +d.value,"*10,000) / (",getPopNum(),"*(",g.pop_perc_u5,"/100)*",1," = ", v);
                                         } else {
                                            var v = null;
                                         };
                                         break;
-                            default:  var v = g.dev_defined.definition_incidence(+d.value, getPopNum(), 1); 
-                                      //var pop = -2;
+                            default:  var v = g.dev_defined.definition_incidence(+d.value, getPopNum(yr), 1); 
                         }                                                
                     } else {
                         var v = +d.value;
-                        //var pop = -1;
                     };
                     //console.log("in getValue: group ", group, " pop = ", pop);
 
                     return v;                   
                 }
 
-                function valueAccessor_all(d) {      //value for overall summary group (e.g. All Ages)
+                /*function valueAccessor_all(d) {      //value for overall summary group (e.g. All Ages)
+                    //console.log("calling valueAccessor_all: ", d);
                     return getValue(d, 'all');
+                };*/
+
+                function valueAccessor2(d, age, year) {       
+                    //console.log("in valueAccessor2: ", d, age, year);
+                    if(g.pop_new_format) {                                      //HEIDI - is this needed or could we pass current_yr through as undefined in old format?
+                        if (d.key instanceof Date) {
+                            var current_yr = d.key.getFullYear();
+                        } else if (year!=null) {
+                            var current_yr = year;
+                            //console.log("in valueAccessor2 ", current_yr, year);
+                        }
+                        //console.log("valueAccessor2 year: ", current_yr);
+                        if (age=='a') {
+                            return getValue(d, 'all', current_yr); 
+                        } else if (age=='u') {
+                            return getValue(d, 'u5', current_yr);
+                        } else if (age=='o') {
+                            return getValue(d, 'o5', current_yr);
+                        };
+                    } else {
+                        if (age=='a') {
+                            return getValue(d, 'all'); 
+                        } else if (age=='u') {
+                            return getValue(d, 'u5');
+                        } else if (age=='o') {
+                            return getValue(d, 'o5');
+                        }
+                    };
+
                 };
 
+                
                 function getYLabel() {    
                     if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
                         var yLabel = g.viz_definition[key1].display_axis.y_imr;                                
@@ -2279,32 +2866,24 @@ function generateDashboard(){
 
                 if (g.viz_definition[key1].domain_parameter == 'custom_ordinal'){                 
 
-                    function valueAccessor_u5(d) {        //value for subgroup under 5
-                        return getValue(d, 'u5');
-                    };
-
-                    function valueAccessor_o5(d) {        //value for subgroup over 5
-                        return getValue(d, 'o5');
-                    };
-
                     function getTitle(d, group) {
                         if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {    
                             switch (group) {
-                                case 'all': var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_all(d)); 
+                                case 'all': var t = d.key+ ": " + d3.format(",.2f")(valueAccessor2(d, 'a')); 
                                             break;
                                 case 'u5': if (g.pop_perc_u5) {
-                                               var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_u5(d)); 
+                                               var t = d.key+ ": " + d3.format(",.2f")(valueAccessor2(d, 'u')); 
                                             } else {
                                                var t = "Data not available";
                                             };
                                             break;
                                 case 'o5': if (g.pop_perc_u5) {
-                                               var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_o5(d)); 
+                                               var t = d.key+ ": " + d3.format(",.2f")(valueAccessor2(d, 'o')); 
                                             } else {
                                                var t = "Data not available";
                                             };
                                             break;
-                                default:  var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_all(d)); 
+                                default:  var t = d.key+ ": " + d3.format(",.2f")(valueAccessor2(d, 'a')); 
                             }                                                
                         } else {
                             var t = d.key+ ": " + d.value;
@@ -2312,19 +2891,17 @@ function generateDashboard(){
                         return t;       
                     };
 
-                    function titleAccessor_all(d) {    //hover info for overall summary group (e.g. All Ages)
-                        return getTitle(d, 'all');
-                    };
+                    function titleAccessor(d, age) {
+                        if (age=='a') {
+                            return getTitle(d, 'all'); 
+                        } else if (age=='u') {
+                            return getTitle(d, 'u5');
+                        } else if (age=='o') {
+                            return getTitle(d, 'o5');
+                        }
+                    }  
 
-                    function titleAccessor_u5(d) {    //hover info for subgroup under 5
-                        return getTitle(d, 'u5');
-                    };      
-
-                    function titleAccessor_o5(d) {    //hover info for subgroup over 5
-                        return getTitle(d, 'o5');
-                    };    
-
-
+                    var color_count=-1;
                     g.viz_definition[key1].chart
                         .margins({top: 10, right: 50, bottom: 60, left: 40})
                         .width(width)
@@ -2332,7 +2909,7 @@ function generateDashboard(){
                         //.transitionDuration(1000)    //HEIDI added to test rangeChart
                         .elasticX(true)
                         .dimension(g.viz_definition[dim_namespace].dimension)
-                        .group(group0)
+                        //.group(group0)
                         .elasticY(true)
                         .brushOn(false)     //turning brushOn to true removes rendering and pop-ups of points, and doesn't 'brush' here because units are ordinal  
                         .x(xScaleRange)
@@ -2348,11 +2925,38 @@ function generateDashboard(){
                         .shareTitle(false)
                         //.clipPadding(10)   //could change padding parameter to 6 here but must do for all charts (default=12)
                         ._rangeBandPadding(1)
-                        .compose([
-                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.a,g.module_lang.text[g.module_lang.current].chart_fyo_labela).valueAccessor(valueAccessor_all).title(titleAccessor_all).colors("#333"),
+
+                        //Note that /*.defined(function(d) {if (d.y !== null) {return d.y;}})*/ removes data entry of null but not of 0
+                        .compose(
+                            g.pop_age_groups.map(function(age_group) {         //composes line for each year for which we have data
+                                color_count++;
+                                if (color_count>=color_list.length) {color_count=0};
+                                //console.log("in compose: ", g.pop_age_groups, age_group);
+                                return dc.lineChart(g.viz_definition[key1].chart)
+                                    .interpolate('linear')
+                                    .renderDataPoints(true)
+                                    .defined(function(d) {
+                                        if (d.y !== null) {return d.y;}
+                                    })
+                                    .group(g.viz_definition[key1].group[age_group.group], age_group.label)  //age_group should be g.module_lang.text[g.module_lang.current].chart_fyo_labela
+                                    //.group(g.viz_definition[key1].group.a,g.module_lang.text[g.module_lang.current].chart_fyo_labela)
+                                    .valueAccessor(function(d) {
+                                        //console.log("age_group: ", age_group.group);
+                                        return valueAccessor2(d, age_group.group);
+                                    })
+                                    .title(function(d) {
+                                        //console.log("age_group: ", age_group.group);
+                                        return titleAccessor(d, age_group.group);
+                                    })
+                                    .colors(color_list[color_count])  //.colors("#333")                              
+                            })
+                        )
+
+                        /*.compose([
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {console.log("d = ", d); if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.a,g.module_lang.text[g.module_lang.current].chart_fyo_labela).valueAccessor(valueAccessor_all).title(titleAccessor_all).colors("#333"),
                             dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.u,g.module_lang.text[g.module_lang.current].chart_fyo_labelu).valueAccessor(valueAccessor_u5).title(titleAccessor_u5).colors(color_list[0]),
                             dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.o,g.module_lang.text[g.module_lang.current].chart_fyo_labelo).valueAccessor(valueAccessor_o5).title(titleAccessor_o5).colors(color_list[1])
-                        ])
+                        ])*/
                         .legend(dc.legend().x(100).y(20).itemHeight(8).gap(4));
                         //-.brushOn(false);
 
@@ -2372,36 +2976,29 @@ function generateDashboard(){
                 } else if  (g.viz_definition[key1].domain_parameter == 'heidi_custom_time'){
                     //console.log("in heidi_custom_time 1");
 
-                    function valueAccessor_u5(d) {        //value for subgroup under 5
-                        return getValue(d, 'u5');
-                    };
-
-                    function valueAccessor_o5(d) {        //value for subgroup over 5
-                        return getValue(d, 'o5');
-                    };
 
                     function getTitle(d, group) {
                         if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {    
                             switch (group) {
                                 case 'all': //var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_all(d)); 
-                                            var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor_all(d));
+                                            var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor2(d, 'a'));
                                             break;
                                 case 'u5': if (g.pop_perc_u5) {
                                                //var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_u5(d)); 
-                                               var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor_u5(d));
+                                               var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor2(d, 'u'));
                                             } else {
                                                var t = "Data not available";
                                             };
                                             break;
                                 case 'o5': if (g.pop_perc_u5) {
-                                            var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor_o5(d));
+                                            var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor2(d, 'o'));
                                                //var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_o5(d)); 
                                             } else {
                                                var t = "Data not available";
                                             };
                                             break;
                                 default:  //var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_all(d)); 
-                                          var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor_all(d));
+                                          var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor2(d, 'a'));
                                             
                             }                                                
                         } else {
@@ -2413,19 +3010,18 @@ function generateDashboard(){
                         return t;       
                     };
 
-                    function titleAccessor_all(d) {    //hover info for overall summary group (e.g. All Ages)
-                        return getTitle(d, 'all');
-                    };
 
-                    function titleAccessor_u5(d) {    //hover info for subgroup under 5
-                        return getTitle(d, 'u5');
-                    };      
+                    function titleAccessor(d, age) {
+                        if (age=='a') {
+                            return getTitle(d, 'all'); 
+                        } else if (age=='u') {
+                            return getTitle(d, 'u5');
+                        } else if (age=='o') {
+                            return getTitle(d, 'o5');
+                        }
+                    } 
 
-                    function titleAccessor_o5(d) {    //hover info for subgroup over 5
-                        return getTitle(d, 'o5');
-                    };    
-
-
+                    var color_count=-1;
                     g.viz_definition[key1].chart
                         .margins({top: 10, right: 50, bottom: 60, left: 40})
                         .width(width)
@@ -2446,11 +3042,48 @@ function generateDashboard(){
                         .shareTitle(false)
                         //.clipPadding(10)   //could change padding parameter to 6 here but must do for all charts (default=12)
                         //._rangeBandPadding(1)
-                        .compose([
+
+
+                        //Note that /*.defined(function(d) {if (d.y !== null) {return d.y;}})*/ removes data entry of null but not of 0
+                        .compose(
+                            g.pop_age_groups.map(function(age_group) {         //composes line for each year for which we have data
+                                color_count++;
+                                if (color_count>=color_list.length) {color_count=0};
+                                //console.log("in compose: ", g.pop_age_groups, age_group, age_group.group, age_group.label);
+                                return dc.lineChart(g.viz_definition[key1].chart)
+                                    .interpolate('linear')
+                                    .renderDataPoints(true)
+                                    .defined(function(d) {
+                                        if (d.y !== null) {return d.y;}
+                                    })
+                                    .group(g.viz_definition[key1].group[age_group.group], age_group.label)  //age_group should be g.module_lang.text[g.module_lang.current].chart_fyo_labela
+                                    //.group(g.viz_definition[key1].group.a,g.module_lang.text[g.module_lang.current].chart_fyo_labela)
+                                    .valueAccessor(function(d) {
+                                        //console.log("age_group: ", age_group.group);
+                                        //return getValue(d, 'all'); 
+                                        return valueAccessor2(d, age_group.group);
+                                    })
+                                    .title(function(d) {
+                                        //console.log("age_group: ", age_group.group);
+                                        return titleAccessor(d, age_group.group);
+                                    })
+                                    .colors(color_list[color_count])  //.colors("#333")                              
+                            })
+                        )
+                            
+
+                        /*.compose([
                             dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.a,g.module_lang.text[g.module_lang.current].chart_fyo_labela).valueAccessor(valueAccessor_all).title(titleAccessor_all).colors("#333"),
                             dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.u,g.module_lang.text[g.module_lang.current].chart_fyo_labelu).valueAccessor(valueAccessor_u5).title(titleAccessor_u5).colors(color_list[0]),
                             dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.o,g.module_lang.text[g.module_lang.current].chart_fyo_labelo).valueAccessor(valueAccessor_o5).title(titleAccessor_o5).colors(color_list[1])
-                        ])
+                        ])*/
+                        /*.compose([
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.a,g.module_lang.text[g.module_lang.current].chart_fyo_labela).valueAccessor(function(d) {return valueAccessor(d, 'a');}).title(function(d) {return titleAccessor(d, 'a');}).colors(color_list[0]),
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.u,g.module_lang.text[g.module_lang.current].chart_fyo_labelu).valueAccessor(function(d) {return valueAccessor(d, 'u');}).title(function(d) {return titleAccessor(d, 'u');}).colors(color_list[1]),
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.o,g.module_lang.text[g.module_lang.current].chart_fyo_labelo).valueAccessor(function(d) {return valueAccessor(d, 'o');}).title(function(d) {return titleAccessor(d, 'o');}).colors(color_list[2])
+                        ])*/
+
+
                         .round(d3.time.day.round)
                         .brushOn(false)
                         .legend(dc.legend().x(100).y(20).itemHeight(8).gap(4));
@@ -2467,6 +3100,7 @@ function generateDashboard(){
                 } else if (g.viz_definition[key1].domain_parameter == 'custom_linear'){
                     //console.log("COLOR LIST = ", color_list);
                     //console.log("COLOR DOMAIN = ", color_domain);
+                    var color_count=-1;
                     g.viz_definition[key1].chart
                         .margins({top: 10, right: 50, bottom: 60, left: 40})
                         .width(width)
@@ -2481,21 +3115,44 @@ function generateDashboard(){
                         .xUnits(dc.units.integers)   
                         .yAxisLabel(getYLabel)   
                         .xAxisLabel(g.viz_definition[key1].display_axis.x) 
-                        //.shareTitle(false)
+                        .shareTitle(false)
                         //.clipPadding(10)  
                         ._rangeBandPadding(1)
-                        .title(function(d) {
-                            if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
-                                return "Week " + d.key+ ": " + d3.format(",.2f")(valueAccessor_all(d));                                
-                            } else {
-                                return "Week " + d.key+ ": " +d.value;
-                            }
-                        })
-                        .compose([
-                            //Note that /*.defined(function(d) {if (d.y !== null) {return d.y;}})*/ removes data entry of null but not of 0
-                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.yr2015,g.medical_yearlist[1]).valueAccessor(valueAccessor_all).colors(color_list[0]),
-                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.yr2016,g.medical_yearlist[0]).valueAccessor(valueAccessor_all).colors(color_list[1])
-                        ])
+                        
+                        //Note that /*.defined(function(d) {if (d.y !== null) {return d.y;}})*/ removes data entry of null but not of 0
+                        .compose(
+                            g.module_epitime.all_years.map(function(year) {         //composes line for each year for which we have data
+                                color_count++;
+                                if (color_count>=color_list.length) {color_count=0};
+                                return dc.lineChart(g.viz_definition[key1].chart)
+                                    .interpolate('linear')
+                                    .renderDataPoints(true)
+                                    .defined(function(d) {
+                                        if (d.y !== null) {return d.y;}
+                                    })
+                                    .group(g.viz_definition[key1].group["yr_"+year], year)
+                                    //.valueAccessor(valueAccessor_all)
+                                    .valueAccessor(function(d) {
+                                        //console.log("age_group: ", age_group.group);
+                                        //return getValue(d, 'all'); 
+                                        //return valueAccessor(d, age_group.group);
+                                        return valueAccessor2(d, 'a', year);
+                                    })
+                                    .title(function(d) {
+                                        if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
+                                            return "Week " + d.key+ ": " + d3.format(",.2f")(valueAccessor2(d, 'a', year));                                
+                                        } else {
+                                            return "Week " + d.key+ ": " +d.value;
+                                        }
+                                    })
+                                    .colors(color_list[color_count])
+                            
+                            })
+                        )
+                        /*.compose([
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.yr_2015,g.medical_yearlist[1]).valueAccessor(valueAccessor_all).colors(color_list[0]),  
+                            dc.lineChart(g.viz_definition[key1].chart).interpolate('linear').renderDataPoints(true).defined(function(d) {if (d.y !== null) {return d.y;}}).group(g.viz_definition[key1].group.yr_2016,g.medical_yearlist[0]).valueAccessor(valueAccessor_all).colors(color_list[1])
+                        ])*/
                         .legend(dc.legend().x(100).y(20).itemHeight(8).gap(4));
                 };
 
@@ -2515,12 +3172,12 @@ function generateDashboard(){
                 //console.log("in heidi_move_custom_ordinal 10");
 
                 // HEIDI - ADDED THIS - for composite charts where domainBuilder = epiweek, and domain length >=53:
-                if ((g.viz_definition[key1].domain_builder == 'epiweek') && (g.viz_definition[key1].domain.length >= 53)) {  //ideally make this dependent on chart width, not domain length
-                    //console.log("should adapt x axis here = ", g.viz_definition[key1].domain_builder, g.viz_definition[key1].domain.length);
+               /* if (((g.viz_definition[key1].domain_builder == 'epiweek') || (g.viz_definition[key1].domain_builder == 'date_extent')) && (g.viz_definition[key1].domain.length >= 53)) {  //ideally make this dependent on chart width, not domain length
+                    console.log("should adapt x axis here = ", g.viz_definition[key1].domain_builder, g.viz_definition[key1].domain.length);
                     g.viz_definition[key1].chart
                         .xAxis().tickFormat(function(d, i) {
                             j = parseInt(d.substring(5));
-                            //console.log(d, typeof(d), "  ", j, typeof(j), j%4, typeof(j%4));                       
+                            console.log(d, typeof(d), "  ", j, typeof(j), j%4, typeof(j%4));                       
                             if (!(isNaN(j)) && (!(j%4==0))) {       
                                 return "";
                             } else {
@@ -2533,7 +3190,78 @@ function generateDashboard(){
                                 .attr('dx', '-5')
                                 .attr('dy', '5')
                         })              
-                };
+                };*/
+
+                //console.log("HEIDI ", g.viz_definition[key1].domain_builder, g.viz_definition[key1].domain[0], g.viz_definition[key1].domain[1].getTime());
+                if ((g.viz_definition[key1].domain_builder == 'epiweek') && (g.viz_definition[key1].domain.length >= 53)) {  //ideally make this dependent on chart width, not domain length
+                  //console.log("should adapt x axis here = ", g.viz_definition[key1].domain_builder, g.viz_definition[key1].domain.length);
+                    g.viz_definition[key1].chart
+                        .xAxis().tickFormat(function(d, i) {
+                            //if ((g.viz_definition[key1].domain_builder == 'epiweek') && (g.viz_definition[key1].domain.length >= 53)) {  //ideally make this dependent on chart width, not domain length
+                            //console.log("should adapt x axis here = ", g.viz_definition[key1].domain_builder, g.viz_definition[key1].domain.length, d);
+                            j = parseInt(d.substring(5));
+                            console.log(d, typeof(d), "  ", j, typeof(j), j%4, typeof(j%4));                       
+                            if (!(isNaN(j)) && (!(j%4==0))) {     
+                                console.log(d, typeof(d), "  ", j, typeof(j), j%4, typeof(j%4));    
+                                return "";
+                            } else {
+                                return d;
+                            };
+                        });
+                    g.viz_definition[key1].chart   
+                        .on ('renderlet', function (chart) {
+                            chart.selectAll("g.x text")
+                                .attr('dx', '-5')
+                                .attr('dy', '5')
+                        }) 
+                } else if ((g.viz_definition[key1].domain_builder == 'date_extent') && (g.viz_definition[key1].domain[1].getTime()-g.viz_definition[key1].domain[0].getTime() >= 3.154e+10)) {   //1yr = 3.154e+10 - HEIDI make timeframe optional
+                    g.viz_definition[key1].chart
+                        .xAxis().tickFormat(function(d, i) {
+                            var x_label = module_epitime.get_epi_id(d);    
+                            //if ((g.viz_definition[g.viz_timeline].chart.filters()[1].getTime()-g.viz_definition[g.viz_timeline].chart.filters()[0].getTime() >= 2.154e+10) && (!(i%4==0))) {              
+                            if (!(i%4==0)) {     
+                                //console.log(d, typeof(d), "  ", x_label, typeof(x_label), j%4, typeof(j%4));   
+                                //console.log("i = ", i, "no label"); 
+                                return "";
+                            } else {
+                                //console.log("i = ", i, "LABEL = ", x_label); 
+                                return x_label;
+                            };   
+                        });
+                    g.viz_definition[key1].chart
+                        .on ('renderlet.label', function (chart) {
+                            chart.xAxis().tickFormat(function(d, i) {
+                            //.xAxis().tickFormat(function(d, i) {
+                                //console.log(g.viz_definition[g.viz_timeline].chart.filters());
+                                //console.log("should adapt x axis here = ", g.viz_definition[g.viz_timeline].domain, g.viz_definition[g.viz_timeline].domain.length, d);
+                                var x_label = module_epitime.get_epi_id(d);
+                                //var j=0;
+                                //console.log(d, typeof(d), "  ", i, typeof(x_label));      
+                                
+                                if (g.viz_definition[g.viz_timeline].chart.filters().length==0) {
+                                    if (!(i%4==0)) {
+                                        //console.log("empty array");
+                                        return "";
+                                    } else {
+                                        return x_label;
+                                    }
+
+                                } else if ((g.viz_definition[g.viz_timeline].chart.filters()[0][1].getTime()-g.viz_definition[g.viz_timeline].chart.filters()[0][0].getTime() >= 3.154e+10) && (!(i%4==0))) {   //1yr = 3.154e+10 - HEIDI make timeframe optional           
+                                //if (!(i%4==0)) {     
+                                    //console.log(d, typeof(d), "  ", x_label, typeof(x_label), j%4, typeof(j%4));   
+                                    //console.log("i = ", i, "no label"); 
+                                    return "";
+                                } else {
+                                    //console.log("i = ", i, "LABEL = ", x_label); 
+                                    return x_label;
+                                };
+                            });
+                            chart.selectAll("g.x text")
+                                .attr('dx', '-5')
+                                .attr('dy', '5')
+                        });
+                }
+      
 
                 //console.log("in heidi_move_custom_ordinal 11");
 
@@ -2783,5 +3511,12 @@ function zoomToGeom(geom,adm){
 
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function remove(array, element) {
+    const index = array.indexOf(element);   
+    if (index !== -1) {
+        array.splice(index, 1);
+    }
 }
 

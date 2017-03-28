@@ -64,7 +64,7 @@ g.medical_datatype = 'surveillance'; // 'outbreak' or 'surveillance'
  */
 g.dev_defined.definition_incidence = function(value,pop,periode) {
     return value * 10000 / (pop * periode);             //Note: periode = number of epiweeks
-};
+};                                                      //Note: with changing population data (new pop format), then all values summed to value, all pops summed to pop and periode=1 - i.e. total cases/total pop
 
 /**
  Defines your completeness computation.
@@ -94,6 +94,19 @@ if(!g.module_colorscale){
     g.module_colorscale = {}; 
 }
 g.module_colorscale.mapunitlist = ['Cases', 'Deaths','IncidenceProp','MortalityProp','Completeness'];
+
+/*if(!g.module_chartwarper){
+    g.module_chartwarper = {}; 
+}*/
+
+//OPTIONAL FOR IF WE WANT SOMETHING DIFFERENT TO DEFAULT DEFINED IN module-chartwarper.js
+g.dev_defined.tabcontainer_id = 'containter_bar-lin_tabs'; 
+g.dev_defined.chartcontainers_list = ['containter_ser','containter_lin'];  
+
+/*g.module_chartwarper.tabcontainer_id = 'containter_bar-lin_tabs';   //HEIDI - moved over from module-charwarper.js
+//g.module_chartwarper.chartcontainers_list = ['containter_bar','containter_lin'];   
+g.module_chartwarper.chartcontainers_list = ['containter_ser','containter_lin'];   //HEIDI - added 'containter_ser', removed 'containter_bar'
+*/
 
 /**
  * Defines the data parsed in the dashboard (urls and sources type). Order matters.<br>
@@ -148,7 +161,7 @@ g.module_getdata = {
     population:{
         pop: {
             method: 'populationd3',
-            options: {  url: './data/tonkolili_population_2015.csv',
+            options: {  url: './data/tonkolili_population.csv',
                         type: 'csv'}   
         }
     }
@@ -189,12 +202,21 @@ g.medical_headerlist = {
  */
 g.population_headerlist = {
     admNx: 'name',
-    pop: 'population'
+    //pop: 'population'
+    //pop: 'yr_2015'
+    pop: {'yr_2015': 2015,     //HEIDI added this - column headings with associated year
+          'yr_2016': 2016}  
 };
 
 g.pop_perc_u5 = 18.9;   //HEIDI added this - percentage of population assumed to be under 5 -- put it in g.population_data?
 g.pop_annual_growth = 3.0; //HEIDI added this - assumed percentage increase per year if pop data not supplied
-g.pop_new_format = false;    //HEIDI defined this where each year is given column heading of e.g. 'yr_2015', 'yr_2020', etc.
+g.pop_new_format = true;    //HEIDI defined this where each year is given column heading of e.g. 'yr_2015', 'yr_2020', etc.
+/*g.pop_age_groups = {'u': 'Under 5',   //HEIDI added this
+                    'o': 'Over 5',
+                    'a': 'All'}*/
+g.pop_age_groups = [ {group: 'a', label: 'All'},
+                     {group: 'u', label: 'Under 5'},   //HEIDI added this - could get from g.medical_read just below???
+                     {group: 'o', label: 'Over 5'}]
 
 
 function main_loadfiles_readvar(){
@@ -463,7 +485,9 @@ g.viz_definition = {
                                  y:g.module_lang.text[g.module_lang.current].chart_case_labely,
                                  y_imr: 'Incidence Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js
                 //display_colors: [4,2,1],     
-                display_colors: [999, 0,1],           //HEIDI - temporary fix       
+                //display_colors: [999, 0,1],           //HEIDI - temporary fix   
+                color_group: 'age_classes',    
+                display_colors: [0,1,2],   
                 display_intro: 'top',           
                 display_idcontainer: 'container_casedeath_ser',
                 display_filter: false,
@@ -493,7 +517,9 @@ g.viz_definition = {
                                  y:g.module_lang.text[g.module_lang.current].chart_death_labely,
                                  y_imr: 'Mortality Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js
                 //display_colors: [4,2,1],      
-                display_colors: [999, 0,1],           //HEIDI - temporary fix      
+                //display_colors: [999, 0,1],           //HEIDI - temporary fix  
+                color_group: 'age_classes', 
+                display_colors: [0,1,2],   
                 display_intro: 'top',           
                 display_idcontainer: 'container_casedeath_ser',   //IS THIS EVEN USED ANYWHERE???
                 display_filter: false,
@@ -538,7 +564,8 @@ g.viz_definition = {
                                  y:'',
                                  y_imr: ''},        //HEIDI - need to put this in module-lang.js
                 //display_colors: [4,2,1],     
-                display_colors: [999, 0,1],           //HEIDI - temporary fix       
+                //display_colors: [999, 0,1],           //HEIDI - temporary fix 
+                display_colors: [1],         
                 display_intro: 'top',           
                 display_idcontainer: 'container_casedeath_ser',
                 display_filter: true,
@@ -559,7 +586,9 @@ g.viz_definition = {
                 group_parameter: {  column: ['case']},
 
                 //display_colors: [2,4],    
-                display_colors: [999, 1,0],           //HEIDI - temporary fix
+                //display_colors: [999, 1,0],           //HEIDI - temporary fix
+                color_group: 'age_classes',
+                display_colors: [2,1],
                 display_intro: 'left',
 
                 buttons_list: ['reset','help'],

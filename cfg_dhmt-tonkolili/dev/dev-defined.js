@@ -64,7 +64,7 @@ g.medical_datatype = 'surveillance'; // 'outbreak' or 'surveillance'
  */
 g.dev_defined.definition_incidence = function(value,pop,periode) {
     return value * 10000 / (pop * periode);             //Note: periode = number of epiweeks
-};
+};                                                      //Note: with changing population data (new pop format), then all values summed to value, all pops summed to pop and periode=1 - i.e. total cases/total pop
 
 /**
  Defines your completeness computation.
@@ -94,6 +94,19 @@ if(!g.module_colorscale){
     g.module_colorscale = {}; 
 }
 g.module_colorscale.mapunitlist = ['Cases', 'Deaths','IncidenceProp','MortalityProp','Completeness'];
+
+/*if(!g.module_chartwarper){
+    g.module_chartwarper = {}; 
+}*/
+
+//OPTIONAL FOR IF WE WANT SOMETHING DIFFERENT TO DEFAULT DEFINED IN module-chartwarper.js
+g.dev_defined.tabcontainer_id = 'containter_bar-lin_tabs'; 
+g.dev_defined.chartcontainers_list = ['containter_ser','containter_lin'];  
+
+/*g.module_chartwarper.tabcontainer_id = 'containter_bar-lin_tabs';   //HEIDI - moved over from module-charwarper.js
+//g.module_chartwarper.chartcontainers_list = ['containter_bar','containter_lin'];   
+g.module_chartwarper.chartcontainers_list = ['containter_ser','containter_lin'];   //HEIDI - added 'containter_ser', removed 'containter_bar'
+*/
 
 /**
  * Defines the data parsed in the dashboard (urls and sources type). Order matters.<br>
@@ -148,7 +161,7 @@ g.module_getdata = {
     population:{
         pop: {
             method: 'populationd3',
-            options: {  url: './data/tonkolili_population_2015.csv',
+            options: {  url: './data/tonkolili_population.csv',
                         type: 'csv'}   
         }
     }
@@ -189,10 +202,22 @@ g.medical_headerlist = {
  */
 g.population_headerlist = {
     admNx: 'name',
-    pop: 'population'
+    //pop: 'population'
+    //pop: 'yr_2015'
+    pop: {'yr_2015': 2015,     //HEIDI added this - column headings with associated year
+          'yr_2016': 2016}  
 };
 
-g.population_byAgeGroup = false;   //HEIDI added this - prob needs more appropriate defining in appropriate location
+g.pop_perc_u5 = 18.9;   //HEIDI added this - percentage of population assumed to be under 5 -- put it in g.population_data?
+g.pop_annual_growth = 3.0; //HEIDI added this - assumed percentage increase per year if pop data not supplied
+g.pop_new_format = true;    //HEIDI defined this where each year is given column heading of e.g. 'yr_2015', 'yr_2020', etc.
+/*g.pop_age_groups = {'u': 'Under 5',   //HEIDI added this
+                    'o': 'Over 5',
+                    'a': 'All'}*/
+g.pop_age_groups = [ {group: 'a', label: 'All'},
+                     {group: 'u', label: 'Under 5'},   //HEIDI added this - could get from g.medical_read just below???
+                     {group: 'o', label: 'Over 5'}]
+
 
 function main_loadfiles_readvar(){
     /**
@@ -352,7 +377,7 @@ g.module_datacheck.definition_record = [
  * @alias module:g.viz_definition 
  **/
 g.viz_definition = {
-    multiadm: { domain_builder: 'none',            
+   multiadm:  { domain_builder: 'none',            
                 domain_parameter: 'none',
 
                 instance_builder: 'multiadm',
@@ -368,9 +393,9 @@ g.viz_definition = {
                 display_colors: [0,1,2,3,4,5],  
                 display_intro: 'bottom',
                 display_filter: true,
-                buttons_list: ['reset','help','expand','lockcolor','parameters'],
-                
-            },
+                buttons_list: ['reset','help','expand','lockcolor','parameters'], 
+                }, 
+
     disease:  { domain_builder: 'none', 
                 domain_parameter: 'none',
 
@@ -392,7 +417,7 @@ g.viz_definition = {
                 buttons_list: ['help'],
                 
             },
-    case_bar: { domain_builder: 'epiweek',
+   /* case_bar: { domain_builder: 'epiweek',
                 domain_parameter: 'custom_ordinal',   
 
                 instance_builder: 'stackedbar',
@@ -435,64 +460,119 @@ g.viz_definition = {
                 display_colors: [4,2],            
                 display_intro: 'none',
                 buttons_list: ['reset','help'],
-            },
+            }, */
 
-    case_ser: { domain_builder: 'epiweek',                 
-                domain_parameter: 'custom_ordinal',         
+  
+    case_ser: { domain_builder: 'date_extent',              
+                domain_parameter: 'heidi_custom_time',        //HEIDI - can change name, doesn't have to match casedeath_ser_range domain_parameter name
 
                 instance_builder: 'composite',
 
-                dimension_builder: 'auto',
+                dimension_builder: 'epidate',
                 dimension_parameter: {  column: 'epiwk',
-                                        //shared: true,
-                                        shared: false,
-                                        //namespace: 'epiweek'},
-                                        namespace: 'none'},
+                                        shared: true,
+                                        //shared: false,
+                                        namespace: 'epirange'},
+                                        //namespace: 'none'},
 
                 group_builder: 'series_age',
                 group_parameter: {  column: ['case','fyo']},    
 
-                sync_to: ['death_ser'],   
+                //sync_to: ['casedeath_ser_range'],  
+                //sync_to: ['death_ser'], 
 
                 display_axis:   {x:'',
                                  y:g.module_lang.text[g.module_lang.current].chart_case_labely,
                                  y_imr: 'Incidence Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js
                 //display_colors: [4,2,1],     
-                display_colors: [999, 0,1],           //HEIDI - temporary fix       
+                //display_colors: [999, 0,1],           //HEIDI - temporary fix   
+                color_group: 'age_classes',    
+                display_colors: [0,1,2],   
                 display_intro: 'top',           
                 display_idcontainer: 'container_casedeath_ser',
                 display_filter: false,
                 buttons_list: ['help'],               
             },
 
-    death_ser: {domain_builder: 'epiweek',                 
-                domain_parameter: 'custom_ordinal',         
+    death_ser: {domain_builder: 'date_extent',                 
+                domain_parameter: 'heidi_custom_time',         
 
                 instance_builder: 'composite',
 
-                dimension_builder: 'auto',
+                dimension_builder: 'epidate',
                 dimension_parameter: {  column: 'epiwk',
-                                        //shared: true,         //TRY VARYING THIS?
-                                        shared: false,
-                                        //namespace: 'epiweek'},
-                                        namespace: 'none'},
+                                        shared: true,       
+                                        //shared: false,
+                                        namespace: 'epirange'},
+                                        //namespace: 'none'},
 
                 group_builder: 'series_age',
                 group_parameter: {  column: ['death','fyo']},    
 
-                sync_to: ['case_ser'],  
+                //sync_to: ['casedeath_ser_range'],  
+                //sync_to: ['case_ser'],  
+
 
                 display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_death_labelx,
                                  y:g.module_lang.text[g.module_lang.current].chart_death_labely,
                                  y_imr: 'Mortality Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js
                 //display_colors: [4,2,1],      
-                display_colors: [999, 0,1],           //HEIDI - temporary fix      
+                //display_colors: [999, 0,1],           //HEIDI - temporary fix  
+                color_group: 'age_classes', 
+                display_colors: [0,1,2],   
                 display_intro: 'top',           
-                //display_idcontainer: 'container_casedeath_ser',   //IS THIS EVEN USED ANYWHERE???
+                display_idcontainer: 'container_casedeath_ser',   //IS THIS EVEN USED ANYWHERE???
                 display_filter: false,
                 buttons_list: ['help'],               
-            },
+            },   
 
+    casedeath_ser_range: { domain_builder: 'date_extent',        // *** NOTE - NEEDS TO BE DEFINED BEFORE CASE_SER OR OTHER CHARTS THAT DEPEND ON IT       
+                domain_parameter: 'heidi_custom_time',       //HEIDI - test   //HEIDI - not used???
+
+                instance_builder: 'bar',
+
+                dimension_builder: 'epidate',
+                dimension_parameter: {  column: 'epiwk',        
+                                        shared: true,
+                                        //shared: false,              //TRY VARYING THIS???
+                                        namespace: 'epirange'},
+                                        //namespace: 'none'},
+
+                //group_builder: 'auto',
+                //group_parameter: {  column: ['case']},    
+                group_builder: 'series_all',                    //HEIDI - should be   group_builder: 'series_all', 
+                group_parameter: {  column: ['case','fyo']},    //HEIDI - should be    group_parameter: {  column: ['case']}, 
+
+                sync_to: ['case_ser', 'death_ser'],   
+                //sync_to: ['case_ser'], 
+                //sync_to: ['death_ser'],  
+                range_chart: true,                              //HEIDI - added new parameter
+                //HEIDI - should we also define range_focus_charts here? is it different to sync_to???
+                //HEIDI - quick filter currently has 3 button types: lastXepiweeks, lastXepimonths, lastXepiyears; could extend this though; 0 represents 'current' for epimonth and epiyear 
+                buttons_filt_range: [{btn_type: 'lastXepiweeks', btn_param: 1, btn_text: 'Last full epiweek'},  //note all buttons are 'relative' time
+                                    {btn_type: 'lastXepiweeks', btn_param: 4, btn_text: 'Last 4 epiweeks'},
+                                    {btn_type: 'lastXepiweeks', btn_param: 52, btn_text: 'Last 52 epiweeks', btn_default: true},
+                                    {btn_type: 'lastXepimonths', btn_param: 0, btn_text: 'Current epimonth'},     //0 for current (probably incomplete) epimonth
+                                    {btn_type: 'lastXepimonths', btn_param: 1, btn_text: 'Last full epimonth'},
+                                    {btn_type: 'lastXepimonths', btn_param: 2, btn_text: 'Last 2 epimonths'},  
+                                    {btn_type: 'lastXepimonths', btn_param: 3, btn_text: 'Last 3 epimonths'}, 
+                                    {btn_type: 'lastXepimonths', btn_param: 13, btn_text: 'Last 13 epimonths'}, 
+                                    {btn_type: 'lastXepiyears', btn_param: 0, btn_text: 'Current epiyear'},
+                                    {btn_type: 'lastXepiyears', btn_param: 1, btn_text: 'Last full epiyear'}],
+
+                display_axis:   {x:'',
+                                 y:'',
+                                 y_imr: ''},        //HEIDI - need to put this in module-lang.js
+                //display_colors: [4,2,1],     
+                //display_colors: [999, 0,1],           //HEIDI - temporary fix 
+                display_colors: [1],         
+                display_intro: 'top',           
+                display_idcontainer: 'container_casedeath_ser',
+                display_filter: true,
+                buttons_list: ['help'],               
+            },
+    
+ 
     fyo: {	domain_builder: 'none',
                 domain_parameter: 'none',  
 
@@ -506,7 +586,9 @@ g.viz_definition = {
                 group_parameter: {  column: ['case']},
 
                 //display_colors: [2,4],    
-                display_colors: [999, 1,0],           //HEIDI - temporary fix
+                //display_colors: [999, 1,0],           //HEIDI - temporary fix
+                color_group: 'age_classes',
+                display_colors: [2,1],
                 display_intro: 'left',
 
                 buttons_list: ['reset','help'],
@@ -578,6 +660,7 @@ g.viz_definition = {
                 display_filter: true,
                 buttons_list: ['reset','help'],
             },
+
     table:  {   domain_builder: 'none',
                 domain_parameter: 'none',            
                 
@@ -593,7 +676,7 @@ g.viz_definition = {
 
                 display_intro: 'top',
                 buttons_list: ['help'],
-            },
+            }, 
 };
 
 /**
@@ -602,7 +685,10 @@ g.viz_definition = {
  * @type {String} 
  * @alias module:g.viz_timeline
  */
-g.viz_timeline = 'case_bar';
+g.viz_timeline = 'casedeath_ser_range'; 
+g.dev_defined.autoplay_delay = 2000;    //currently only defined for rangeChart
+g.dev_defined.autoplay_rewind = false;  //at end of timeline, continues to play from beginning automatically; currently only defined for rangeChart
+
 
 /**
  Defines the charts that are using time dimensions and that should be synchronized with the reference defined with {@link module:g.viz_timeline}.
@@ -611,7 +697,7 @@ g.viz_timeline = 'case_bar';
  * @alias module:g.viz_timeshare
  * @todo Automate
  */
-g.viz_timeshare = ['death_bar'];
+g.viz_timeshare = ['case_ser', 'death_ser'];
 
 /**
  Defines the chart used as a reference for location-related interactions (e.g. incidence rates).

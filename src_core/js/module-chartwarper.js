@@ -42,7 +42,10 @@ g.module_chartwarper = {};
  * @type {String} 
  * @alias module:module_chartwarper.tabcontainer_id
  */
-g.module_chartwarper.tabcontainer_id = 'containter_bar-lin_tabs';
+g.module_chartwarper.tabcontainer_id = 'containter_bar-lin_tabs';			//default value
+if (g.dev_defined.tabcontainer_id) {
+	g.module_chartwarper.tabcontainer_id = g.dev_defined.tabcontainer_id;	//HEIDI - can be overwritten in dev_defined.js
+}
 
 /**
  * Stores the names of the charts/containers to warp behind tabs.
@@ -50,8 +53,14 @@ g.module_chartwarper.tabcontainer_id = 'containter_bar-lin_tabs';
  * @type {Array} 
  * @alias module:module_chartwarper.chartcontainers_list
  */
-//g.module_chartwarper.chartcontainers_list = ['containter_bar','containter_lin'];   
-g.module_chartwarper.chartcontainers_list = ['containter_ser','containter_lin'];   //HEIDI - added 'containter_ser', removed 'containter_bar'
+g.module_chartwarper.chartcontainers_list = ['containter_bar','containter_lin'];  	//default value
+if (g.dev_defined.chartcontainers_list) {
+	g.module_chartwarper.chartcontainers_list = g.dev_defined.chartcontainers_list;	//HEIDI - can be overwritten in dev_defined.js
+} 
+//g.module_chartwarper.chartcontainers_list = ['containter_ser','containter_lin'];   //HEIDI - added 'containter_ser', removed 'containter_bar'
+//g.module_chartwarper.chartcontainers_list = g.dev_defined.chartcontainers_list;
+
+
 
 /**
  * Defines the tabs layout.

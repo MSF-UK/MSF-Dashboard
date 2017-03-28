@@ -128,6 +128,7 @@ g.module_colorscale.colors = {
 	Diverging: ['#DDDDDD','#1a9641','#a6d96a','#ffffbf','#fdae61','#d7191c'],
 	Qualitative: ['#DDDDDD','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33'], 
 	ReversedDiverging: ['#DDDDDD','#d7191c','#fdae61','#ffffbf','#a6d96a','#1a9641'],
+	Composite: ['#333333', '#17becf', '#bcbd22', '#9467bd'],
 };
 
 /**
@@ -432,9 +433,18 @@ module_colorscale.interaction = function(){
 			            g.viz_definition.disease.chart.filter(g.medical_currentdisease);
 					}
 					
-					$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_imr_title+'</b>');		//HEIDI added
-					$('#chart_case_lin_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_imr_title+'</b>');		//HEIDI added
+					if (g.module_lang.text[g.module_lang.current].chart_case_ser_imr_title) {
+						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_imr_title+'</b>');		//HEIDI added
+					} else {
+						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_title+'</b>');
+					}
 
+					if (g.module_lang.text[g.module_lang.current].chart_case_lin_imr_title) {
+						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_imr_title+'</b>');		//HEIDI added
+					} else {
+						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_title+'</b>');
+					}
+					
 					$('#chart-disease').removeClass("noclick");
 					$('#chart-fyo').removeClass("noclick");
 					dc.redrawAll(); //HEIDI ADDED TO TEST

@@ -225,7 +225,10 @@ module_interface.display = function(){
                     break;
                 case 'help':
                     $('#'+button+'-'+key1).click(function(){
-                        g.module_intro.definition.goToStep(g.module_intro.step[key1]).start();
+                        //console.log("Clicked on ", button, key1, g.module_intro.step[key1]);
+                        //g.module_intro.definition.goToStepNumber(g.module_intro.step[key1]).start(); 
+                        g.module_intro.definition.goToStep(g.module_intro.step[key1]).start();  
+                        //console.log("Finished ", button, key1, g.module_intro.step[key1]);
                     }); 
                     break;
                 case 'parameters': // to be implemented
@@ -635,21 +638,19 @@ module_interface.display = function(){
         g.module_interface.autoplaytimer = 0;
 
         $('#menu_autoplay').on('click',function(){
-            //console.log("************************* CLICKED on menu_autoplay ****************************");
-
-            //if (!(g.viz_rangechart)){
 
                 if (g.module_interface.autoplayon) {
                     //console.log(" menu_pausePlay called here");
                     module_interface.menu_pausePlay();
                     dc.redrawAll();
-                }else{
+                } else {
                     g.viz_definition[g.viz_timeline].chart.filterAll();
-                     if(g.viz_timeshare){
+                    if(g.viz_timeshare){
                         g.viz_timeshare.forEach(function(key) {
                             g.viz_definition[key].chart.filterAll();  
                         });
                     } 
+
                     dc.redrawAll();
                     module_colorscale.lockcolor('Auto'); 
                     g.module_interface.autoplayon = true;
@@ -667,20 +668,19 @@ module_interface.display = function(){
                     //var d = new Date();
                     //console.log("calling menu_autoRangePlay(): ", d.getSeconds());
                     if (g.viz_rangechart) {
-                       module_interface.menu_autoRangePlay();
+                        console.log("THERE IS A RANGECHART");
+                        module_interface.menu_autoRangePlay();
                     } else {
+                        console.log("THERE IS NOOOO RANGECHART");
                         g.module_interface.autoplaytimer = setInterval(function(){module_interface.menu_autoPlay()}, 2000);     //HEIDI - ERROR here
                     }
                     
                     //console.log("g.module_interface.autoplaytimer (after)= ",  g.module_interface.autoplaytimer);
                 };
 
-            /*} else {
-
-            }*/
-
             //console.log("************************* End click command *************************");
         });
+
 
         $('#menu_help').click(function(){
             g.module_intro.definition.start();
@@ -820,56 +820,41 @@ module_interface.menu_reset = function() {
 } */
 
 module_interface.menu_autoPlay = function(){
-    
-    var domain_length = g.module_epitime.epitime_all.length;
-    //console.log("menu_autoPlay domain_length-1 = ", domain_length-1);
-    //console.log("menu_autoPlay g.module_interface.autoplaytime = ", g.module_interface.autoplaytime);  //starts at 0
-    //console.log("menu_autoPlay g.module_epitime.epitime_all[g.module_interface.autoplaytime].epiDate = ", g.module_epitime.epitime_all[g.module_interface.autoplaytime].epiDate);
-    //console.log("menu_autoPlay g.module_epitime.epitime_all[g.module_interface.autoplaytime+1].epiDate = ", g.module_epitime.epitime_all[g.module_interface.autoplaytime+1].epiDate);
 
-    if (g.module_interface.autoplaytime >= domain_length) {g.module_interface.autoplaytime==0};  //reset autoplaytime to 0;
-
-    //HEIDI - should these be 3 separate if statements or a series of if..else if with final one at beginning (==0)?
-    if(g.module_interface.autoplaytime == domain_length - 1){   //if autoplay is on final value of x-axis
-        //console.log("in if 1");
-        //dc.redrawAll();
+    //if autoplay is on final value of x-axis
+    if(g.module_interface.autoplaytime == g.viz_definition[g.viz_timeline].domain.length - 1){  
         g.module_interface.autoplaytime += 1;
         module_interface.menu_pausePlay();
-        dc.redrawAll(); //should this be before incrementing autoplaytime?
+        dc.redrawAll();
     }    
 
-    if(g.module_interface.autoplaytime < domain_length - 1 && g.module_interface.autoplaytime>0){  //if autoplay is on but not on final value of x-axis
-        //console.log("in if 2a");   //d3.time.day.offset(temp_dateExtent[0], -3)
-        g.viz_definition[g.viz_timeline].chart.filter([g.module_epitime.epitime_all[g.module_interface.autoplaytime-1].epiDate, g.module_epitime.epitime_all[g.module_interface.autoplaytime].epiDate]);
-        g.viz_definition[g.viz_timeline].chart.filter([g.module_epitime.epitime_all[g.module_interface.autoplaytime].epiDate, g.module_epitime.epitime_all[g.module_interface.autoplaytime+1].epiDate]);
-
-        if ((!(g.viz_rangechart)) && (g.viz_timeshare)) {
-            //console.log("in if 2b");
+    //if autoplay is on but not on final value of x-axis
+    if(g.module_interface.autoplaytime < g.viz_definition[g.viz_timeline].domain.length - 1 && g.module_interface.autoplaytime>0){
+        g.viz_definition[g.viz_timeline].chart.filter([g.viz_definition[g.viz_timeline].domain[g.module_interface.autoplaytime-1]]);
+        g.viz_definition[g.viz_timeline].chart.filter([g.viz_definition[g.viz_timeline].domain[g.module_interface.autoplaytime]]);
+        if(g.viz_timeshare){
             g.viz_timeshare.forEach(function(key) {
-                //console.log("filter chart ", key);
-                g.viz_definition[key].chart.filter([g.module_epitime.epitime_all[g.module_interface.autoplaytime-1].epiDate, g.module_epitime.epitime_all[g.module_interface.autoplaytime].epiDate]);
-                g.viz_definition[key].chart.filter([g.module_epitime.epitime_all[g.module_interface.autoplaytime].epiDate, g.module_epitime.epitime_all[g.module_interface.autoplaytime+1].epiDate]);
+                g.viz_definition[key].chart.filter([g.viz_definition[key].domain[g.module_interface.autoplaytime-1]]);
+                g.viz_definition[key].chart.filter([g.viz_definition[key].domain[g.module_interface.autoplaytime]]);
             });
-        };
+        }
         dc.redrawAll();
         g.module_interface.autoplaytime += 1;
     }
 
-    if(g.module_interface.autoplaytime == 0){   //if autoplay is on first round
-        //console.log("in if 3a");
-        g.viz_definition[g.viz_timeline].chart.filter([g.module_epitime.epitime_all[g.module_interface.autoplaytime].epiDate, g.module_epitime.epitime_all[g.module_interface.autoplaytime+1].epiDate]);
-
-        if ((!(g.viz_rangechart)) && (g.viz_timeshare)) {
-            //console.log("in if 3b");
+    //if autoplay is on first round
+    if(g.module_interface.autoplaytime == 0){   
+        g.viz_definition[g.viz_timeline].chart.filter([g.viz_definition[g.viz_timeline].domain[g.module_interface.autoplaytime]]);
+        if(g.viz_timeshare){
             g.viz_timeshare.forEach(function(key) {
-                //console.log("filter chart ", key);
-                g.viz_definition[key].chart.filter([g.module_epitime.epitime_all[g.module_interface.autoplaytime].epiDate, g.module_epitime.epitime_all[g.module_interface.autoplaytime+1].epiDate]);
+                g.viz_definition[key].chart.filter([g.viz_definition[g.viz_timeline].domain[g.module_interface.autoplaytime]]);
             });
-        };
-        dc.redrawAll();                                
+        }
+        dc.redrawAll();
         g.module_interface.autoplaytime += 1;
     }    
 } 
+
 
 
 

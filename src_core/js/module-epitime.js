@@ -127,11 +127,24 @@ g.module_epitime = {};
         all_epiweeks = [];  
         for (i=0; i<=g.medical_data.length-1; i++) {
             if (!(all_epiweeks.includes(g.medical_data[i][g.medical_headerlist[g.medical_keylist[0]]]))) {
-                all_epiweeks.push(g.medical_data[i][g.medical_headerlist[g.medical_keylist[0]]]);
+                all_epiweeks.push(g.medical_data[i][g.medical_headerlist[g.medical_keylist[0]]]);            
             }
         }
         //console.log("all epiweeks in data (", all_epiweeks.length, ") = ", all_epiweeks);
         return all_epiweeks;
+    };
+
+    module_epitime.getYearsInData = function() {
+        all_years = [];
+        all_epiweeks = module_epitime.getEpiweeksInData();
+        for (i=0; i<=all_epiweeks.length-1; i++) {
+            if (all_years.indexOf(all_epiweeks[i].substr(0,4)) == -1) {   //if year is not already in array
+                all_years.push(all_epiweeks[i].substr(0,4));
+            }    
+        }
+        console.log("all_years: ", all_years); 
+        //console.log("all epiweeks in data (", all_epiweeks.length, ") = ", all_epiweeks);
+        return all_years;
     };
 
     module_epitime.createEpiTime = function(){
@@ -139,6 +152,10 @@ g.module_epitime = {};
         var epi_first = new epiTime("2007-52",52,12,2007,d3.time.format("%d-%m-%Y").parse("24-12-2007"));
         var epi_prev = epi_first;   
         var epiweeksInData = module_epitime.getEpiweeksInData();
+        var datesInData = [];
+        //console.log("epiweeksInData: ", epiweeksInData);
+        var all_epitimes = [];
+
         
         var all_years = [];
         for (i=0; i<= epiweeksInData.length-1; i++) {
@@ -171,12 +188,32 @@ g.module_epitime = {};
             var new_epi_id = (new_week < 10)? new_year + "-0" + new_week : new_year + "-" + new_week;
             var epi_temp = new epiTime(new_epi_id, new_week, new_month, new_year, new_date);
                     
-            if (epiweeksInData.includes(new_epi_id)) {      //if week is included in dataset then
-                g.module_epitime.epitime_all.push(epi_temp);
+            if (epiweeksInData.includes(new_epi_id)) {      //if week is included in dataset 
+                //console.log("date_extent: ",  g.module_epitime.date_extent);
+                datesInData.push(new_date);
             };
-                
+            all_epitimes.push(epi_temp);
+                          
             epi_prev = epi_temp;    
         }
+
+        //console.log("datesInData = ", datesInData);
+        datesInData.sort(date_sort_asc);
+        var minDateInData = datesInData[0];
+        var maxDateInData = datesInData[datesInData.length-1];
+        //console.log("min/max dates: ", minDateInData, maxDateInData);
+        //console.log("all_epitimes: ", all_epitimes);
+
+        for (var i=0; i<=all_epitimes.length-1; i++) {          
+            if ((minDateInData <= all_epitimes[i].epiDate) && (all_epitimes[i].epiDate <= maxDateInData)) {
+                g.module_epitime.epitime_all.push(all_epitimes[i]);
+                //console.log(all_epitimes[i].epiDate, "  INCLUDED");
+            }
+        }
+
+        //console.log("g.module_epitime.epitime_all = ", g.module_epitime.epitime_all);
+
+
     }; 
     //createEpiTime();
     //console.log("module-epitime: epitime_all", epitime_all);
@@ -243,6 +280,7 @@ module_epitime.getEpiweeksInRange = function(date_start, date_end) {
     g.module_epitime.current_epiweeks = epiweeksInRange;   //HEIDI - USE THIS
     return epiweeksInRange;
 }
+
  
 var date_sort_asc = function (date1, date2) {   //sort dates in ascending order
   if (date1 > date2) return 1;
