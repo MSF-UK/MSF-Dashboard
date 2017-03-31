@@ -4,6 +4,12 @@
     List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
     Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
 ------------------------------------------------------------------------------------*/
+#main_description {
+    font: 12px sans-serif;
+    text-align: right;
+    margin-top: 20px;
+    margin-right: 0px;
+}
 
 .button,.button:hover,.button:focus{
     padding:3px 6px;
@@ -100,23 +106,176 @@
     color: #ee0000!important;
 }
 
-#menu_autoplay{
+.headline {
+    font-size: 0.9em;
+}
+
+.btn:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+} 
+
+.btn:active {
+  box-shadow: 0 4px #666;
+  transform: translateY(3px); 
+} 
+
+/* Buttons/Left menu styles - New Page Format */
+/*.button_menu, .button_menu:focus {*/
+.button_menu {
+    position: fixed;
+    top: 200px;
+    left: 2.5%;
+    width: 7.5%;
+    /*background-color: #cccccc;  #3160b2; 
+    border: none;*/
+    border-radius: 6px;
+    outline: none;
+    /*color: black; /* white; */
+    padding: 4px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    /*margin: 4px 2px;*/
+    margin-left: 12px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+
+.button_menu:hover {
+    position: fixed;
+    top: 200px;
+    left: 2.5%;
+    width: 7.5%;
+    /*box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);*/
+    /*background-color: #264b8b */
+}
+
+.button_menu:active {
+/*.menu_btn:active {*/
+  border-radius: 8px;
+  /*background-color: #39ff14; /*#3160b2;  #264b8b; 
+  color: white;   /* #ffff00; */
+  /* border: 1px solid #979797;  */
+}
+
+#menu_viewFilters {
     top: 250px;
+}
+
+
+.filters_btn {
+    float: right;
+    margin-right: 5px;
+    background-color: #cccccc;  /*#3160b2; */
+    border: none;
+    color: black;
+}
+ 
+.filters_btn.on {
+    background-color: #2e89ce;
+    border-color: #2e89ce;
+    color: white;
+} 
+
+.filters_btn.off {
+    background-color: #cccccc;  /*#3160b2; */
+    border: none;
+    color: black;
+} 
+
+.filters_btn:hover {
+    background-color: #2e89ce;
+    border-color: #2e89ce;
+    color: white;
+}
+
+.filters_btn:active {
+    background-color: #3585BB;
+    border-color: #3585BB; 
+    color: #000000;
+}
+
+
+#filters_info{
+    text-align: left;
+    position: fixed;
+    top: 300px;
+    left: 1.0%;
+    width: 12%;
+    font-size:0.9em;
+}
+
+#filters_info.on {
+    margin-top: 10px;
+    border-radius: 6px;
+    background: #a6cddb;
+    padding: 6px; 
+    background-size: 100% 100%;
+    color: black;
+}
+
+#menu_reset, #menu_reset.off{
+    top: 210px;
+    background-color: #cccccc;  /*#3160b2; */
+    border: none;
+    color: black;
+}
+#menu_reset.on, #menu_reset.off:hover {
+    background-color: #2e89ce;
+    border-color: #2e89ce;
+    color: white;
+}
+
+#menu_reset:active {
+    background-color: #2e6991;
+    border: none;
+    color: white;
+}
+
+#menu_help{
+    top: 650px;
+    background-color:#d60505;
+    border-color:#d60505;
+    color: white;
+}
+
+#menu_reload, #menu_reload.off{
+    top: 700px;
+    background-color: #cccccc;  /*#3160b2; */
+    border: none;
+    color: black;
+}
+
+#menu_reload.on, #menu_reload.off:hover {
+    background-color: #2e89ce;
+    border-color: #2e89ce;
+    color: white;
+}
+
+#menu_reload:active {
+    background-color: #2e6991;
+    border: none;
+    color: white;
+}
+
+#menu_autoplay{
+    top: 300px;
 }
 #menu_count{
     text-align: center;
     position: fixed;
-    top: 380px;
+    top: 150px;
     left: 2.5%;
     width: 7.5%;
     font-size:1.1em;
 }
-#menu_help{
-    top: 530px;
-}
-#menu_reload{
-    top: 580px;
-}
+
+
+
+
 
 /* Quick filter buttons */
 
@@ -154,7 +313,7 @@
   /* border: 1px solid #979797;  */
 }
 
-.on {
+.button_qf.on {
     background-color: #3160b2;
     color: white;
 }

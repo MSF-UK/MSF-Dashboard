@@ -219,6 +219,9 @@ g.pop_age_groups = [ {group: 'a', label: 'All'},
                      {group: 'o', label: 'Over 5'}]
 
 
+g.new_layout = true;
+
+
 function main_loadfiles_readvar(){
     /**
      Lists the keys from {@link module:g.medical_headerlist} that require custom parsing (eg. translate numbers into words).<br>
@@ -393,6 +396,7 @@ g.viz_definition = {
                 display_colors: [0,1,2,3,4,5],  
                 display_intro: 'bottom',
                 display_filter: true,
+
                 buttons_list: ['reset','help','expand','lockcolor','parameters'], 
                 }, 
 
@@ -553,10 +557,8 @@ g.viz_definition = {
                                     {btn_type: 'lastXepiweeks', btn_param: 4, btn_text: 'Last 4 epiweeks'},
                                     {btn_type: 'lastXepiweeks', btn_param: 52, btn_text: 'Last 52 epiweeks', btn_default: true},
                                     {btn_type: 'lastXepimonths', btn_param: 0, btn_text: 'Current epimonth'},     //0 for current (probably incomplete) epimonth
-                                    {btn_type: 'lastXepimonths', btn_param: 1, btn_text: 'Last full epimonth'},
-                                    {btn_type: 'lastXepimonths', btn_param: 2, btn_text: 'Last 2 epimonths'},  
+                                    {btn_type: 'lastXepimonths', btn_param: 1, btn_text: 'Last full epimonth'},  
                                     {btn_type: 'lastXepimonths', btn_param: 3, btn_text: 'Last 3 epimonths'}, 
-                                    {btn_type: 'lastXepimonths', btn_param: 13, btn_text: 'Last 13 epimonths'}, 
                                     {btn_type: 'lastXepiyears', btn_param: 0, btn_text: 'Current epiyear'},
                                     {btn_type: 'lastXepiyears', btn_param: 1, btn_text: 'Last full epiyear'}],
 
@@ -592,7 +594,7 @@ g.viz_definition = {
                 display_intro: 'left',
 
                 buttons_list: ['reset','help'],
-                filter: true
+                display_filter: true
             },
 
     case_lin: {domain_builder: 'week',

@@ -49,8 +49,8 @@ g.module_lang.current = 'eng';
  */
 g.module_lang.list = {
 	'fra':'French',
-	'eng':'English',
-	'cas':'Castilian'
+	'eng':'English'
+	//'cas':'Castilian'
 	};
 
 /**
@@ -244,7 +244,7 @@ g.module_lang.text.fra = {
 //------------------------------------------------------------------------------------
 g.module_lang.text.eng = {
 	main_title: 'MSF Dashboard v1.1.0pre-alpha | Surveillance Tonkolili DHMT',
-	main_description: 'PILOT VERSION. This version uses surveillance data. This tool is developed by the MSF UK, Manson Unit - <a href="mailto:gis.mansonunit@london.msf.org">gis.mansonunit@london.msf.org</a>.<br><i>Click the charts to filter the various dimensions of your dataset. Refer to the help for more details.</i>',
+	main_description: '<br>PILOT VERSION for surveillance data<br>Developed by MSF UK, Manson Unit: <a href="mailto:gis.mansonunit@london.msf.org">gis.mansonunit@london.msf.org</a><br><i>Click charts to filter data, see help for more detail</i>',
 
 	loadfiles_choose: 'CHOOSE A FILE TO LOAD',
 	loadfiles_selected: ['The file currently selected counts','records.'],
@@ -267,11 +267,13 @@ g.module_lang.text.eng = {
 	chart_fyo_labelu: 'Under 5',
 	chart_fyo_labelo: 'Over 5',
 	chart_fyo_labela: 'All Ages',   //HEIDI added this
+	chart_multiadm_title: 'Locations',	//HEIDI added this
+	chart_casedeath_ser_range_title: 'Epiweeks',	//HEIDI added this
 
 
 	filtext: 'Current filter:',
 	
-	map_title: 'Map',
+	map_title: '',		//HEIDI removed
 	map_legendNA: '0',
 	map_legendEmpty: 'No records',
 	map_hover: 'Hover to display',
@@ -282,7 +284,7 @@ g.module_lang.text.eng = {
 		MortalityProp: 'Mortality Rate (/10,000 people)',
 		Completeness: 'Frequency structures report, in %'
 	},
-	jumpto: 'Goto...',
+	jumpto: 'Zoom to...',
 	map_admN1: {
 		title: 'Chiefdom'
 	},
@@ -350,8 +352,8 @@ g.module_lang.text.eng = {
     },
 	datatable_legend: 'FYO (Five Years Old): u = Under (< 5 years old), o = Over (> 5 years old)',
 
-	interface_menutitle: 'MENU',
-	interface_menuepiwk: 'Quickly filter the \'n\' last weeks',
+	interface_menutitle: 'Menu',		//HEIDI - remove
+	//interface_menuepiwk: 'Quickly filter the \'n\' last weeks',
 	interface_menureset: 'Reset All',
 	interface_menureload: 'Reload',
 	interface_menuhelp: 'Help',
@@ -360,7 +362,10 @@ g.module_lang.text.eng = {
     		pause: 'Pause'
 	},
 	interface_menucount: ['out of','records selected','Key figures:', 'Cases:','Deaths:'],
-	
+	interface_menuviewfilt: 'View Current Filters',
+	interface_menufiltsum: 'Current filter summary',	
+	interface_menunofilt: 'No filters applied',
+
 	interface_colorscale: 'Go back to the Dashboard',
 
 	intro_intro: '<p>You can interact with the Dashboard data by clicking the chart elements (areas, bars...).</p><p><b>1) Filter a dimension of the dataset.</b><br>Each interaction filters the dataset and therefore affects all charts.</p><p><b>2) Combine filters.</b><br>For instance you can filter cases of "this" week AND in "this" area.</p><p><b>3) Reset filters.</b><br>Filters can be reseted one by one, for a chart (by clicking on the "<span class="ft">↻</span>" button) or for the whole dashboard by clicking the "Reset All" button of the lateral menu.</p><p><b>4) Hover chart éléments to display associated values.</b></p><br><p>Click "Next" or press the right arrow key to browse the charts and learn about their specificities or come back later when necesary: either by clicking the "Help" button of the lateral menu, or the "?" buttons to consult each chart\'s specific help.</p>',
@@ -382,7 +387,7 @@ g.module_lang.text.eng = {
 
 // 3) Castilian Spanish - Not translated yet
 //------------------------------------------------------------------------------------
-g.module_lang.text.cas = {
+/*g.module_lang.text.cas = {
 	main_title: 'MSF Dashboard v1.0.0 | Surveillance Tonkolili DHMT',
     main_description: 'VERSIÓN PILOTO. Esta versión utiliza datos de monitoreo. Esta herramienta esta desarrollada por la Manson Unit, MSF UK - <a href="mailto:gis.mansonunit@london.msf.org">gis.mansonunit@london.msf.org</a>.<br><i>Haga clic en los gráficos para filtrar las múltiples dimensiones de su conjunto de datos. Consulta la ayuda para mas detalles.</i>',
 
@@ -510,4 +515,4 @@ g.module_lang.text.cas = {
     intro_year: 'Este gráfico circular muestra el numero de casos por año.<br><i>Haga clic en los sectores para filtrar por una clase de edad especifica. Para reiniciar los filtros, haga clic en los sectores seleccionados uno por uno o haga clic en el botón "<span class="ft">↻</span>".</i>',
 
     intro_table: 'Esta tabla muestra las entradas seleccionadas.<br><i>Haga clic en el botón "Copiar en el portapapeles" para copiar el contenido de toda la tabla (para exportar a Excel por ejemplo).</i>'
-};
+};*/

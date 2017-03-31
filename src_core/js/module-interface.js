@@ -86,6 +86,7 @@ g.module_interface = {};
  * @method
  * @alias module:module_interface.display
  */
+g.module_interface.current_filters = {};
 module_interface.display = function(){
 
     $('#main_title').html(g.module_lang.text[g.module_lang.current].main_title);
@@ -119,12 +120,24 @@ module_interface.display = function(){
      * @method
      * @alias module:module_interface~titlesscreate
      */
-    function titlesscreate(key){
+    function titlesscreate(key){   
         if (g.viz_definition[key].display_filter) {
-            $('#chart_'+key+'_title').html('<b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b><br>' + g.module_lang.text[g.module_lang.current].filtext + ' ' );
-        }else{            
+            //$('#chart_'+key+'_title').html('<b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b><br>' + g.module_lang.text[g.module_lang.current].filtext + ' ' );
+            $('#chart_'+key+'_title').html('<big><b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b></big>');
+            if (key=='multiadm') {
+                for (map in g.viz_definition[key].maps) {
+                    g.module_interface.current_filters['map_'+map] = [];
+                }
+            } else {
+                g.module_interface.current_filters[key] = [];
+                /*if (g.viz_definition[key].chart.filter()!=null) {
+                    //console.log("this filter is not empty: ", key, g.viz_definition[key].chart.filter());
+                }*/
+            }           
+        } else {            
             $('#chart_'+key+'_title').html('<b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b><br>');
         }
+
     }
 
     /**
@@ -540,48 +553,80 @@ module_interface.display = function(){
      * @method
      * @alias module:module_interface~menucreate
      */
+    
     function menucreate(){
 
-        // Menu title
-        var html = '<div id="menu_title" style="font-size:1.2em; text-align:center;"><b>'+g.module_lang.text[g.module_lang.current].interface_menutitle+'</b></div>';
-
-        // Reset button
-        html += '<a id="menu_reset" class="menu_button btn btn-primary btn-sm" href="javascript:module_interface.menu_reset();">'+g.module_lang.text[g.module_lang.current].interface_menureset+'</a>';
+        if (g.new_layout) {
+            // Menu title
+            //var html = '<div id="menu_title" style="font-size:1.2em; text-align:center;"><b>'+g.module_lang.text[g.module_lang.current].interface_menutitle+'</b></div>';
             
-        // Reload button
-        html += '<a id="menu_reload" class="menu_button btn btn-primary btn-sm" href="javascript:history.go(0)">'+g.module_lang.text[g.module_lang.current].interface_menureload+'</a>';
+            var html = '<a id="menu_viewFilters" class="button_menu filters_btn btn btn-primary btn-sm" href="javascript:module_interface.viewFilters();">'+g.module_lang.text[g.module_lang.current].interface_menuviewfilt+'</a>';
+            //'<a id="menu_filtsum" style="font-size:1.2em; text-align:center;"><b>'+g.module_lang.text[g.module_lang.current].interface_menufiltsum+'</b></a>';
+            html += '<div id="filters_info"></div>';
 
-        // Help button
-        html += '<button id="menu_help" class="menu_button btn btn-primary btn-sm">'+g.module_lang.text[g.module_lang.current].interface_menuhelp+'</button>';
+            // Record count
+            if (g.medical_datatype == 'outbreak') {
+                html += '<div id="menu_count"><span id="count-info"><b><span class="filter-count headline"></span></b></span><br>'+g.module_lang.text[g.module_lang.current].interface_menucount[0]+'<br><b>'+g.medical_data.length+'</b><br>'+g.module_lang.text[g.module_lang.current].interface_menucount[1]+'</div>';
+            } else {
+                html += '<div id="menu_count"><span id="case-info"><b>'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+'</b> <span class="filter-count headline"></span></span><br><span id="death-info"><b>'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+'</b> <span class="filter-count headline"></span></span><br></div>';
+                //html += '<div id="menu_count"><br><span id="case-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+' <b><span class="filter-count headline"></span></span></b><br><span id="death-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+' <b><span class="filter-count headline"></span></span></b><br></div>';
+            
+            }
 
-        // Quick access to epiweeks button - only if no range_chart  //HEIDI - didn't we make fast access to this in g.?
-        var range_chart_displayed = false;
-        g.viz_keylist.forEach(function(key1) {
-            if (g.viz_definition[key1].range_chart) {range_chart_displayed=true;}
-        });
-        if (!(range_chart_displayed)) {
-            html += '<div id="menu_epiwk"><p>'+g.module_lang.text[g.module_lang.current].interface_menuepiwk+'</p>';
-            html +='<button class="menu_button_epiwk btn btn-primary btn-sm" id="menu_epi4">4</button>';
-            html +='<button class="menu_button_epiwk btn btn-primary btn-sm" id="menu_epi8">8</button>';
-            html +='<button class="menu_button_epiwk btn btn-primary btn-sm" id="menu_epi12">12</button>';
-            html +='<div>';
+            // Reset button
+            html += '<a id="menu_reset" class="button_menu menu_btn btn btn-primary btn-sm off" href="javascript:module_interface.menu_reset();">'+g.module_lang.text[g.module_lang.current].interface_menureset+'</a>';
+                       
+            // Help button
+            html += '<button id="menu_help" class="button_menu menu_btn btn btn-primary btn-sm">'+g.module_lang.text[g.module_lang.current].interface_menuhelp+'</button>';
+
+            // Reload button
+            //html += '<a id="menu_reload" class="button_menu menu_btn btn btn-primary btn-sm" href="javascript:history.go(0)">'+g.module_lang.text[g.module_lang.current].interface_menureload+'</a>';
+            html += '<a id="menu_reload" class="button_menu menu_btn btn btn-primary btn-sm off" href="javascript:module_interface.menu_reload()">'+g.module_lang.text[g.module_lang.current].interface_menureload+'</a>';
+
+        } else {
+
+            // Menu title
+            var html = '<div id="menu_title" style="font-size:1.2em; text-align:center;"><b>'+g.module_lang.text[g.module_lang.current].interface_menutitle+'</b></div>';
+
+            // Reset button
+            html += '<a id="menu_reset" class="menu_button btn btn-primary btn-sm" href="javascript:module_interface.menu_reset();">'+g.module_lang.text[g.module_lang.current].interface_menureset+'</a>';
+                
+            // Reload button
+            html += '<a id="menu_reload" class="menu_button btn btn-primary btn-sm" href="javascript:history.go(0)">'+g.module_lang.text[g.module_lang.current].interface_menureload+'</a>';
+
+            // Help button
+            html += '<button id="menu_help" class="menu_button btn btn-primary btn-sm">'+g.module_lang.text[g.module_lang.current].interface_menuhelp+'</button>';
+
+            // Quick access to epiweeks button - only if no range_chart  //HEIDI - didn't we make fast access to this in g.?
+            var range_chart_displayed = false;
+            g.viz_keylist.forEach(function(key1) {
+                if (g.viz_definition[key1].range_chart) {range_chart_displayed=true;}
+            });
+            if (!(range_chart_displayed)) {
+                html += '<div id="menu_epiwk"><p>'+g.module_lang.text[g.module_lang.current].interface_menuepiwk+'</p>';
+                html +='<button class="menu_button_epiwk btn btn-primary btn-sm" id="menu_epi4">4</button>';
+                html +='<button class="menu_button_epiwk btn btn-primary btn-sm" id="menu_epi8">8</button>';
+                html +='<button class="menu_button_epiwk btn btn-primary btn-sm" id="menu_epi12">12</button>';
+                html +='<div>';
+            }
+
+            // Autoplay button
+            html += '<button id="menu_autoplay" class="menu_button btn btn-primary btn-sm">'+g.module_lang.text[g.module_lang.current].interface_menuautoplay.play+'</button>'
+
+            // Record count
+            if(g.medical_datatype == 'outbreak'){
+                html += '<div id="menu_count"><span id="count-info"><b><span class="filter-count headline"></span></b></span><br>'+g.module_lang.text[g.module_lang.current].interface_menucount[0]+'<br><b>'+g.medical_data.length+'</b><br>'+g.module_lang.text[g.module_lang.current].interface_menucount[1]+'</div>';
+            }else{
+                html += '<div id="menu_count">'+g.module_lang.text[g.module_lang.current].interface_menucount[2]+'<br><span id="case-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+' <b><span class="filter-count headline"></span></span></b><br><span id="death-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+' <b><span class="filter-count headline"></span></span></b><br></div>';
+            }
+
+            /*<span style="font-size:2em;">Chiffres clés :
+                    <span id="casetotal">Cas : <span class="filter-count headline"></span></span>
+                    <span id="deathtotal"> | Décès : <span class="filter-count headline"></span></span></span>*/
         }
-
-        // Autoplay button
-        html += '<button id="menu_autoplay" class="menu_button btn btn-primary btn-sm">'+g.module_lang.text[g.module_lang.current].interface_menuautoplay.play+'</button>'
-
-        // Record count
-        if(g.medical_datatype == 'outbreak'){
-            html += '<div id="menu_count"><span id="count-info"><b><span class="filter-count headline"></span></b></span><br>'+g.module_lang.text[g.module_lang.current].interface_menucount[0]+'<br><b>'+g.medical_data.length+'</b><br>'+g.module_lang.text[g.module_lang.current].interface_menucount[1]+'</div>';
-        }else{
-            html += '<div id="menu_count">'+g.module_lang.text[g.module_lang.current].interface_menucount[2]+'<br><span id="case-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+' <b><span class="filter-count headline"></span></span></b><br><span id="death-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+' <b><span class="filter-count headline"></span></span></b><br></div>';
-        }
-
-        /*<span style="font-size:2em;">Chiffres clés :
-                <span id="casetotal">Cas : <span class="filter-count headline"></span></span>
-                <span id="deathtotal"> | Décès : <span class="filter-count headline"></span></span></span>*/
 
         $('#menu').html(html);
+
     }
 
     /**
@@ -711,6 +756,84 @@ module_interface.display = function(){
     }
 };
 
+
+
+module_interface.updateFiltersInfo = function() {
+    //console.log("in updateFiltersInfo");
+    if ($(".filters_btn").hasClass("on")) {
+        filters_html = '<b>'+g.module_lang.text[g.module_lang.current].interface_menufiltsum+': </b><br/>';
+        no_filts = true;
+
+        //for (i=0; i<=g.module_interface.current_filters.length-1; i++) {
+        for (var filt in g.module_interface.current_filters) {
+            //console.log("current_filters: ", filt, g.module_interface.current_filters[filt]);
+            if (g.module_interface.current_filters[filt]) {
+                if ((typeof(g.module_interface.current_filters[filt]))=='string') {
+                    //console.log("type string: ", typeof(g.module_interface.current_filters[filt]));
+                    var filt_list = g.module_interface.current_filters[filt];
+                } else if ((typeof(g.module_interface.current_filters[filt]))=='object') {
+                    //console.log("type array: ", g.module_interface.current_filters[filt].isArray);
+                    var filt_arr = g.module_interface.current_filters[filt];
+                    //console.log("type object, ", filt_arr);
+                    if (filt_arr.length > 0) {
+                        var filt_list = [];
+                        //for (j=0; j<=filt_arr.length-1; j++) {
+                        for (j in filt_arr) {
+                            filt_list.push(" " + filt_arr[j]);
+                        };
+                    } else {
+                        var filt_list = "";
+                    }
+                    //console.log("final filt_list = ", filt_list);
+                } else {
+                    //console.log("none of these types!!!!!!!!!!!! ", typeof(g.module_interface.current_filters[filt]));
+                    var filt_list = "";
+                };
+                //var filt_list = g.module_interface.current_filters[filt];
+            } else { 
+                var filt_list = "";// [];
+            };
+
+            if (filt_list.length>0) {
+                if (filt.substr(0,4)=="map_") {
+                    filters_html += '<b><i>&nbsp&nbsp&nbsp' + g.module_lang.text[g.module_lang.current][filt]['title'] + ': </i></b>' + filt_list + '<br/>';
+                } else {
+                    var filt_title = 'chart_' + filt + '_title';
+                    filters_html += '<b><i>&nbsp&nbsp&nbsp' + g.module_lang.text[g.module_lang.current][filt_title] + ': </i></b>' + filt_list + '<br/>';
+                }
+                no_filts = false;
+            };
+
+        };
+        if (no_filts) {filters_html += '&nbsp&nbsp&nbsp&nbsp&nbsp<i>'+g.module_lang.text[g.module_lang.current].interface_menunofilt+'</i><br/>';};
+        $('#filters_info').html(filters_html);
+    } else {
+        $('#filters_info').html("");        
+    };
+}
+
+module_interface.viewFilters = function() {
+    console.log("CLICKED VIEW FILTERS TEST");
+    //var loader = document.getElementById("filters_info");
+    if ($(".filters_btn").hasClass("on")) {
+        $(".filters_btn").removeClass("on");
+        $(".filters_btn").addClass("off");
+        $("#filters_info").removeClass("on");
+        console.log("removed class on");
+        //loader.className = "";
+        //console.log("loader.className: ", loader.className);
+    } else {
+        $(".filters_btn").addClass("on");
+        $(".filters_btn").removeClass("off");
+        $("#filters_info").addClass("on");
+        console.log("addedclass on");
+        //loader.className = "on";
+        //console.log("loader.className: ", loader.className);
+    };
+    module_interface.updateFiltersInfo();
+}
+
+
 /**
  * Defines the reset all function.
  * <br>
@@ -738,6 +861,8 @@ module_interface.display = function(){
  * @alias module:module_interface.menu_reset
  */
 module_interface.menu_reset = function() {
+    //$('#menu_reset').addClass('on');
+    $('#menu_reset').removeClass('off');
     var temp_mode = g.module_colorscale.modecurrent;
     var temp_disease = g.medical_currentdisease;
     g.module_colorscale.modecurrent = 'Manual';
@@ -757,7 +882,15 @@ module_interface.menu_reset = function() {
     }
     module_colorscale.lockcolor('Auto');
     dc.redrawAll();
+    //$('#menu_reset').removeClass('on');
+    $('#menu_reset').addClass('off');
 }
+
+module_interface.menu_reload = function() {
+    $('#menu_reload').removeClass('off');
+    history.go(0);
+    $('#menu_reload').addClass('off');
+};
 
 // Autoplay
 /**
@@ -864,6 +997,7 @@ function rangePlayUpdate() {  //uses setTimeout() instead of setInterval()
     //d = new Date();
     currentEpiweekPos++;
     g.module_interface.autoplaytimer = currentEpiweekPos;
+    g.module_interface.autoplayweek = g.module_epitime.all_epiweeks[currentEpiweekPos];
 
     //$('#filters_qf-'+g.viz_rangechart).html("Currently playing epiweek: " + g.module_epitime.all_epiweeks[currentEpiweekPos]); 
 
@@ -890,16 +1024,18 @@ function rangePlayUpdate() {  //uses setTimeout() instead of setInterval()
     var dateRange = module_epitime.filterDates("lastXepiweeks",  startYr, startYr,'', '', startWeek, startWeek, '');  //HEIDI - do we need this here? can't we just assign to .epidate?
     //console.log("IN menu_autoRangePlay, now filtering to ", dateRange[0], dateRange[1]);
 
-    if(currentEpiweekPos == allEpiweeks.length) {   //if autoplay has completed
+    if (currentEpiweekPos == allEpiweeks.length) {   //if autoplay has completed
         //console.log("autoPlay completed run through here");
         module_interface.menu_pausePlay();
         dc.redrawAll(); //should this be before incrementing autoplaytime?
-    }  else if (currentEpiweekPos < allEpiweeks.length && currentEpiweekPos>=0){  //if autoplay is on but not on final value of x-axis
+    } else if (currentEpiweekPos < allEpiweeks.length && currentEpiweekPos>=0){  //if autoplay is on but not on final value of x-axis
         $('#filters_qf-'+g.viz_rangechart).html("Currently playing epiweek: " + g.module_epitime.all_epiweeks[currentEpiweekPos]); 
         g.viz_timeshare.forEach(function(key) {
             g.viz_definition[key].chart.filterAll();
             g.viz_definition[key].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1])); 
+            //console.log("key: ", key);
         })
+        //g.viz_definition['multiadm'].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1]));  
         dc.redrawAll();
     }
 

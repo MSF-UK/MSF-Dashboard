@@ -1091,6 +1091,9 @@ function generateDashboard(){
                                 if (!g.module_interface.autoplayon==true) {
                                     $('.button_qf').removeClass('on');
                                     $('#filters_qf-'+key1).html("Epiweeks selected: All"); 
+                                    if (g.new_layout) {
+                                        g.module_interface.current_filters[key1] = '';
+                                    }
                                 }
                                 
                                 //console.log("in filter==null i.e. removed all range zoom"); 
@@ -1113,11 +1116,21 @@ function generateDashboard(){
                          
                                 if (select_weeks.length==0) {
                                     $('#filters_qf-'+key1).html("Epiweeks selected: None");
+                                    if (g.new_layout) {
+                                        g.module_interface.current_filters[key1] = '';
+                                    }
                                 } else if (select_weeks.length==1) {
                                     $('#filters_qf-'+key1).html("Epiweeks selected: " + select_weeks[0]);  
+                                    if (g.new_layout) {
+                                        g.module_interface.current_filters[key1] = select_weeks[0];
+                                    }
                                 } else {
                                     $('#filters_qf-'+key1).html("Epiweeks selected: " + select_weeks[0] + ' - ' + select_weeks[select_weeks.length-1]); 
+                                    if (g.new_layout) {
+                                        g.module_interface.current_filters[key1] = select_weeks[0] + ' - ' + select_weeks[select_weeks.length-1];
+                                    }
                                 };
+                                
 
                                 //var epi_id_0 = select_weeks[0];    //HEIDI - PROBLEM HERE WITH dates[0] being undefined in get_epi_id
                                 //var epi_id_1 = select_weeks[select_weeks.length-1];
@@ -1146,6 +1159,10 @@ function generateDashboard(){
                                     });
                                 });
 
+                            }
+
+                            if (g.new_layout) {
+                                module_interface.updateFiltersInfo();
                             }
                             //console.log("****************** end of in renderlet rangeChart: ", chart);
                            
@@ -1414,6 +1431,19 @@ function generateDashboard(){
                     .legend(dc.legend().x(0).y(0))
                     .label (function (d) {return d3.round((d.value / d3.sum(g.viz_definition[key1].group.all(), function(d){ return d.value;}))*100,0) +"%";});
                 g.viz_definition[key1].chart.render();
+
+                g.viz_definition[key1].chart
+                    .on('renderlet', function(chart) {
+                        var filts = chart.filters();
+                        //console.log("in pie renderlet ", key1, filts);
+                         if (g.new_layout) {
+                            //console.log("filtered pie to: ", key1, filts);
+                            g.module_interface.current_filters[key1] = filts;
+                            module_interface.updateFiltersInfo();
+                        }   
+
+                    })
+
                 break;
 
             //------------------------------------------------------------------------------------
@@ -1454,9 +1484,117 @@ function generateDashboard(){
                  * @todo Implement completeness without year chart...
                  */
 
-               /* function getPopNum(region, yr, age_group) {
+                function getPopNumYr(yr, definedPopYears, loc) {
+                    if (definedPopYears.indexOf(yr)!=-1) {     //2 - if year 'yr' is in this then take that value
+                        //var pop_temp = g.population_databyloc.pop[select_locs[i]]['yr_'+yr]; 
 
-                }*/
+                        for (var key in g.population_headerlist.pop) {
+                            //console.log(key, g.population_headerlist.pop);
+                            if (g.population_headerlist.pop[key]==yr) {
+                                //console.log(g.population_headerlist.pop[key], prevYr);
+                                var currKey = key;
+                            };
+                        }
+                        //console.log("key ref: ", currKey);
+
+                        //get pop
+                        var pop_temp = g.population_databyloc.pop[loc][currKey]; 
+                        //console.log(yr, " is in ", definedPopYears, "  pop_temp = ", pop_temp);
+                    } else {
+                        //console.log(yr, " is NOT in ", definedPopYears);
+                        var minDefinedPopYear = Math.min(...definedPopYears);
+                        var maxDefinedPopYear = Math.max(...definedPopYears);
+                        //console.log("minYear: ", minDefinedPopYear, "   maxYear: ", maxDefinedPopYear);
+
+                        if ((yr > minDefinedPopYear) && (yr < maxDefinedPopYear)) {   //3 - if year 'yr' is between two values then do linear interpolation
+                            
+                            function getNearestYrs() {
+                                var prev = definedPopYears[0];
+                                var next = definedPopYears[0];
+                                for (var i=0; i<=definedPopYears.length-1; i++) {
+                                    //if (Math.abs(yr-definedPopYears[i]) < Math.abs(yr-curr)) {
+                                    //console.log(i, yr, definedPopYears[i], prev, next);
+                                    if (((yr-definedPopYears[i])<(yr-prev)) && ((yr-definedPopYears[i])>0)) {
+                                        prev = definedPopYears[i];
+                                    };
+                                    if (((yr-definedPopYears[i])<(yr-next)) && ((yr-definedPopYears[i])<0)) {
+                                        next = definedPopYears[i];
+                                    };
+                                }
+                                return [prev, next];
+                            };
+                            var prevYr, nextYr = 0;
+                            [prevYr, nextYr] = getNearestYrs();
+                            //console.log("prev & next years: ", prevYr, nextYr);
+
+                            for (var key in g.population_headerlist.pop) {
+                                //console.log(key, g.population_headerlist.pop);
+                                if (g.population_headerlist.pop[key]==prevYr) {
+                                    //console.log(g.population_headerlist.pop[key], prevYr);
+                                    var prevKey = key;
+                                } else if (g.population_headerlist.pop[key]==nextYr) {
+                                    var nextKey = key;
+                                };
+                            }
+                            //console.log("prev & next refs: ", prevKey, nextKey);
+
+                            //get both pops
+                            //console.log(g.population_databyloc.pop[select_locs[i]]);
+                            var prevPop = g.population_databyloc.pop[loc][prevKey]; 
+                            var nextPop = g.population_databyloc.pop[loc][nextKey];
+                            //console.log("prev & next pops: ", prevPop, nextPop);
+
+                            //interpolate
+                            var pop_temp = ((yr-prevYr)*((nextPop-prevPop)/(nextYr-prevYr))) + prevPop;
+                            //console.log(yr, " interpolated pop: ", pop_temp);
+
+
+                        } else if (yr < minDefinedPopYear) {  //4 - if year 'yr' is less than lowest year then do 3% increment
+                            var yearDiff = minDefinedPopYear - yr;      //get difference in years
+
+                            for (var key in g.population_headerlist.pop) {
+                                //console.log(key, g.population_headerlist.pop);
+                                if (g.population_headerlist.pop[key]==minDefinedPopYear) {
+                                    //console.log(g.population_headerlist.pop[key], minDefinedPopYear);
+                                    var minKey = key;
+                                };
+                            }
+                            //console.log("min ref: ", minKey);
+
+                            var minPop = g.population_databyloc.pop[loc][minKey]; 
+                            //console.log("min pop: ", minPop);
+
+                            //calculate pop
+                            var pop_temp = minPop/Math.pow((1+(g.pop_annual_growth/100)),yearDiff);
+                            //console.log("min pop: ", minPop, " in yr ", minDefinedPopYear);
+                            //console.log("in year ", yr, " pop = ", pop_temp);
+
+                        } else if (yr > maxDefinedPopYear) {  //5 - if year 'yr' is more than highest year then do 3% increment
+                            var yearDiff = yr - maxDefinedPopYear;      //get difference in years
+
+                            for (var key in g.population_headerlist.pop) {
+                                //console.log(key, g.population_headerlist.pop);
+                                if (g.population_headerlist.pop[key]==maxDefinedPopYear) {
+                                    //console.log(g.population_headerlist.pop[key], maxDefinedPopYear);
+                                    var maxKey = key;
+                                };
+                            }
+                            //console.log("max ref: ", maxKey);
+
+                            var maxPop = g.population_databyloc.pop[loc][maxKey]; 
+                            //console.log("max pop: ", maxPop);
+
+                            //calculate pop
+                            var pop_temp = maxPop*Math.pow((1+(g.pop_annual_growth/100)),yearDiff);
+                            //console.log("max pop: ", maxPop, " in yr ", maxDefinedPopYear);
+                            //console.log("in year ", yr, " pop = ", pop_temp);
+                        } else {
+                            console.log("ERROR - cannot find population data for year ", yr);
+                            var pop_temp = 0;
+                        }
+                    } 
+                    return pop_temp;
+                }
 
                 function valueAccessor(d){
                     //console.log("IN VALUE ACCESSOR FOR MULTIADM - ", g.module_colorscale.mapunitcurrent, d);
@@ -1542,10 +1680,54 @@ function generateDashboard(){
                         }
                         //console.log(g.population_databyloc.pop[d.key], definedPopYears);
 
+                        /*//HEIDI - orig:
                         var pop = 0;
-                        for (i=0; i<=current_epiweeks.length-1;i++) {       //get sum of total population throughout time period
-                            
+                        for (i=0; i<=current_epiweeks.length-1;i++) {       //get sum of total population throughout time period                            
                             if (g.pop_new_format) {
+                                yr = parseInt(current_epiweeks[i].substr(0,4));
+                                //console.log("yr: ", yr);
+                                pop_temp = getPopNumYr(yr, definedPopYears, d.key);
+                                pop += pop_temp;
+                                //console.log("total so far = ", pop);
+                            } else {
+                                pop += g.population_databyloc.pop[d.key];
+                                //console.log("total so far (not new pop format) = ", pop);
+                            }
+                        }                    
+                        console.log(d.key, " total pop = ", pop);*/
+
+                        var pop = 0;
+
+                        if ((g.pop_new_format) && (g.module_interface.autoplayon)) {
+                            //console.log("AUTOPLAYON");
+                            //console.log("g.module_interface.autoplayweek: ", g.module_interface.autoplayweek);
+                            //yr = 2015;
+                            yr = parseInt(g.module_interface.autoplayweek.substr(0,4))
+                            pop = getPopNumYr(yr, definedPopYears, d.key);
+                        }
+                        else {
+                            for (i=0; i<=current_epiweeks.length-1;i++) {       //get sum of total population throughout time period                            
+                                if (g.pop_new_format) {
+                                    yr = parseInt(current_epiweeks[i].substr(0,4));
+                                    //console.log("yr: ", yr);
+                                    pop_temp = getPopNumYr(yr, definedPopYears, d.key);
+                                    pop += pop_temp;
+                                    //console.log("total so far = ", pop);
+                                } else {
+                                    pop += g.population_databyloc.pop[d.key];
+                                    //console.log("total so far (not new pop format) = ", pop);
+                                }
+                            } 
+                        }                   
+                        //console.log(d.key, " total pop = ", pop);
+
+                        
+
+                        /*for (i=0; i<=current_epiweeks.length-1;i++) {       //get sum of total population throughout time period
+                            
+                            if (g.pop_new_format) {*/
+
+                                
 
                                 //console.log("i = ", i, "   add in ", current_epiweeks[i], g.population_databyloc.pop[d.key]);
                                 //pop += g.population_databyloc.pop[d.key];
@@ -1559,9 +1741,12 @@ function generateDashboard(){
                                 console.log(current_epiweeks[i], definedPopYears);*/
 
                                 //yr = parseInt(yr);
-                                yr = parseInt(current_epiweeks[i].substr(0,4));
+                                /*yr = parseInt(current_epiweeks[i].substr(0,4));
                                 //console.log("yr: ", yr);
-                                if (definedPopYears.indexOf(yr)!=-1) {     //2 - if year 'yr' is in this then take that value
+
+                                pop_temp = getPopNumYr(yr, definedPopYears, d.key);
+*/
+                                /*if (definedPopYears.indexOf(yr)!=-1) {     //2 - if year 'yr' is in this then take that value
                                     //var pop_temp = g.population_databyloc.pop[select_locs[i]]['yr_'+yr]; 
 
                                     for (var key in g.population_headerlist.pop) {
@@ -1667,10 +1852,10 @@ function generateDashboard(){
                                     } else {
                                         console.log("ERROR - cannot find population data for year ", yr);
                                     }
-                                } 
+                                } */
 
                                // console.log(g.population_databyloc.pop[d.key], yr, ": pop = ", pop_temp);
-                                pop += pop_temp;
+                                /*pop += pop_temp;
                                 //console.log("total so far = ", pop);
 
                             } else {
@@ -1678,7 +1863,8 @@ function generateDashboard(){
                                 //console.log("total so far (not new pop format) = ", pop);
                             }
                         }
-                        //console.log("total pop = ", pop);
+                    
+                        console.log(d.key, " total pop = ", pop);*/
 
 
                         //Deals with getting population for appropriate age class, year
@@ -1711,6 +1897,7 @@ function generateDashboard(){
                             //var accessed_value = g.dev_defined.definition_incidence(d.value.Values_c,popAgeClass,filterswklength);
                             var accessed_value = g.dev_defined.definition_incidence(d.value.Values_c,popAgeClass,1);
                             //console.log("INCDIENCE RATE (Inc Prop):  (", d.value.Values_c,"*10,000) / (",popAgeClass,"*",filterswklength,") = ", accessed_value);
+                            //console.log("all values: ", d);
                             //console.log("INCDIENCE RATE:  (", d.value.Values_c,"*10,000) / (",popAgeClass,"*1) = ", accessed_value);
                         } else if (g.module_colorscale.mapunitcurrent == 'MortalityProp') {
                             var accessed_value = g.dev_defined.definition_incidence(d.value.Values_d,popAgeClass,1);
@@ -1984,7 +2171,7 @@ function generateDashboard(){
                         //console.log("INCDIENCE RATE (Mort Prop):  (", d.value.Values_d,"*10,000) / (",popAgeClass,"*",filterswklength,") = ", accessed_value);
                         
 
-                    }else if (g.module_colorscale.mapunitcurrent == 'Completeness') {
+                    } else if (g.module_colorscale.mapunitcurrent == 'Completeness') {
 
                         if (g.viz_rangechart) {
                             if (g.viz_definition[g.viz_timeline].chart.filters().length==0) {
@@ -2032,7 +2219,7 @@ function generateDashboard(){
                         temp_count = temp_count / filterswklength;
                         var accessed_value = temp_count * 100;
 
-                    }else if(g.module_colorscale.mapunitcurrent == 'Cases'){ // Cases
+                    } else if (g.module_colorscale.mapunitcurrent == 'Cases'){ // Cases
                         if (g.viz_rangechart) { 
                             //console.log("g.viz_rangechart = ", g.viz_rangechart); 
                             var accessed_value = d.value.Values_c;  //HEIDI - just to test
@@ -2043,11 +2230,12 @@ function generateDashboard(){
                             var accessed_value = d.value.Values_c;
                         }
                         //var accessed_value = d.value.Values_c;
-                    }else if(g.module_colorscale.mapunitcurrent == 'Deaths'){ // Deaths
+                    } else if (g.module_colorscale.mapunitcurrent == 'Deaths'){ // Deaths
                         var accessed_value = d.value.Values_d;
                     };
 
                     g.viz_currentvalues[temp_adm][d.key] = accessed_value;
+                    //console.log(g.module_colorscale.mapunitcurrent, d.key, accessed_value);
                     return accessed_value; 
                 }
 
@@ -2111,12 +2299,38 @@ function generateDashboard(){
                             e.filters().forEach(function(l){
                                 html += l.split(',')[l.split(',').length-1]+", ";		//text for filter list
                             });
+                            if (html.length>0) {html = html.slice(0,-2)};  
                             $(filter_id).html(html);
+                            if (g.new_layout) {
+                                g.module_interface.current_filters['map_'+key2] = html;
+                                module_interface.updateFiltersInfo();
+                            }
                         });
                     g.viz_definition[key1].charts[key2].render();
                     g.viz_definition[key1].maps[key2] = g.viz_definition[key1].charts[key2].map();
                     g.viz_definition[key1].maps[key2].scrollWheelZoom.disable();
                     zoomToGeom(g.geometry_data[key2],g.viz_definition[key1].maps[key2]);
+
+        
+                    /*g.viz_definition[key1].charts[key2].chart
+                        .on('renderlet', function (chart) {
+                            if (chart.filters().length==0) {
+                                console.log("filter empty");
+                            } else {
+                                console.log("filter: ", chart.filters());
+                            };
+                        })*/
+
+                    /*g.viz_definition[key1].charts[key2].chart
+                        .on('renderlet', function(chart) {
+                            var filts = chart.filters();
+                            console.log("in multiadm renderlet ", key1, key2, filts);
+                             if (g.new_layout) {
+                                //console.log("filtered pie to: ", key1, filts);
+                                g.module_interface.current_filters[key2] = filts;
+                                module_interface.updateFiltersInfo();
+                            }   
+                        })*/
 
                     // Map legend
                     g.viz_definition[key1].legend[key2] = L.control({position: 'bottomright'});
@@ -2274,7 +2488,7 @@ function generateDashboard(){
                     var xScaleRange = d3.scale.log().clamp(true).domain(g.viz_definition[key1].domain).range([0,$('#chart-'+key1).width() - 50]).nice();
                     g.viz_definition[key1].chart
                         .x(xScaleRange);
-                }else{
+                } else {
                     g.viz_definition[key1].chart
                         .elasticX(true)
                         .xAxis().ticks(3);;
@@ -2317,6 +2531,10 @@ function generateDashboard(){
                          */
                         g.medical_currentdisease = out[0];
                         dc.redrawAll();
+                        if (g.new_layout) {
+                            g.module_interface.current_filters[key1] = out[0];
+                            module_interface.updateFiltersInfo();
+                        }
                         return out;
                     });
                 
@@ -2325,6 +2543,19 @@ function generateDashboard(){
                 
                 g.viz_definition[key1].chart.render();
                 g.viz_definition[key1].chart.filter(rand);
+
+                g.viz_definition[key1].chart
+                    .on('renderlet', function(chart) {
+                        var filts = chart.filters();
+                        //console.log("in row renderlet ", key1, filts);
+                        if (g.new_layout) {
+                            //console.log("filtered pie to: ", key1, filts);
+                            g.module_interface.current_filters[key1] = filts;
+                            module_interface.updateFiltersInfo();
+                        }   
+
+                    })
+
 
                 function AddXAxis(chartToUpdate, displayText){
                     chartToUpdate.svg()

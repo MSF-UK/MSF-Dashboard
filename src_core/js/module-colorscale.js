@@ -505,7 +505,7 @@ module_colorscale.lockcolor = function(source){
 		//console.log("************ in lockcolor for: ", source);
 		var admlevel_current = g.module_multiadm.tabcurrent.split('-')[1];
 		if (g.module_colorscale.mapunitcurrent == 'Casses') {
-			//console.log("lockcolor, in if");
+			//console.log("lockcolor, in if Casses");
 			if(g.medical_datatype == 'surveillance'){
 				var admobjects_current = g.viz_definition.multiadm.group[admlevel_current].top(Infinity);
 			}else{
@@ -515,6 +515,7 @@ module_colorscale.lockcolor = function(source){
 				return admobjects_current[keynum].value.Values;
 			});
 		}else if(g.module_colorscale.mapunitcurrent == 'Completeness'){
+			//console.log("lockcolor, in if Completemess");
 			//console.log("lockcolor, in else if");
 			var admvalues_current = [100,80,60,40,20,0];
 		}else{ //} if(g.module_colorscale.mapunitcurrent == 'Incidence'){
@@ -522,9 +523,12 @@ module_colorscale.lockcolor = function(source){
 			var admvalues_current = Object.keys(g.viz_currentvalues[admlevel_current]).map(function (key,keynum,keylist) {
 				if(keynum == keylist.length - 1){
 					var temp = g.viz_currentvalues[admlevel_current][key];
+					//console.log("keynum ", keynum, "  key ", key, "  temp: ", temp);
 				}else{
 					var temp = module_colorscale.nice_limits(g.viz_currentvalues[admlevel_current][key]);
+					//console.log("keynum ", keynum, "  key ", key, "  temp: ", temp);
 				}
+				//console.log("temp: ", temp);
 				return temp;
 			});
 			
@@ -533,6 +537,7 @@ module_colorscale.lockcolor = function(source){
 			});
 		}
 
+		//console.log("admvalues_current: ", admvalues_current);
 		var serie = new geostats();
 		serie.setSerie(admvalues_current);
 		function sortNumber(a,b) {
@@ -542,7 +547,7 @@ module_colorscale.lockcolor = function(source){
 		if(g.module_colorscale.mapunitcurrent !== 'Completeness'){
 			unique_values.sort(sortNumber);
 		}
-
+		//console.log("unique_values: ", unique_values);
 		var nbClass = Math.min(5,unique_values.length - 1);
 
 		if(unique_values.length - 1 > 4){

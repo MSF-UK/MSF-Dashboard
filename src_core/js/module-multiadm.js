@@ -69,14 +69,19 @@ module_multiadm.display = function(){
 	var html = '<div class="col-md-12">';
 		html += '<div id=buttons-multiadm></div>';
 		// Title + filters
-		html += '<p><b>'+g.module_lang.text[g.module_lang.current].map_title+' - <small><span id="map-unit">'+g.module_lang.text[g.module_lang.current].map_unit[g.module_colorscale.mapunitcurrent]+'</b></span></small> | '+g.module_lang.text[g.module_lang.current].filtext +' ';
-		g.geometry_keylist.forEach(function(key,keynum,keylist){
-			html +=  '<span id="map-'+key+'-filter"></span>';
-			if (!(keynum == keylist.length - 1)) {
-				html += ' >';
-			}
-		});
-		html +='</p>';
+		if (g.new_layout) {
+			html += '<p><b><big><span id="map-unit">'+g.module_lang.text[g.module_lang.current].map_unit[g.module_colorscale.mapunitcurrent]+'</span></big></b>';
+		} else {
+			html += '<p><b>'+g.module_lang.text[g.module_lang.current].map_title+' - <small><span id="map-unit">'+g.module_lang.text[g.module_lang.current].map_unit[g.module_colorscale.mapunitcurrent]+'</b></span></small> | '+g.module_lang.text[g.module_lang.current].filtext +' ';
+			g.geometry_keylist.forEach(function(key,keynum,keylist){
+				html +=  '<span id="map-'+key+'-filter"></span>';
+				if (!(keynum == keylist.length - 1)) {
+					html += ' >';
+				}
+			});
+			html +='</p>';
+		}
+		
 
 		// Tabs + 'jumpto' dropdown lists
 		html += '<div>';
