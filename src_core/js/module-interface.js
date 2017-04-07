@@ -90,7 +90,12 @@ g.module_interface.current_filters = {};
 module_interface.display = function(){
 
     $('#main_title').html(g.module_lang.text[g.module_lang.current].main_title);
-    $('#main_description').html(g.module_lang.text[g.module_lang.current].main_description);
+    if (g.new_layout) {
+        $('#main_description_new').html(g.module_lang.text[g.module_lang.current].main_description);
+    } else {
+        $('#main_description').html(g.module_lang.text[g.module_lang.current].main_description);
+    }
+    
 
     g.viz_keylist.forEach(function(key){
         titlesscreate(key);
@@ -122,17 +127,19 @@ module_interface.display = function(){
      */
     function titlesscreate(key){   
         if (g.viz_definition[key].display_filter) {
-            //$('#chart_'+key+'_title').html('<b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b><br>' + g.module_lang.text[g.module_lang.current].filtext + ' ' );
-            $('#chart_'+key+'_title').html('<big><b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b></big>');
-            if (key=='multiadm') {
+            //console.log("key: ", key, "  title: ", '#chart_'+key+'_title');
+            if (g.new_layout) {
+                $('#chart_'+key+'_title').html('<big><b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b></big>');
+            } else {
+                $('#chart_'+key+'_title').html('<b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b><br>' + g.module_lang.text[g.module_lang.current].filtext + ' ' );
+            }
+            
+            if ((g.new_layout) && (key=='multiadm')) {
                 for (map in g.viz_definition[key].maps) {
                     g.module_interface.current_filters['map_'+map] = [];
                 }
             } else {
                 g.module_interface.current_filters[key] = [];
-                /*if (g.viz_definition[key].chart.filter()!=null) {
-                    //console.log("this filter is not empty: ", key, g.viz_definition[key].chart.filter());
-                }*/
             }           
         } else {            
             $('#chart_'+key+'_title').html('<b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b><br>');
@@ -238,7 +245,7 @@ module_interface.display = function(){
                     break;
                 case 'help':
                     $('#'+button+'-'+key1).click(function(){
-                        //console.log("Clicked on ", button, key1, g.module_intro.step[key1]);
+                        console.log("Clicked on ", button, key1, g.module_intro.step[key1]);
                         //g.module_intro.definition.goToStepNumber(g.module_intro.step[key1]).start(); 
                         g.module_intro.definition.goToStep(g.module_intro.step[key1]).start();  
                         //console.log("Finished ", button, key1, g.module_intro.step[key1]);
@@ -247,12 +254,20 @@ module_interface.display = function(){
                 case 'parameters': // to be implemented
                     $('#'+button+'-'+key1).click(function(){
                         window.scrollTo(0, 0);
-                        $('body').addClass('stop-scrolling')
+                        $('body').addClass('stop-scrolling');
+
+                        if (g.new_layout) {
+                            $('.modal-dialog').css('height','5%'); 
+                            $('.modal-dialog').css('width','40%'); 
+                            $('.modal-dialog').css('margin-top','1%'); 
+                            $('.modal-dialog').css('margin-right','25%'); 
+                        } else {
+                            $('.modal-dialog').css('height','6%'); 
+                            $('.modal-dialog').css('width','90%'); 
+                            $('.modal-dialog').css('margin-top','1%'); 
+                            $('.modal-dialog').css('margin-left','10%'); 
+                        }
                         
-                        $('.modal-dialog').css('height','6%'); 
-                        $('.modal-dialog').css('width','90%'); 
-                        $('.modal-dialog').css('margin-top','1%'); 
-                        $('.modal-dialog').css('margin-left','10%'); 
 
                         var html = '<div class="row">';
 
@@ -566,22 +581,27 @@ module_interface.display = function(){
 
             // Record count
             if (g.medical_datatype == 'outbreak') {
-                html += '<div id="menu_count"><span id="count-info"><b><span class="filter-count headline"></span></b></span><br>'+g.module_lang.text[g.module_lang.current].interface_menucount[0]+'<br><b>'+g.medical_data.length+'</b><br>'+g.module_lang.text[g.module_lang.current].interface_menucount[1]+'</div>';
+                html += '<div id="menu_count_new"><span id="count-info"><b><span class="filter-count headline"></span></b></span><br>'+g.module_lang.text[g.module_lang.current].interface_menucount[0]+'<br><b>'+g.medical_data.length+'</b><br>'+g.module_lang.text[g.module_lang.current].interface_menucount[1]+'</div>';
             } else {
-                html += '<div id="menu_count"><span id="case-info"><b>'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+'</b> <span class="filter-count headline"></span></span><br><span id="death-info"><b>'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+'</b> <span class="filter-count headline"></span></span><br></div>';
+                //html += '<div id="menu_count"><span id="case-info"><b>'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+'</b> <span class="filter-count headline"></span></span><br><span id="death-info"><b>'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+'</b> <span class="filter-count headline"></span></span><br></div>';
                 //html += '<div id="menu_count"><br><span id="case-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+' <b><span class="filter-count headline"></span></span></b><br><span id="death-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+' <b><span class="filter-count headline"></span></span></b><br></div>';
-            
+                //html += '<div id="menu_count">'+g.module_lang.text[g.module_lang.current].interface_menucount[2]+'<br><span id="case-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+' <b><span class="filter-count headline"></span></span></b><br><span id="death-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+' <b><span class="filter-count headline"></span></span></b><br></div>';
+                html += '<div id="menu_count_new"><p style="margin-bottom: 12px;"><b>'+g.module_lang.text[g.module_lang.current].interface_menucount[2]+'</b></p><span id="case-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+' <b><span class="filter-count headline"></span></span></b><br><span id="death-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+' <b><span class="filter-count headline"></span></span></b><br></div>';
             }
 
+            // Autoplay button
+            html += '<button id="menu_autoplay_new" class="button_menu menu_btn btn_play play btn"></button>';
+            html += '<div id="menu_playtext"><p><span id="epiweek-play"></span></p></div>';
+            
             // Reset button
-            html += '<a id="menu_reset" class="button_menu menu_btn btn btn-primary btn-sm off" href="javascript:module_interface.menu_reset();">'+g.module_lang.text[g.module_lang.current].interface_menureset+'</a>';
+            html += '<a id="menu_reset_new" class="button_menu menu_btn btn btn-primary btn-sm off" href="javascript:module_interface.menu_reset();">'+g.module_lang.text[g.module_lang.current].interface_menureset+'</a>';
                        
             // Help button
-            html += '<button id="menu_help" class="button_menu menu_btn btn btn-primary btn-sm">'+g.module_lang.text[g.module_lang.current].interface_menuhelp+'</button>';
+            html += '<button id="menu_help_new" class="button_menu menu_btn btn btn-primary btn-sm">'+g.module_lang.text[g.module_lang.current].interface_menuhelp+'</button>';
 
             // Reload button
             //html += '<a id="menu_reload" class="button_menu menu_btn btn btn-primary btn-sm" href="javascript:history.go(0)">'+g.module_lang.text[g.module_lang.current].interface_menureload+'</a>';
-            html += '<a id="menu_reload" class="button_menu menu_btn btn btn-primary btn-sm off" href="javascript:module_interface.menu_reload()">'+g.module_lang.text[g.module_lang.current].interface_menureload+'</a>';
+            html += '<a id="menu_reload_new" class="button_menu menu_btn btn btn-primary btn-sm off" href="javascript:module_interface.menu_reload()">'+g.module_lang.text[g.module_lang.current].interface_menureload+'</a>';
 
         } else {
 
@@ -700,7 +720,63 @@ module_interface.display = function(){
                     module_colorscale.lockcolor('Auto'); 
                     g.module_interface.autoplayon = true;
                     //console.log("button should say: ", g.module_lang.text[g.module_lang.current].interface_menuautoplay.pause);
-                    $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.pause);
+                    if (g.new_layout) {
+                        $('#menu_autoplay_new').removeClass("play");
+                        $('#menu_autoplay_new').addClass("pause");
+                    } else {
+                        $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.pause);
+                    }
+                    
+                    $('#chart-'+ g.viz_timeline).addClass("noclick");
+                    if(g.viz_timeshare){
+                        g.viz_timeshare.forEach(function(key) {
+                            $('#chart-'+ key).addClass("noclick");
+                        });
+                    }
+                    g.module_interface.autoplaytime = 0;
+                    //console.log("g.module_interface.autoplaytimer (before)= ",  g.module_interface.autoplaytimer);
+
+                    //var d = new Date();
+                    //console.log("calling menu_autoRangePlay(): ", d.getSeconds());
+                    if (g.viz_rangechart) {
+                        console.log("THERE IS A RANGECHART");
+                        module_interface.menu_autoRangePlay();
+                    } else {
+                        console.log("THERE IS NOOOO RANGECHART");
+                        g.module_interface.autoplaytimer = setInterval(function(){module_interface.menu_autoPlay()}, 2000);     //HEIDI - ERROR here
+                    }
+                    
+                    //console.log("g.module_interface.autoplaytimer (after)= ",  g.module_interface.autoplaytimer);
+                };
+
+            //console.log("************************* End click command *************************");
+        });
+
+        $('#menu_autoplay_new').on('click',function(){
+
+                if (g.module_interface.autoplayon) {
+                    //console.log(" menu_pausePlay called here");
+                    module_interface.menu_pausePlay();
+                    dc.redrawAll();
+                } else {
+                    g.viz_definition[g.viz_timeline].chart.filterAll();
+                    if(g.viz_timeshare){
+                        g.viz_timeshare.forEach(function(key) {
+                            g.viz_definition[key].chart.filterAll();  
+                        });
+                    } 
+
+                    dc.redrawAll();
+                    module_colorscale.lockcolor('Auto'); 
+                    g.module_interface.autoplayon = true;
+                    //console.log("button should say: ", g.module_lang.text[g.module_lang.current].interface_menuautoplay.pause);
+                    if (g.new_layout) {
+                        $('#menu_autoplay_new').removeClass("play");
+                        $('#menu_autoplay_new').addClass("pause");
+                    } else {
+                        $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.pause);
+                    }
+                    
                     $('#chart-'+ g.viz_timeline).addClass("noclick");
                     if(g.viz_timeshare){
                         g.viz_timeshare.forEach(function(key) {
@@ -728,6 +804,9 @@ module_interface.display = function(){
 
 
         $('#menu_help').click(function(){
+            g.module_intro.definition.start();
+        });
+        $('#menu_help_new').click(function(){
             g.module_intro.definition.start();
         });
 
@@ -813,20 +892,20 @@ module_interface.updateFiltersInfo = function() {
 }
 
 module_interface.viewFilters = function() {
-    console.log("CLICKED VIEW FILTERS TEST");
+    //console.log("CLICKED VIEW FILTERS TEST");
     //var loader = document.getElementById("filters_info");
     if ($(".filters_btn").hasClass("on")) {
         $(".filters_btn").removeClass("on");
         $(".filters_btn").addClass("off");
         $("#filters_info").removeClass("on");
-        console.log("removed class on");
+        //console.log("removed class on");
         //loader.className = "";
         //console.log("loader.className: ", loader.className);
     } else {
         $(".filters_btn").addClass("on");
         $(".filters_btn").removeClass("off");
         $("#filters_info").addClass("on");
-        console.log("addedclass on");
+        //console.log("addedclass on");
         //loader.className = "on";
         //console.log("loader.className: ", loader.className);
     };
@@ -863,6 +942,7 @@ module_interface.viewFilters = function() {
 module_interface.menu_reset = function() {
     //$('#menu_reset').addClass('on');
     $('#menu_reset').removeClass('off');
+    $('#menu_reset_new').removeClass('off');
     var temp_mode = g.module_colorscale.modecurrent;
     var temp_disease = g.medical_currentdisease;
     g.module_colorscale.modecurrent = 'Manual';
@@ -884,12 +964,15 @@ module_interface.menu_reset = function() {
     dc.redrawAll();
     //$('#menu_reset').removeClass('on');
     $('#menu_reset').addClass('off');
+    $('#menu_reset_new').addClass('off');
 }
 
 module_interface.menu_reload = function() {
     $('#menu_reload').removeClass('off');
+    $('#menu_reload_new').removeClass('off');
     history.go(0);
     $('#menu_reload').addClass('off');
+    $('#menu_reload_new').addClass('off');
 };
 
 // Autoplay
@@ -1013,7 +1096,13 @@ function rangePlayUpdate() {  //uses setTimeout() instead of setInterval()
             //console.log("IN menu_autoRangePlay, current play = ", currentEpiweekPos, " = ", g.module_interface.autoplaytimer);
             module_interface.menu_pausePlay();
             dc.redrawAll();
-            $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.play);
+            if (g.new_layout) {
+                $('#menu_autoplay_new').removeClass("pause");
+                $('#menu_autoplay_new').addClass("play");
+            } else {
+                $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.play);
+            }
+            //$('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.play);
 
             return;
         }
@@ -1029,7 +1118,8 @@ function rangePlayUpdate() {  //uses setTimeout() instead of setInterval()
         module_interface.menu_pausePlay();
         dc.redrawAll(); //should this be before incrementing autoplaytime?
     } else if (currentEpiweekPos < allEpiweeks.length && currentEpiweekPos>=0){  //if autoplay is on but not on final value of x-axis
-        $('#filters_qf-'+g.viz_rangechart).html("Currently playing epiweek: " + g.module_epitime.all_epiweeks[currentEpiweekPos]); 
+        $('#filters_qf-'+g.viz_rangechart).html('<b><big>' + g.module_lang.text[g.module_lang.current].epiweek_playing + '</big></b>' + g.module_epitime.all_epiweeks[currentEpiweekPos]); 
+        $('#epiweek-play').html('<b>' + g.module_epitime.all_epiweeks[currentEpiweekPos] + '</b>'); 
         g.viz_timeshare.forEach(function(key) {
             g.viz_definition[key].chart.filterAll();
             g.viz_definition[key].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1])); 
@@ -1117,7 +1207,14 @@ module_interface.menu_autoRangePlay = function(){
 module_interface.menu_pausePlay = function(){
     //console.log("now in menu_pausePlay");
     g.module_interface.autoplayon = false;
-    $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.play);
+    if (g.new_layout) {
+        $('#menu_autoplay_new').removeClass("pause");
+        $('#menu_autoplay_new').addClass("play");
+    } else {
+        $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.play);
+    }
+    //$('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.play);
+    $('#epiweek-play').html('');
 
     $('#chart-'+ g.viz_timeline).removeClass("noclick");
     g.viz_definition[g.viz_timeline].chart.filterAll();

@@ -333,6 +333,7 @@ function generateDashboard(){
                 // Load Optional Module: module-multiadm.js
                 //------------------------------------------------------------------------------------
                 module_multiadm.display();
+                module_multiadm.mapunit_interaction();
                 // Maps definition
                 g.viz_definition[key].charts = {};
                 g.geometry_keylist.forEach(function(key2){
@@ -901,7 +902,7 @@ function generateDashboard(){
             //------------------------------------------------------------------------------------
                 var div_id = '#chart-'+key1;
                 var width = $(div_id).parent().width();
-                var height = (g.viz_definition[key1].range_chart)? 100 : 180;
+                var height = (g.viz_definition[key1].range_chart)? 80 : 180;
 
                 //console.log("1 - in BAR chart (testing)");
 
@@ -937,9 +938,11 @@ function generateDashboard(){
                         .title(function(d) { return d.key + ": " + d.value; });
 
                 } else if (g.viz_definition[key1].domain_parameter == 'heidi_custom_time') {
+                    console.log("color_list in bar function: ", color_list);
                     var xScaleRange = d3.time.scale().domain(g.viz_definition[key1].domain)
                     g.viz_definition[key1].chart
                         .x(xScaleRange)
+                        //.colors(function(d) {console.log("color_list in bar function: ", color_list); return color_list;})
                         //.dimension(g.viz_definition[dim_namespace].dimension)
                         //.group(g.viz_definition[key1].group)
                         //.focusCharts(g.viz_definition['case_ser'].chart, g.viz_definition['death_ser'].chart)
@@ -1001,7 +1004,17 @@ function generateDashboard(){
                 if (g.viz_definition[key1].range_chart) {
                     g.viz_definition[key1].chart
                         //.margins({top: 10, right: 50, bottom: 20, left: 40})
-                        .colors(color_list)
+                        .colors(function(d) {
+                            //console.log("color_list in rangebar function: ", color_list); 
+                            if (g.module_colorscale.colors.Composite) {
+                                if (g.viz_definition[key1].display_colors) {
+                                    color_list = [];
+                                    color_list.push(g.module_colorscale.colors.Composite[g.viz_definition[key1].display_colors[0]]);
+                                }   
+                            }
+                            //console.log("color_list in rangebar function: ", color_list); 
+                            return color_list;
+                        })
                         .xAxisLabel(g.viz_definition[key1].display_axis.x)
                         .yAxisLabel(g.viz_definition[key1].display_axis.y);
 
@@ -1090,7 +1103,7 @@ function generateDashboard(){
                            if (chart.filter()==null) {
                                 if (!g.module_interface.autoplayon==true) {
                                     $('.button_qf').removeClass('on');
-                                    $('#filters_qf-'+key1).html("Epiweeks selected: All"); 
+                                    $('#filters_qf-'+key1).html('<b><big>' + g.module_lang.text[g.module_lang.current].epiweek_selected + '</big></b>' + g.module_lang.text[g.module_lang.current].epiweek_all); 
                                     if (g.new_layout) {
                                         g.module_interface.current_filters[key1] = '';
                                     }
@@ -1115,17 +1128,18 @@ function generateDashboard(){
                                 //console.log("select_weeks: ", select_weeks);
                          
                                 if (select_weeks.length==0) {
-                                    $('#filters_qf-'+key1).html("Epiweeks selected: None");
+                                    //$('#filters_qf-'+key1).html("Epiweeks selected: None");
+                                    $('#filters_qf-'+key1).html('<b><big>' + g.module_lang.text[g.module_lang.current].epiweek_selected + '</big></b>' + g.module_lang.text[g.module_lang.current].epiweek_none);
                                     if (g.new_layout) {
                                         g.module_interface.current_filters[key1] = '';
                                     }
                                 } else if (select_weeks.length==1) {
-                                    $('#filters_qf-'+key1).html("Epiweeks selected: " + select_weeks[0]);  
+                                    $('#filters_qf-'+key1).html('<b><big>' + g.module_lang.text[g.module_lang.current].epiweek_selected + '</big></b>' + select_weeks[0]);  
                                     if (g.new_layout) {
                                         g.module_interface.current_filters[key1] = select_weeks[0];
                                     }
                                 } else {
-                                    $('#filters_qf-'+key1).html("Epiweeks selected: " + select_weeks[0] + ' - ' + select_weeks[select_weeks.length-1]); 
+                                    $('#filters_qf-'+key1).html('<b><big>' + g.module_lang.text[g.module_lang.current].epiweek_selected + '</big></b>' + select_weeks[0] + ' - ' + select_weeks[select_weeks.length-1]); 
                                     if (g.new_layout) {
                                         g.module_interface.current_filters[key1] = select_weeks[0] + ' - ' + select_weeks[select_weeks.length-1];
                                     }
@@ -3136,7 +3150,7 @@ function generateDashboard(){
                     g.viz_definition[key1].chart
                         .margins({top: 10, right: 50, bottom: 60, left: 40})
                         .width(width)
-                        .height(180)
+                        .height(140)
                         //.transitionDuration(1000)    //HEIDI added to test rangeChart
                         .elasticX(true)
                         .dimension(g.viz_definition[dim_namespace].dimension)

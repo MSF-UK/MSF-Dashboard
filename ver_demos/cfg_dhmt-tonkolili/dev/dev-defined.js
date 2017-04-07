@@ -74,7 +74,6 @@ g.dev_defined.definition_incidence = function(value,pop,periode) {
  */
 g.dev_defined.ignore_empty = true;
 g.dev_defined.ignore_errors = true;    //HEIDI - added this as a test - used in module-datacheck.js
-
 /**
  * Contains the list of implemented map units.
  * <br> Defined in {@link module:module_colorscale}.
@@ -100,10 +99,18 @@ g.module_colorscale.mapunitlist = ['Cases', 'Deaths','IncidenceProp','MortalityP
 }*/
 
 //OPTIONAL FOR IF WE WANT SOMETHING DIFFERENT TO DEFAULT DEFINED IN module-chartwarper.js
-g.dev_defined.tabcontainer_id = 'containter_bar-lin_tabs'; 
-g.dev_defined.chartcontainers_list = ['containter_ser','containter_lin'];  
+g.dev_defined.epiweek_container_id = 'containter_bar_lin';
+g.dev_defined.tabcontainer_id = 'containter_bar_lin_tabs'; 
+g.dev_defined.chartcontainers_list = [{
+                                        container: 'containter_ser',
+                                        height: '600px'
+                                      },
+                                      {
+                                        container: 'containter_lin',
+                                        height: '400px'
+                                      }];  
 
-/*g.module_chartwarper.tabcontainer_id = 'containter_bar-lin_tabs';   //HEIDI - moved over from module-charwarper.js
+/*g.module_chartwarper.tabcontainer_id = 'containter_bar_lin_tabs';   //HEIDI - moved over from module-charwarper.js
 //g.module_chartwarper.chartcontainers_list = ['containter_bar','containter_lin'];   
 g.module_chartwarper.chartcontainers_list = ['containter_ser','containter_lin'];   //HEIDI - added 'containter_ser', removed 'containter_bar'
 */
@@ -221,7 +228,6 @@ g.pop_age_groups = [ {group: 'a', label: 'All'},
 
 g.new_layout = true;
 
-
 function main_loadfiles_readvar(){
     /**
      Lists the keys from {@link module:g.medical_headerlist} that require custom parsing (eg. translate numbers into words).<br>
@@ -317,7 +323,7 @@ g.module_datacheck.definition_record = [
     group_setup: {Array},              // [datakey,datakeyopt] ('datakey' mandatory if 'surveillance', 'datakeyopt' if 'stackedbar'),
     display_axis: {Object},            // {x:'labelx',y:'labely'} (for x/y-type charts),
     display_colors: {Array.<Integer>}, // Refers to colors in g.color_domain,            
-    display_intro: {String},           // 'top' or 'bottom' or 'right' or 'left' or 'none',
+    display_intro_position: {String},           // 'top' or 'bottom' or 'right' or 'left' or 'none',
     display_idcontainer: {String},     // To display buttons on a div different from: chart-'chart_id' 
     buttons_list: {Array.<String>},    // ['reset','help'] - any, all or none of the two for most of charts plus 'expand','lockcolor' and 'parameters' for 'multiadm' charts,
     sync_to: {Array.<String>},         // ['chart_id's] - sync filtering with other charts
@@ -394,7 +400,7 @@ g.viz_definition = {
                 group_parameter: {  column: ['case','death']},
 
                 display_colors: [0,1,2,3,4,5],  
-                display_intro: 'bottom',
+                display_intro_position: 'bottom',
                 display_filter: true,
 
                 buttons_list: ['reset','help','expand','lockcolor','parameters'], 
@@ -416,7 +422,7 @@ g.viz_definition = {
                 display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_disease_labelx,
                                  y:g.module_lang.text[g.module_lang.current].chart_disease_labely},
                 display_colors: [2],            
-                display_intro: 'right',
+                display_intro_position: 'left',
                 display_filter: true,
                 buttons_list: ['help'],
                 
@@ -439,7 +445,7 @@ g.viz_definition = {
                 display_axis:   {x:'',
                                  y:g.module_lang.text[g.module_lang.current].chart_case_labely},
                 display_colors: [4,2],            
-                display_intro: 'top',           
+                display_intro_position: 'top',           
                 display_idcontainer: 'container_casedeath_bar',
                 display_filter: true,
                 buttons_list: ['reset','help'],             
@@ -462,7 +468,7 @@ g.viz_definition = {
                 display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_death_labelx,
                                  y:g.module_lang.text[g.module_lang.current].chart_death_labely},
                 display_colors: [4,2],            
-                display_intro: 'none',
+                display_intro_position: 'none',
                 buttons_list: ['reset','help'],
             }, */
 
@@ -492,8 +498,9 @@ g.viz_definition = {
                 //display_colors: [999, 0,1],           //HEIDI - temporary fix   
                 color_group: 'age_classes',    
                 display_colors: [0,1,2],   
-                display_intro: 'top',           
-                display_idcontainer: 'container_casedeath_ser',
+                display_intro_position: 'top',           
+                display_intro_container: 'container_casedeath_ser',  
+                //display_intro_container: 'containter_bar_lin',
                 display_filter: false,
                 buttons_list: ['help'],               
             },
@@ -524,8 +531,8 @@ g.viz_definition = {
                 //display_colors: [999, 0,1],           //HEIDI - temporary fix  
                 color_group: 'age_classes', 
                 display_colors: [0,1,2],   
-                display_intro: 'top',           
-                display_idcontainer: 'container_casedeath_ser',   //IS THIS EVEN USED ANYWHERE???
+                display_intro_position: 'none',           
+                //display_idcontainer: 'container_casedeath_ser',   //IS THIS EVEN USED ANYWHERE???
                 display_filter: false,
                 buttons_list: ['help'],               
             },   
@@ -568,35 +575,12 @@ g.viz_definition = {
                 //display_colors: [4,2,1],     
                 //display_colors: [999, 0,1],           //HEIDI - temporary fix 
                 display_colors: [1],         
-                display_intro: 'top',           
-                display_idcontainer: 'container_casedeath_ser',
+                display_intro_position: 'right',           
+                display_intro_container: 'container_rangechart',
                 display_filter: true,
                 buttons_list: ['help'],               
             },
     
- 
-    fyo: {	domain_builder: 'none',
-                domain_parameter: 'none',  
-
-                instance_builder: 'pie',
-
-                dimension_builder: 'readcat',
-                dimension_parameter: {  column: 'fyo',
-                                        shared: false,
-                                        namespace: 'none'},
-                group_builder: 'auto',
-                group_parameter: {  column: ['case']},
-
-                //display_colors: [2,4],    
-                //display_colors: [999, 1,0],           //HEIDI - temporary fix
-                color_group: 'age_classes',
-                display_colors: [2,1],
-                display_intro: 'left',
-
-                buttons_list: ['reset','help'],
-                display_filter: true
-            },
-
     case_lin: {domain_builder: 'week',
                 domain_parameter: 'custom_linear',
 
@@ -616,8 +600,8 @@ g.viz_definition = {
                                  y:g.module_lang.text[g.module_lang.current].chart_case_labely,
                                  y_imr: 'Incidence Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js},
                 //display_colors: [4,2,1],            
-                display_intro: 'top',           
-                display_idcontainer: 'container_casedeath_lin',
+                display_intro_position: 'top',                  
+                display_intro_container: 'container_casedeath_lin',
                 buttons_list: ['help'],
             },
 
@@ -640,9 +624,31 @@ g.viz_definition = {
                                  y:g.module_lang.text[g.module_lang.current].chart_death_labely,
                                  y_imr: 'Mortality Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js},
                 //display_colors: [4,2,1],            
-                display_intro: 'none',
+                display_intro_position: 'none',
                 buttons_list: ['help'],
             },    
+
+    fyo: {  domain_builder: 'none',
+                domain_parameter: 'none',  
+
+                instance_builder: 'pie',
+
+                dimension_builder: 'readcat',
+                dimension_parameter: {  column: 'fyo',
+                                        shared: false,
+                                        namespace: 'none'},
+                group_builder: 'auto',
+                group_parameter: {  column: ['case']},
+
+                //display_colors: [2,4],    
+                //display_colors: [999, 1,0],           //HEIDI - temporary fix
+                color_group: 'age_classes',
+                display_colors: [2,1],
+                display_intro_position: 'left',
+
+                buttons_list: ['reset','help'],
+                display_filter: true
+            },
 
     year: {     domain_builder: 'year',
                 domain_parameter: 'none',
@@ -657,7 +663,7 @@ g.viz_definition = {
                 group_builder: 'auto',
                 group_parameter: {  column: ['case']},
 
-                display_intro: 'left',           
+                display_intro_position: 'left',           
                 //display_idcontainer: 'chart-year',
                 display_filter: true,
                 buttons_list: ['reset','help'],
@@ -676,7 +682,8 @@ g.viz_definition = {
                 group_builder: 'none',
                 group_parameter: {  column: 'none'},
 
-                display_intro: 'top',
+                display_intro_position: 'top',
+                display_intro_container: 'container_table',
                 buttons_list: ['help'],
             }, 
 };
@@ -709,3 +716,24 @@ g.viz_timeshare = ['case_ser', 'death_ser'];
  */
 g.viz_locations = 'multiadm';
 
+//g.dev_defined.intro_order = [];
+g.dev_defined.intro_order = ['intro', 'menu', 'multiadm', 'disease', 'containter_bar_lin', 'case_ser', 'casedeath_ser_range','case_lin', 'fyo', 'year', 'table'];
+g.dev_defined.intro_position = [{container: 'containter_bar_lin',
+                                 position: 'top'
+                                }];
+g.dev_defined.intro_beforechange = [{           //HEIDI - make all this easier somehow???
+                                     element: 'containter_casedeath_ser',
+                                     click: '#containter_ser-tab'
+                                    }, {
+                                     element: 'container_rangechart',
+                                     click: '#containter_ser-tab'
+                                    },{
+                                     element: 'containter_bar_lin',
+                                     click: '#containter_ser-tab'
+                                    },{
+                                     element: 'chart-fyo',
+                                     click: '#containter_ser-tab'
+                                    },{
+                                     element: 'container_casedeath_lin',
+                                     click: '#containter_lin-tab'
+                                    }]

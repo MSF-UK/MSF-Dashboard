@@ -66,48 +66,135 @@ g.module_multiadm = {};
  */
 module_multiadm.display = function(){
 
-	var html = '<div class="col-md-12">';
-		html += '<div id=buttons-multiadm></div>';
-		// Title + filters
-		if (g.new_layout) {
-			html += '<p><b><big><span id="map-unit">'+g.module_lang.text[g.module_lang.current].map_unit[g.module_colorscale.mapunitcurrent]+'</span></big></b>';
-		} else {
-			html += '<p><b>'+g.module_lang.text[g.module_lang.current].map_title+' - <small><span id="map-unit">'+g.module_lang.text[g.module_lang.current].map_unit[g.module_colorscale.mapunitcurrent]+'</b></span></small> | '+g.module_lang.text[g.module_lang.current].filtext +' ';
-			g.geometry_keylist.forEach(function(key,keynum,keylist){
-				html +=  '<span id="map-'+key+'-filter"></span>';
-				if (!(keynum == keylist.length - 1)) {
-					html += ' >';
-				}
-			});
-			html +='</p>';
-		}
+	var html = '<div class="row">';
+	html += '<div class="col-md-12" style="height:30px;">';
+	html += '<div id=buttons-multiadm></div>';
+	html += '</div></div>';
+
+	// Title + filters
+	if (g.new_layout) {
+		html += '<div class="row">';
+		//html += '<div class="col-md-7" style="height:30px;">';
+		html += '<div class="col-md-8" id="map-title">';
+		html += '<span id="map-unit" class="map-unit-title">'+g.module_lang.text[g.module_lang.current].map_unit[g.module_colorscale.mapunitcurrent]+'</span>';
+		g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
+			if (unitnum == 0) {
+				var text = g.module_lang.text[g.module_lang.current].colorscale_unitintro;
+			} else {
+				var text = '';
+			};
+			if (unit == g.module_colorscale.mapunitcurrent) {
+				html += '<button id='+unit+' class="btn_map button_mapunit on">'+g.module_lang.text[g.module_lang.current].map_unit_title[unit]+'</button>';
+				//html += '<button id='+unit+' class="button_mapunit on checked">'+g.module_lang.text[g.module_lang.current].map_unit_title[unit]+'</button>';
+			} else {
+				html += '<button id='+unit+' class="btn_map button_mapunit">'+g.module_lang.text[g.module_lang.current].map_unit_title[unit]+'</button>';
+			};
+			//html += '<button id='+unit+' class="button_mapunit">'+g.module_lang.text[g.module_lang.current].map_unit_title[unit]+'</button>';
+		});
+		html += '</div>';
+
+		html += '<div class="col-md-2" id="map-text">';
+		html += '<span class="map-text">View by:</span><br>'; //HEIDI - need to add this to module-lang.js
+		//html += '<span class="map-unit-title">'+g.module_lang.text[g.module_lang.current].jumpto+'</span>';
+		//var temp_key = 'admN1';
+		g.geometry_keylist.forEach(function(key,keynum){
+			//console.log(key, keynum);
+			if (keynum == 0) {
+				//var temp_key = key;
+				//var temp = 'map-'+key+'-btn';
+				//console.log('map id = ', temp);
+				html += '<button id="map-'+key+'-btn" class="btn_map button_mapadm on">'+g.module_lang.text[g.module_lang.current]['map_'+key].title+'</button>';
+			} else {
+				//var tab_status ='inactive';
+				//var temp = 'map-'+key+'-btn';
+				//console.log('map id = ', temp);
+				html += '<button id="map-'+key+'-btn" class="btn_map button_mapadm">'+g.module_lang.text[g.module_lang.current]['map_'+key].title+'</button>';
+			}			
+		});
+		html += '</div>';
+
+		html += '<div class="col-md-2">';
+		html += '<span class="map-text">Quick zoom:</span><br>'; //HEIDI - need to add this to module-lang.js
+					
+		//console.log("tabcurrent now: ", g.module_multiadm.tabcurrentnum, g.module_multiadm.tabcurrent);			
+		// 'jumpto' dropdown list
+		g.geometry_keylist.forEach(function(key,keynum){
+			//console.log(key, keynum);
+			html +=  '<div class="list-content" id="map-'+key+'-jumpto"></div>';
+		});
+		//html +=  '<div class="tab-content" id="map-'+temp_key+'-jumpto"></div>';
+		html +=  '</div>';
+
+		html += '</div></div>';
+	} else {
+		html += '<b>'+g.module_lang.text[g.module_lang.current].map_title+' - <small><span id="map-unit">'+g.module_lang.text[g.module_lang.current].map_unit[g.module_colorscale.mapunitcurrent]+'</b></span></small> | '+g.module_lang.text[g.module_lang.current].filtext +' ';
+		g.geometry_keylist.forEach(function(key,keynum,keylist){
+			html +=  '<span id="map-'+key+'-filter"></span>';
+			if (!(keynum == keylist.length - 1)) {
+				html += ' >';
+			}
+		});
+	}
 		
+		//Map Units (i.e. Cases, Deaths, Incidence Rate, Mortality Rate, Completeness) go here
+		//if (g.new_layout) {
+			//html += '<div class="col-md-4">';
+			// Unit
+			/*html += '<p><table style="font-size:1em;">';
+
+				g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
+					if(unitnum == 0){
+						var text = g.module_lang.text[g.module_lang.current].colorscale_unitintro;
+					}else{
+						var text = '';
+					}
+					if(unit == g.module_colorscale.mapunitcurrent){
+						html += '<tr><td>'+text+' </td><td><input type="radio" name="group1" id="'+unit+'" value='+unitnum+' checked> '+unit+'</td></tr>';
+					}else{
+						html += '<tr><td>'+text+'</td><td><input type="radio" name="group1" id="'+unit+'" value='+unitnum+'> '+unit+'</td></tr>';
+					}
+				});
+				
+			html +=	'</table></p>';*/
+
+			/*g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
+				html += '<button id='+unit+' class="button_mapunit">'+g.module_lang.text[g.module_lang.current].map_unit_title[unit]+'</button>';
+			});*/
+
+			//if(g.medical_datatype == 'surveillance'){html += '</div><div class="col-md-4">';}
+			//html += '</div>';
+		//}
 
 		// Tabs + 'jumpto' dropdown lists
-		html += '<div>';
-			g.geometry_keylist.forEach(function(key,keynum){
-				if (keynum == 0) {
-					var tab_status ='active';
-				} else {
-					var tab_status ='inactive';
-				}
-				html +=  '<div id="map-'+key+'-tab" class="'+tab_status+' tab">';
-				
-				// Tab title
-				html +=  '<div class="col-md-7 tab-content">'+g.module_lang.text[g.module_lang.current]['map_'+key].title+'</div>';
-				
-				// 'jumpto' dropdown list
-				html +=  '<div class="col-md-5 tab-content" id="map-'+key+'-jumpto"></div>';
-				html +=  '</div>';
-			});
-		html += '</div>';
+		if (!(g.new_layout)) {
+			html += '<div>';
+				g.geometry_keylist.forEach(function(key,keynum){
+					if (keynum == 0) {
+						var tab_status ='active';
+					} else {
+						var tab_status ='inactive';
+					}
+					html +=  '<div id="map-'+key+'-tab" class="'+tab_status+' tab">';
+					
+					// Tab title
+					html +=  '<div class="col-md-7 tab-content">'+g.module_lang.text[g.module_lang.current]['map_'+key].title+'</div>';
+					
+					// 'jumpto' dropdown list
+					html +=  '<div class="col-md-5 tab-content" id="map-'+key+'-jumpto"></div>';
+					html +=  '</div>';
+				});
+			html += '</div>';
+		}
+
 	html += '</div>';
 
 	// Maps
-	html += '<div class="col-md-12 viz" style="height:425px; width:110%;">';
+	html += '<div class="row">';
+	html += '<div class="col-md-12 viz" style="height:425px; width:108%;">';
 		g.geometry_keylist.forEach(function(key){
 			html += '<div id="map-'+key+'" class="map"></div>'; 
 		});
+	html += '</div>';
 	html += '</div>';
 
 	$('#chart-multiadm').html(html);
@@ -141,6 +228,19 @@ module_multiadm.display = function(){
  * @alias module:module_multiadm.interaction
  */
 module_multiadm.interaction = function(){
+
+	/*//Map unit 'onclick' events
+	g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
+		$('#'+unit).on('click',function(){   
+			if (!($('#'+unit).hasClass('on'))) {
+				console.log('CLICKED ON: ', unit);
+				$('.button_mapunit').removeClass('on')
+				$('.button_mapunit').removeClass('checked')
+				$('#'+unit).addClass('on');
+				$('#'+unit).addClass('checked');
+			};
+		});
+	});*/
 
 	// 3) a. Tabs Interactions
 	//------------------------------------------------------------------------------------
@@ -197,47 +297,87 @@ module_multiadm.interaction = function(){
      * @todo Could we avoid module_colorscale dependency here?
      */
 	g.module_multiadm.tabcurrentnum = 0;
-	console.log("ASSIGNED TABCURRENTNUM HERE: ", g.module_multiadm.tabcurrentnum);
+	console.log("ASSIGNED TABCURRENTNUM HERE: ", g.module_multiadm.tabcurrentnum, g.module_multiadm.tabcurrent);
 
 	// Tabs 'onclick' events
 	g.geometry_keylist.forEach(function(key1,key1num){
+		if (g.new_layout) {
+			$('#map-'+key1+'-btn').on('click',function(){  
+				//console.log("CLICKED ON ", key1);
+				if (!(g.module_multiadm.tabcurrent == 'map-'+key1)) {
+					// Temporarily store previous tab keys
+			    	var key0 = g.module_multiadm.tabcurrent;
+			    	var key0num = g.module_multiadm.tabcurrentnum;
 
-		$('#map-'+key1+'-tab').on('click',function(){        
-		    if (!(g.module_multiadm.tabcurrent == 'map-'+key1)) {
+			        // Swich current displayed map in global variable
+			        g.module_multiadm.tabcurrent = 'map-'+key1;
+					g.module_multiadm.tabcurrentnum = key1num;
 
-		    	// Temporarily store previous tab keys
-		    	var key0 = g.module_multiadm.tabcurrent;
-		    	var key0num = g.module_multiadm.tabcurrentnum;
+					$('#'+key0+'-btn').removeClass('on');
+			        //$('#'+key0+'-btn').addClass('inactive');
+			        $('#'+key0).css('z-index', 1);		
+			        //$('#map-'+key1+'-btn').removeClass('inactive');
+			        $('#map-'+key1+'-btn').addClass('on');
+			        $('#map-'+key1).css('z-index', 9999);	
 
-		        // Swich current displayed map in global variable
-		        g.module_multiadm.tabcurrent = 'map-'+key1;
-				g.module_multiadm.tabcurrentnum = key1num;
+			        // For maps of lower administrative level: reset 'jumpto' dropdown list
+			        if (key1num < key0num){
+				        g.geometry_keylist.forEach(function(key2,key2num){
+				        	if (key2num>key1num) {
+					        	module_multiadm.resetGoto(key2);
+					        	g.viz_definition.multiadm.charts[key2].filterAll();		
+				        	}
+				        });
+				        dc.redrawAll();
+				    }
 
-		        $('#'+key0+'-tab').removeClass('active');
-		        $('#'+key0+'-tab').addClass('inactive');
-		        $('#'+key0).css('z-index', 1);		
-		        $('#map-'+key1+'-tab').removeClass('inactive');
-		        $('#map-'+key1+'-tab').addClass('active');
-		        $('#map-'+key1).css('z-index', 9999);		
+				    // Why? - To maintain coherence if a feature is selected in the new adm level? Does that work? 
+				    module_multiadm.propGoto(key1,key1num);		
 
-		        // For maps of lower administrative level: reset 'jumpto' dropdown list
-		        if (key1num < key0num){
-			        g.geometry_keylist.forEach(function(key2,key2num){
-			        	if (key2num>key1num) {
-				        	module_multiadm.resetGoto(key2);
-				        	g.viz_definition.multiadm.charts[key2].filterAll();		
-			        	}
-			        });
-			        dc.redrawAll();
-			    }
+				};
 
-			    // Why? - To maintain coherence if a feature is selected in the new adm level? Does that work? 
-			    module_multiadm.propGoto(key1,key1num);	
-		    };
+			    // Why? - 'lockcolor' only locks color on current adm level map.
+	    		module_colorscale.lockcolor('Auto');    	
+			})	
 
-		    // Why? - 'lockcolor' only locks color on current adm level map.
-    		module_colorscale.lockcolor('Auto');             
-		})   	
+		} else {
+			$('#map-'+key1+'-tab').on('click',function(){        
+			    if (!(g.module_multiadm.tabcurrent == 'map-'+key1)) {
+
+			    	// Temporarily store previous tab keys
+			    	var key0 = g.module_multiadm.tabcurrent;
+			    	var key0num = g.module_multiadm.tabcurrentnum;
+
+			        // Swich current displayed map in global variable
+			        g.module_multiadm.tabcurrent = 'map-'+key1;
+					g.module_multiadm.tabcurrentnum = key1num;
+
+			        $('#'+key0+'-tab').removeClass('active');
+			        $('#'+key0+'-tab').addClass('inactive');
+			        $('#'+key0).css('z-index', 1);		
+			        $('#map-'+key1+'-tab').removeClass('inactive');
+			        $('#map-'+key1+'-tab').addClass('active');
+			        $('#map-'+key1).css('z-index', 9999);		
+
+			        // For maps of lower administrative level: reset 'jumpto' dropdown list
+			        if (key1num < key0num){
+				        g.geometry_keylist.forEach(function(key2,key2num){
+				        	if (key2num>key1num) {
+					        	module_multiadm.resetGoto(key2);
+					        	g.viz_definition.multiadm.charts[key2].filterAll();		
+				        	}
+				        });
+				        dc.redrawAll();
+				    }
+
+				    // Why? - To maintain coherence if a feature is selected in the new adm level? Does that work? 
+				    module_multiadm.propGoto(key1,key1num);	
+			    };
+
+			    // Why? - 'lockcolor' only locks color on current adm level map.
+	    		module_colorscale.lockcolor('Auto');             
+			}) 	
+		}
 
 	});
 	/***************************************************************/
@@ -278,7 +418,10 @@ module_multiadm.interaction = function(){
             if(g.geometry_keylist[key2num]){
             	var key2 = g.geometry_keylist[key2num];
             	var html = '<select class="select-adm" id="select-'+key2+'">';
-	            html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+'</option>';   
+            	console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')');
+	            html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')'+'</option>'; 
+	            //console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key1].title+')');  
+			    //html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+'</option>';   
 			    g.medical_loclists[key2].forEach(function(loc){
 			        if (loc.slice(0,loc_new.length) == loc_new) {
 			        	html +='<option value="'+loc+'">'+loc+'</option>';
@@ -332,7 +475,8 @@ module_multiadm.interaction = function(){
 
         // Initialize first jumpto
 	    var html = '<select class="select-adm" id="select-admN1">';
-	    html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+'</option>';
+	    //console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key1].title+')');  
+	    html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_admN1'].title+')'+'</option>';
 	    g.medical_loclists.admN1.sort().forEach(function(loc){
 	        html +='<option value="'+loc+'">'+loc+'</option>';
 	    });
@@ -402,7 +546,8 @@ module_multiadm.zoomTo = function(key,loc){
 module_multiadm.resetGoto = function(key){	  //key=adm level, e.g. admN2
 	// Reset jumpto dropdown lists content
     var html = '<select class="select-adm" id="select-'+ key +'">';
-    html += '<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+'</option>';
+    console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key].title+')');
+    html += '<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_'+key].title+')'+'</option>';
     g.medical_loclists[key].sort().forEach(function(loc){	
         html +='<option value="'+loc+'">'+loc+'</option>';
     });
@@ -410,3 +555,103 @@ module_multiadm.resetGoto = function(key){	  //key=adm level, e.g. admN2
     $('#map-'+key+'-jumpto').html(html);
     g.module_multiadm.focuscurrent[key] = 'NA';
 }
+
+
+module_multiadm.mapunit_interaction = function() {
+
+	//Map unit 'onclick' events
+	g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
+		$('#'+unit).on('click',function(){   
+			if (!($('#'+unit).hasClass('on'))) {
+				console.log('CLICKED ON: ', unit);
+				$('.button_mapunit').removeClass('on')
+				//$('.button_mapunit').removeClass('checked')
+				$('#'+unit).addClass('on');
+				//$('#'+unit).addClass('checked');
+				g.module_colorscale.mapunitcurrent = unit;
+				changeMapUnit(unit);
+			};
+		});
+	});
+
+	//g.module_colorscale.mapunitlist.forEach(function(unit){
+	changeMapUnit = function(unit) {
+		//$('#'+unit).on('change',function(){			//whenever selection changes
+			//if ($('#'+unit).is(':checked')) {		//if it is checked (i.e. changed to this 'unit')
+			if ($('#'+unit).hasClass('on')) {
+				//g.module_colorscale.mapunitcurrent = g.module_colorscale.mapunitlist[$('#'+unit).val()];  //set .mapunitcurrent variable to selected
+				//console.log("CLICKED ON: ", g.module_colorscale.mapunitcurrent);
+
+				// Saves last disease displayed when 'Completeness' is selected
+				if (g.module_colorscale.mapunitcurrent == 'Completeness') {
+					//console.log("SELECTED Completeness: ", g.module_colorscale.mapunitcurrent);
+					$('#selectform1').val('ReversedDiverging');	
+					g.module_colorscale.colorscurrent = 'ReversedDiverging';
+					//console.log("g.module_colorscale.colorscurrent: ", g.module_colorscale.colorscurrent);
+					if (typeof g.viz_definition.disease.chart.filter() == 'string') {
+			            var temp_disease = g.medical_currentdisease.substring(0,g.medical_currentdisease.length);
+						g.medical_pastdisease = temp_disease;
+						g.viz_definition.disease.chart.filterAll();
+						g.medical_currentdisease = g.medical_pastdisease; 
+					}
+
+					$('#chart_case_ser_title').html('<b>Completeness</b>');		//HEIDI added - not sure about this!!!
+					$('#chart_case_lin_title').html('<b>Completeness</b>');	
+
+	                $('#chart-disease').addClass("noclick");
+	                $('#chart-fyo').addClass("noclick");
+
+				} else if(g.module_colorscale.mapunitcurrent == 'Cases' || g.module_colorscale.mapunitcurrent == 'Deaths') {
+					//console.log("SELECTED Cases OR Deaths: ", g.module_colorscale.mapunitcurrent);
+					$('#selectform1').val('Classic');	
+					g.module_colorscale.colorscurrent = 'Classic';
+					//console.log("g.module_colorscale.colorscurrent: ", g.module_colorscale.colorscurrent);
+					//console.log("g.viz_definition.disease = ", g.viz_definition.disease);
+					//console.log("g.viz_definition.disease.chart.filter() = ", g.viz_definition.disease.chart.filter());
+					//console.log("g.medical_currentdisease = ", g.medical_currentdisease);
+					if(g.viz_definition.disease && g.viz_definition.disease.chart.filter() == undefined && g.medical_currentdisease){
+			            g.viz_definition.disease.chart.filter(g.medical_currentdisease);
+			            //console.log("IN IF for Cases or Deaths: ", g.medical_currentdisease);
+					}
+
+					$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_title+'</b>');		//HEIDI added
+					$('#chart_case_lin_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_title+'</b>');		//HEIDI added
+
+					$('#chart-disease').removeClass("noclick");
+					$('#chart-fyo').removeClass("noclick");
+
+				} else if(g.module_colorscale.mapunitcurrent == 'IncidenceProp' || g.module_colorscale.mapunitcurrent == 'MortalityProp'){
+					//console.log("SELECTED Incidence or Mortality: ", g.module_colorscale.mapunitcurrent);
+					$('#selectform1').val('Classic');	
+					g.module_colorscale.colorscurrent = 'Classic';
+					//console.log("g.module_colorscale.colorscurrent: ", g.module_colorscale.colorscurrent);
+		            if(g.viz_definition.disease && g.viz_definition.disease.chart.filter() == undefined && g.medical_currentdisease){
+			            g.viz_definition.disease.chart.filter(g.medical_currentdisease);
+					}
+					
+					if (g.module_lang.text[g.module_lang.current].chart_case_ser_imr_title) {
+						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_imr_title+'</b>');		//HEIDI added
+					} else {
+						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_title+'</b>');
+					}
+
+					if (g.module_lang.text[g.module_lang.current].chart_case_lin_imr_title) {
+						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_imr_title+'</b>');		//HEIDI added
+					} else {
+						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_title+'</b>');
+					}
+					
+					$('#chart-disease').removeClass("noclick");
+					$('#chart-fyo').removeClass("noclick");
+					dc.redrawAll(); //HEIDI ADDED TO TEST
+	          	}
+
+	          	module_colorscale.changeMapColors();
+				module_colorscale.lockcolor('Manual');
+
+				$('#map-unit').html(g.module_lang.text[g.module_lang.current].map_unit[g.module_colorscale.mapunitcurrent]);  //map title
+			}
+		//});
+	//});
+	};
+};

@@ -32,64 +32,81 @@
 
             <!-- Header -->
             <div id="header" class="row">
-                <div class="col-md-8">  
-                    <h2 id="main_title"></h2>
+                <div class="col-md-9">  
+                    <p id="main_title"></p>
                 </div>
-                <div class="col-md-4">  
-                    <p id="main_description"></p>
+                <div class="col-md-3">  
+                    <p id="main_description_new"></p>
                 </div>                 
             </div>
 
             <div class="row">
 
 		<!-- Maps -->
-                <div class="col-md-12">
-                    <div id="chart-multiadm" class="row"></div>
+                <div class="col-md-9">
+                    <div id="chart-multiadm" class="row">
+                        <!-- <div class="row">
+                            <div class="col-md-12" style="height:30px;">
+                                <span id="buttons-multiadm"></span>
+                            </div>
+                        </div> -->
+                    </div>
                 </div>
-            </div>
 
-        <!-- Other Graphs -->                                                                              
-            <div class="row">
-                <div class="col-md-2">
-                    <div id="buttons-disease"></div>
+                <div class="col-md-3" id="disease_div">
+                    <div id="buttons-disease" class="viz"></div>
                     <div id="chart-disease" class="viz">
                         <!-- <p style="height: 60px;"><span id="chart_disease_title"></span> <span class="filter"> </span></p> -->
                         <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_disease_title"></span></p>
                     </div>
                 </div>  
-                <div id="containter_bar-lin" class="col-md-8">
-                    <div id="containter_bar-lin_tabs"></div>
+            </div>
+
+        <!-- Other Graphs -->                                                                              
+            <div class="row">
+                <!-- <div class="col-md-2">
+                    <div id="buttons-disease"></div>
+                    <div id="chart-disease" class="viz">
+                        <p style="height: 60px;"><span id="chart_disease_title"></span> <span class="filter"> </span></p>
+                        <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_disease_title"></span></p>
+                    </div>
+                </div>   -->
+
+                <div id="containter_bar_lin" class="col-md-9" style="height: 600px;">
+
+                    <div id="containter_bar_lin_tabs"></div>
 
                     <div id="containter_ser">
                         <div class="col-md-12" id="container_casedeath_ser">
+
                             <div class="row">                        
                                 <div class="col-md-12">
                                     <div id="buttons-case_ser"></div>
                                     <div id="chart-case_ser" class="viz">
                                         <!-- <p style="height: 30px;"><span id="chart_case_ser_title"></span> <span class="filter"> </span></p> -->
-                                        <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_case_ser_title"></span></p>
+                                        <!-- <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_case_ser_title"></span></p> -->
                                     </div>                       
                                 </div>
-                            </div>                          
+                            </div>   
+
                             <div class="row">
                                 <div class="col-md-12">
                                     <div id="chart-death_ser" class="viz"></div>
                                 </div>
                             </div> 
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div id="chart-casedeath_ser_range" class="viz"></div>
-                                </div>
-                                <div class="col-md-12">
-                                    <p><span id="filters_qf-casedeath_ser_range"></span></p> 
-                                    <div id="buttons_qf-casedeath_ser_range">
-                                        <!-- <p style="height: 30px;"><span id="filters_qf-casedeath_ser_range">Current selection: All</span> <span class="filter"> </span></p>-->
-                                    </div>
-                                </div>
-                            </div>                                                    
                         </div>
-                    </div>
 
+                            <div class="row">
+                                <div class="col-md-12" id="container_rangechart">
+                                    <p><span id="filters_qf-casedeath_ser_range"></span></p> 
+                                    <div id="buttons-casedeath_ser_range"></div>
+                                    <div id="chart-casedeath_ser_range" class="viz"></div>
+                                    <div id="buttons_qf-casedeath_ser_range"></div>
+                                </div>
+                               
+                            </div>                                                    
+                        <!-- </div> -->
+                    </div>
 
                     <div id="containter_lin">
                         <div class="col-md-12" id="container_casedeath_lin">
@@ -98,7 +115,7 @@
                                     <div id="buttons-case_lin"></div>
                                     <div id="chart-case_lin" class="viz">
                                         <!-- <p style="height: 30px;"><span id="chart_case_lin_title"></span> <span class="filter"> </span></p> -->
-                                        <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_case_lin_title"></span></p>
+                                        <!-- <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_case_lin_title"></span></p> -->
                                     </div>                         
                                 </div>
                             </div>
@@ -110,36 +127,43 @@
                         </div>
                     </div>
 
-
                 </div>
 
-                <div class="col-md-2">
-                    <div id="buttons-fyo"></div>
-                    <div id="chart-fyo" class="viz">
-                        <!-- <p style="height: 30x;"><span id="chart_fyo_title"></span> <span class="filter"> </span></p> -->
-                        <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_fyo_title"></span></p>
+                <div class="col-md-3">
+                    <div class="col-md-12" id="container_fyo">
+                        <div class="row">
+                            <div id="buttons-fyo"></div>
+                            <div id="chart-fyo" class="viz">
+                                <!-- <p style="height: 30x;"><span id="chart_fyo_title"></span> <span class="filter"> </span></p> -->
+                                <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_fyo_title"></span></p>
+                            </div>
+                        </div>
                     </div>
-
-                    <div id="buttons-year"></div>
-                    <div id="chart-year" class="viz">
-                        <!-- <p style="height: 30px;"><span id="chart_year_title"></span> <span class="filter"> </span></p> -->
-                        <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_year_title"></span></p>
+                    <div class="col-md-12" id="container_year">
+                        <div class="row">
+                            <div id="buttons-year"></div>
+                            <div id="chart-year" class="viz">
+                                <!-- <p style="height: 30px;"><span id="chart_year_title"></span> <span class="filter"> </span></p> -->
+                                <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_year_title"></span></p>
+                            </div>
+                        </div>
                     </div>
-
                 </div>  
 
             </div>
+       <!--  </div> -->
 
         <!-- Datatable -->
             <div class="row">
-                <div class="col-md-12">
-                    <div class="row">
+                <div class="col-md-12" id="container_table">
+                    <!-- <div class="row"> -->
                         <p><a id="more-table"></a></p>
                         <div id="container-table" hidden="true"></div>
-                    </div>
+                    <!-- </div> -->
                 </div>
             </div>
-        
+        <!-- </div> -->
+
         <!-- Menu -->
         <div class="row">
             <div id="menu"></div>

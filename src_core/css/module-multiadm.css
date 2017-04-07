@@ -30,7 +30,84 @@
 	padding-right: 0px;	
 }
 
+.list-content {
+    /*border-left: 1px solid #bbb;
+    border-top: 1px solid #bbb;
+    border-right: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+    border-radius: 6px;*/
+    margin-bottom: 2px;
+}
+
 .select-adm{
-    width:60px;
+    /*width: 60px;*/
+    width: 90%;
     font-size:0.9em;
+    border-radius: 6px;
+    /*border: none;*/
+}
+
+/* Map unit title & text - new layout */
+#map-title {
+    margin-top: 25px;
+}
+
+.map-unit-title {
+    margin-right: 10px;
+    text-align: bottom;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#map-text {
+    margin-top: 10px;
+}
+
+.map-text {
+    margin-top: 10px;
+    margin-left: 4px;
+    text-align: bottom;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+/* Map unit button styles */
+.btn_map {
+    background-color: #cccccc; /* #3160b2; */
+    border: none;
+    border-radius: 6px;
+    outline: none;
+    /*outline-color: #ffff00;*/
+    color: black; /* white; */
+    padding: 4px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    /*margin: 4px 2px;*/
+    margin-left: 4px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+
+.btn_map:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+    /* background-color: #264b8b */
+}
+
+.btn_map:active {
+  border-radius: 8px;
+  background-color: #3160b2; /* #264b8b; */
+  color: white;   /* #ffff00; */
+  box-shadow: 0 4px #666;
+  transform: translateY(3px); 
+  /* border: 1px solid #979797;  */
+}
+
+.btn_map.on {
+    background-color: #3160b2;
+    color: white;
 }

@@ -128,7 +128,7 @@ g.module_colorscale.colors = {
 	Diverging: ['#DDDDDD','#1a9641','#a6d96a','#ffffbf','#fdae61','#d7191c'],
 	Qualitative: ['#DDDDDD','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33'], 
 	ReversedDiverging: ['#DDDDDD','#d7191c','#fdae61','#ffffbf','#a6d96a','#1a9641'],
-	Composite: ['#333333', '#17becf', '#bcbd22', '#9467bd'],
+	Composite: ['#333333', '#17becf', '#bcbd22', '#9467bd'],   //HEIDI - should be in here!!! this is outputted in modal dialog
 };
 
 /**
@@ -211,30 +211,33 @@ module_colorscale.display = function() {
 
 	// Title
 	var html = '<div><p><b>'+g.module_lang.text[g.module_lang.current].colorscale_title+'</b></p>';
+
+	if (!(g.new_layout)) {
+		//if(g.medical_datatype == 'surveillance'){html += '<div class="col-md-4">';}
+		html += '<div class="col-md-4">';
+		// Unit
+		html += '<p><table style="font-size:1em;">';
+
+			g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
+				if(unitnum == 0){
+					var text = g.module_lang.text[g.module_lang.current].colorscale_unitintro;
+				}else{
+					var text = '';
+				}
+				if(unit == g.module_colorscale.mapunitcurrent){
+					html += '<tr><td>'+text+' </td><td><input type="radio" name="group1" id="'+unit+'" value='+unitnum+' checked> '+unit+'</td></tr>';
+				}else{
+					html += '<tr><td>'+text+'</td><td><input type="radio" name="group1" id="'+unit+'" value='+unitnum+'> '+unit+'</td></tr>';
+				}
+			});
+			
+		html +=	'</table></p>';
+		//if(g.medical_datatype == 'surveillance'){html += '</div><div class="col-md-4">';}
+		html += '</div>';
+	}
 	
-	//if(g.medical_datatype == 'surveillance'){html += '<div class="col-md-4">';}
+	
 	html += '<div class="col-md-4">';
-
-	// Unit
-	html += '<p><table style="font-size:1em;">';
-
-		g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
-			if(unitnum == 0){
-				var text = g.module_lang.text[g.module_lang.current].colorscale_unitintro;
-			}else{
-				var text = '';
-			}
-			if(unit == g.module_colorscale.mapunitcurrent){
-				html += '<tr><td>'+text+' </td><td><input type="radio" name="group1" id="'+unit+'" value='+unitnum+' checked> '+unit+'</td></tr>';
-			}else{
-				html += '<tr><td>'+text+'</td><td><input type="radio" name="group1" id="'+unit+'" value='+unitnum+'> '+unit+'</td></tr>';
-			}
-		});
-		
-	html +=	'</table></p>';
-	
-	//if(g.medical_datatype == 'surveillance'){html += '</div><div class="col-md-4">';}
-	html += '</div><div class="col-md-4">';
 
 	// Colorscale mode
 	html += '<p><table style="font-size:1em;">';
@@ -266,6 +269,8 @@ module_colorscale.display = function() {
 		if (f!==g.module_colorscale.colorscurrent) {html +='<option value="'+f+'">'+f+'</option>';};
 	});
 	html +='</p></select>';
+
+	if (g.new_layout) {html += '</div><div class="col-md-4">'};
 
 	html += '<p>'+g.module_lang.text[g.module_lang.current].colorscale_choosetype+'<select class="select-cs" id="selectform2">';
 	html +='<option value="'+g.module_colorscale.scaletypecurrent+'">'+g.module_colorscale.scaletypecurrent+'</option>';
@@ -315,13 +320,55 @@ module_colorscale.display = function() {
  * @method
  * @alias module:module_colorscale.interaction
  */
+
+module_colorscale.changeMapColors = function() {
+
+	if (g.viz_definition.multiadm.display_colors) {
+        var color_list = [];
+        g.viz_definition.multiadm.display_colors.forEach(function(num) {
+            color_list.push(g.module_colorscale.colors[g.module_colorscale.colorscurrent][num]);
+        });
+        var color_domain = [0,color_list.length - 1];
+    }
+
+    // Duplicate from main-core.js
+    function colorAccessor(d){
+        //console.log('from module-colorscale');
+    	var col = g.module_colorscale.valuescurrent.length - 1;
+        if(d || (!(d == undefined) && g.module_colorscale.mapunitcurrent == 'Completeness')){
+            while ((d <= g.module_colorscale.valuescurrent[col]) && (col > 1)){
+                col--;
+            }
+        }else{
+            col = 0;
+        }
+        return col;
+    }
+
+    // Updates the map
+	$('.legend').remove();
+    g.geometry_keylist.forEach(function(adm) {
+    	g.viz_definition.multiadm.charts[adm]
+    		.colors(color_list)
+    		//.valueAccessor(valueAccessor)
+            .colorDomain(color_domain)
+            .colorAccessor(colorAccessor); 
+	    g.viz_definition.multiadm.legend[adm].addTo(g.viz_definition.multiadm.maps[adm]);
+    })
+    //console.log("ABOUT TO REDRAW ALL from module_colorscale.interaction...");
+	dc.redrawAll();	
+}
+
 module_colorscale.interaction = function(){
 
 	// Reacts on color tone change
     $("#selectform1").on('change',function(){
+
 		g.module_colorscale.colorscurrent = $('#selectform1').val();
 
-		if (g.viz_definition.multiadm.display_colors) {
+		module_colorscale.changeMapColors();
+		//console.log("color scale type, selectform1, changed to (in module-colorscale): ", g.module_colorscale.colorscurrent);
+		/*if (g.viz_definition.multiadm.display_colors) {
             var color_list = [];
             g.viz_definition.multiadm.display_colors.forEach(function(num) {
                 color_list.push(g.module_colorscale.colors[g.module_colorscale.colorscurrent][num]);
@@ -354,7 +401,7 @@ module_colorscale.interaction = function(){
 		    g.viz_definition.multiadm.legend[adm].addTo(g.viz_definition.multiadm.maps[adm]);
 	    })
 	    //console.log("ABOUT TO REDRAW ALL from module_colorscale.interaction...");
-		dc.redrawAll();	
+		dc.redrawAll();	*/
 	});
 
     // Reacts on scale type change
@@ -377,7 +424,7 @@ module_colorscale.interaction = function(){
 				    $(g.module_colorscale.lockcolor_id).removeClass('buttonlocked'); 
 				}
 			}
-			console.log(['mode',g.module_colorscale.modecurrent]);
+			//console.log(['mode',g.module_colorscale.modecurrent]);
 
 			// Shouldn't we update the map?
 			// module_colorscale.lockcolor(g.module_colorscale.modecurrent);
@@ -502,7 +549,7 @@ module_colorscale.interaction = function(){
 module_colorscale.lockcolor = function(source){
 	//console.log("in module_colorscale.lockcolor: ", source)
 	if(source == g.module_colorscale.modecurrent || source == 'Manual'){
-		//console.log("************ in lockcolor for: ", source);
+		//console.log("in lockcolor: ", source);
 		var admlevel_current = g.module_multiadm.tabcurrent.split('-')[1];
 		if (g.module_colorscale.mapunitcurrent == 'Casses') {
 			//console.log("lockcolor, in if Casses");
@@ -515,11 +562,11 @@ module_colorscale.lockcolor = function(source){
 				return admobjects_current[keynum].value.Values;
 			});
 		}else if(g.module_colorscale.mapunitcurrent == 'Completeness'){
-			//console.log("lockcolor, in if Completemess");
+			//console.log("lockcolor, in Completeness");
 			//console.log("lockcolor, in else if");
 			var admvalues_current = [100,80,60,40,20,0];
 		}else{ //} if(g.module_colorscale.mapunitcurrent == 'Incidence'){
-			//console.log("lockcolor, in else");
+			//console.log("lockcolor");
 			var admvalues_current = Object.keys(g.viz_currentvalues[admlevel_current]).map(function (key,keynum,keylist) {
 				if(keynum == keylist.length - 1){
 					var temp = g.viz_currentvalues[admlevel_current][key];

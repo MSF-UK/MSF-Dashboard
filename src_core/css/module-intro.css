@@ -5,3 +5,11 @@
     Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
 ------------------------------------------------------------------------------------*/
 
+/*.introjs-tooltiptext {
+	width: 400px;
+}*/
+
+.introjs-tooltip {
+  max-width: 500px;
+  min-width: 400px;
+}

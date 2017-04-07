@@ -4,11 +4,30 @@
     List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
     Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
 ------------------------------------------------------------------------------------*/
-#main_description {
-    font: 12px sans-serif;
-    text-align: right;
+#main_title {
+    font: 32px sans-serif;
+    /*font-weight: bold;*/
+    text-align: left;
+    margin-left: 0px;
     margin-top: 20px;
     margin-right: 0px;
+    margin-bottom: 0px; 
+}
+
+/*#main_description {         
+    font: 12px sans-serif;
+    text-align: left;
+    margin-top: 10px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+*/
+#main_description_new {
+    font: 14px sans-serif;
+    text-align: right;
+    margin-top: 10px;
+    margin-right: 0px;
+    margin-bottom: 0px;
 }
 
 .button,.button:hover,.button:focus{
@@ -62,6 +81,7 @@
     top: 23px !important;
 }
 
+
 /* Buttons/Left menu styles */
 .menu_button,.menu_button:focus,.menu_button:hover{
     background-color:#ee0000;
@@ -107,7 +127,7 @@
 }
 
 .headline {
-    font-size: 0.9em;
+    font-size: 1.0em;
 }
 
 .btn:hover {
@@ -118,6 +138,8 @@
   box-shadow: 0 4px #666;
   transform: translateY(3px); 
 } 
+
+
 
 /* Buttons/Left menu styles - New Page Format */
 /*.button_menu, .button_menu:focus {*/
@@ -137,7 +159,7 @@
     display: inline-block;
     font-size: 12px;
     /*margin: 4px 2px;*/
-    margin-left: 12px;
+   /* margin-left: 12px;*/
     margin-bottom: 4px;
     cursor: pointer;
     -webkit-transition-duration: 0.4s; /* Safari */
@@ -161,10 +183,128 @@
   /* border: 1px solid #979797;  */
 }
 
-#menu_viewFilters {
+#menu_help{
+    top: 530px;
+}
+
+#menu_help_new {
+    top: 30px;
+    background-color:#d60505;
+    border-color:#d60505;
+    color: white;
+}
+
+#menu_reload {
+    top: 580px;
+}
+
+#menu_reload_new, #menu_reload_new.off {
+    top: 70px;
+    background-color: #cccccc;  /*#3160b2;*/ 
+    border: none;
+    color: black;
+}
+
+#menu_reload_new.on, #menu_reload_new.off:hover {
+    background-color: #2e89ce;
+    border-color: #2e89ce;
+    color: white;
+}
+
+#menu_reload_new:active {
+    background-color: #2e6991;
+    border: none;
+    color: white;
+}
+
+#menu_autoplay {
     top: 250px;
 }
 
+#menu_autoplay_new {
+    top: 180px;
+}
+
+#menu_count{
+    text-align: center;
+    position: fixed;
+    top: 380px;
+    /*top: 300px;*/
+    left: 2.5%;
+    width: 7.5%;
+    font-size:1.1em;
+    /*margin-bottom: 40px;*/
+}
+
+#menu_count_new {
+    text-align: center;
+    position: fixed;
+    top: 300px;
+    left: 2.5%;
+    width: 7.5%;
+    font-size:1.1em;
+    /*margin-bottom: 40px;*/
+}
+
+#menu_reset_new, #menu_reset_new.off{
+    top: 400px;
+    background-color: #cccccc;  /*#3160b2; */
+    border: none;
+    color: black;
+}
+#menu_reset_new.on, #menu_reset_new.off:hover {
+    background-color: #2e89ce;
+    border-color: #2e89ce;
+    color: white;
+}
+
+#menu_reset_new:active {
+    background-color: #2e6991;
+    border: none;
+    color: white;
+}
+
+#menu_playtext{
+    text-align: center;
+    position: fixed;
+    top: 230px;
+    left: 2.5%;
+    width: 7.5%;
+    font-size:1.1em;
+    margin-top: 8px;
+    /*margin-bottom: 40px;*/
+}
+
+.btn_play.play{
+    /*text-align: center; 
+    position: fixed;*/
+    left: 5%;
+    width: 2.5%; /* 50px; */
+    height: 50px;
+    margin-top: 0px;   
+    background: url(../images/play.png);
+    background-size: 40px 40px;
+    background-position:center;
+    background-repeat:no-repeat; 
+    border: none;
+}
+
+.btn_play.pause{
+    /*text-align: center;*/
+    left: 5%;
+    width: 2.5%; /* 50px; */
+    height: 50px;
+    margin-top: 0px;
+    background: url(../images/pause.png);
+    background-size: 40px 40px;
+    background-position:center;
+    background-repeat:no-repeat; 
+    border: none;
+}
+
+#menu_viewFilters {
+    top: 440px;
+}
 
 .filters_btn {
     float: right;
@@ -202,7 +342,7 @@
 #filters_info{
     text-align: left;
     position: fixed;
-    top: 300px;
+    top: 490px;
     left: 1.0%;
     width: 12%;
     font-size:0.9em;
@@ -217,68 +357,8 @@
     color: black;
 }
 
-#menu_reset, #menu_reset.off{
-    top: 210px;
-    background-color: #cccccc;  /*#3160b2; */
-    border: none;
-    color: black;
-}
-#menu_reset.on, #menu_reset.off:hover {
-    background-color: #2e89ce;
-    border-color: #2e89ce;
-    color: white;
-}
 
-#menu_reset:active {
-    background-color: #2e6991;
-    border: none;
-    color: white;
-}
-
-#menu_help{
-    top: 650px;
-    background-color:#d60505;
-    border-color:#d60505;
-    color: white;
-}
-
-#menu_reload, #menu_reload.off{
-    top: 700px;
-    background-color: #cccccc;  /*#3160b2; */
-    border: none;
-    color: black;
-}
-
-#menu_reload.on, #menu_reload.off:hover {
-    background-color: #2e89ce;
-    border-color: #2e89ce;
-    color: white;
-}
-
-#menu_reload:active {
-    background-color: #2e6991;
-    border: none;
-    color: white;
-}
-
-#menu_autoplay{
-    top: 300px;
-}
-#menu_count{
-    text-align: center;
-    position: fixed;
-    top: 150px;
-    left: 2.5%;
-    width: 7.5%;
-    font-size:1.1em;
-}
-
-
-
-
-
-/* Quick filter buttons */
-
+/* Quick filter buttons for epiweek rangechart */
 .button_qf {
     background-color: #cccccc; /* #3160b2; */
     border: none;
