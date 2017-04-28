@@ -249,25 +249,30 @@ module_getdata.process_geometry = function(){
      * @alias module:g.geometry_subnum
      */
     g.geometry_subnum = {};
-    g.geometry_keylist.forEach(function(key,keynum){
-        g.geometry_levellist[key] = keynum;
+    g.geometry_keylist.forEach(function(key,keynum){   //work through [admN1, admN2, hosp]
+        //console.log("calculate geometry_subnums: ", key, keynum);
+        g.geometry_levellist[key] = keynum;     
         g.geometry_loclists[key] = [];
-        g.geometry_data[key].features.forEach(function(f){
-            g.geometry_loclists[key].push(f.properties.name.trim());
+        g.geometry_data[key].features.forEach(function(f){  //for each feature in the geometry file
+            g.geometry_loclists[key].push(f.properties.name.trim());    //add it into the geometry_loclists
             g.geometry_loclists.all.push(f.properties.name.trim());
 
             // Compute number of Sub-Area in Area
-            if(keynum == g.geometry_keylist.length - 1){
+            //if (keynum == g.geometry_keylist.length - 1) {        //if it is lowest geometry  
+            if (keynum==1) {                                        //HEIDI - must fix to not count up hospitals (key='hosp')
+                //console.log("lowest geometry: ", keynum, g.geometry_keylist.length, g.geometry_keylist);
                 g.geometry_subnum[f.properties.name.trim()] = 1 ;
                 var temp_loc = '';
-                for (var i =  0; i <= g.geometry_keylist.length - 2; i++) {
-                    for (var j = 0; j <= i; j++) {
+                //for (var i=0; i<=g.geometry_keylist.length-2; i++) {
+                for (var i=0; i<=0; i++) {          //HEIDI - must fix to not count up hospitals (key='hosp')
+                    for (var j=0; j<=i; j++) {
                         temp_loc += ', ' + f.properties.name.trim().split(', ')[j].split('_').join(' ');
                     }
                     temp_loc = temp_loc.substring(2, temp_loc.length);
                     g.geometry_subnum[temp_loc]++;
                 }
-            }else{
+            } else {      //if it is not lowest geometry
+                //console.log("not lowest geometry: ", keynum, g.geometry_keylist.length, g.geometry_keylist);
                 g.geometry_subnum[f.properties.name.trim()] = 0 ;
             }
         });

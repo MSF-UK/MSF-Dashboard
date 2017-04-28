@@ -63,7 +63,11 @@ g.medical_datatype = 'surveillance'; // 'outbreak' or 'surveillance'
  * @alias module:dev_defined.definition_incidence
  */
 g.dev_defined.definition_incidence = function(value,pop,periode) {
-    return value * 10000 / (pop * periode);             //Note: periode = number of epiweeks
+    /*if (pop==0) {
+        return 0;       //HEIDI - should we return NaN here?
+    } else {*/
+        return value * 10000 / (pop * periode);             //Note: periode = number of epiweeks
+    //}
 };                                                      //Note: with changing population data (new pop format), then all values summed to value, all pops summed to pop and periode=1 - i.e. total cases/total pop
 
 /**
@@ -73,7 +77,7 @@ g.dev_defined.definition_incidence = function(value,pop,periode) {
  * @alias module:dev_defined.ignore_empty
  */
 g.dev_defined.ignore_empty = true;
-g.dev_defined.ignore_errors = true;    //HEIDI - added this as a test - used in module-datacheck.js
+//g.dev_defined.ignore_errors = true;    //HEIDI - added this as a test - used in module-datacheck.js
 /**
  * Contains the list of implemented map units.
  * <br> Defined in {@link module:module_colorscale}.
@@ -140,9 +144,19 @@ g.module_getdata = {
             options: {  url: './data/geo_chief.geojson',
                         type: 'json'}
             },
-        admN2: {
+        /*admN2: {          //HEIDI - original file
             method:  'geometryd3',
             options: {  url: './data/geo_phu.geojson',
+                        type: 'json'}
+            },*/
+        admN2: {
+            method:  'geometryd3',
+            options: {  url: './data/geo_phu_poly.geojson',
+                        type: 'json'}
+            },
+        hosp: {
+            method:  'geometryd3',
+            options: {  url: './data/geo_hosp_poly.geojson',
                         type: 'json'}
             }
     },
@@ -156,13 +170,18 @@ g.module_getdata = {
             method: 'd3',
             options: {  url: './data/geo_chief.geojson',
                         type: 'json'}
-        }
+        },
+        /*hosp:{
+            method: 'd3',
+            options: {  url: './data/geo_hosp_poly.geojson',
+                        type: 'json'}
+        }*/
     },
     medical:{
         medical: {
             method: 'medicald3noserver',
-			options: {  url: 'input/tonkolili_database_wks-201545-201605.csv',
-                        type: 'csv'}     
+            options: {  url: 'input/tonkolili_database_wks-201545-201605.csv',
+                        type: 'csv'}      
         }
     },
     population:{
@@ -187,12 +206,16 @@ g.medical_headerlist = {
     epiwk: 'epiweek',     // Epidemiological week: format YYYY-WW
     admN1: 'chiefdom',    // Name of administrative/health division level N1 
     admN2: 'PHU',
+    //hosp: 'PHU_2',  //HEIDI - seems strange  - this should be for hospitals 
+    //hosp: 'hosp',
     disease: 'disease',
     fyo: 'fyo',
     case: 'cas', 
     death: 'dth', 
 };
 
+g.medical_hospitals_fullname = ["Kholifa Rowalla, Masanga Leprosy Hospital", "Gbonkolenken, Lion Heart Medical Centre", "Kholifa Rowalla, Magburaka Government Hospital"]; //HEIDI - same as g.geometry_loclists.hosp - do we need to redefine here at all?
+g.medical_hospitals = ["Masanga Leprosy Hospital", "Lion Heart Medical Centre", "Magburaka Government Hospital"];  //for a separate layer to admN2
 /**
  Lists the keys used to refer to specific {@link module:g.population_data} fields. It makes the link between headers in the data files and unambiguous keys used in the code.<br>
  Each element in the object is coded in the following way:
@@ -212,7 +235,7 @@ g.population_headerlist = {
     //pop: 'population'
     //pop: 'yr_2015'
     pop: {'yr_2015': 2015,     //HEIDI added this - column headings with associated year
-          'yr_2016': 2016}  
+          'yr_2017': 2017}  
 };
 
 g.pop_perc_u5 = 18.9;   //HEIDI added this - percentage of population assumed to be under 5 -- put it in g.population_data?
@@ -272,7 +295,11 @@ if(!g.module_datacheck){
 g.module_datacheck.definition_value = {
     epiwk:  {test_type: 'epiwk',        setup: 'none'},     // Epidemiological week: format YYYY-WW
     admN1:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level N1 
-    admN2:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level N1 
+    admN2:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level N1
+    //admN1:  {test_type: 'none',   setup: 'none'}, // Name of division level N1 - HEIDI just to test how fast it is
+    //admN2:  {test_type: 'none',   setup: 'none'}, // Name of division level N1
+    //hosp:  {test_type: 'none',   setup: 'none'}, // Name of division level N1
+    hosp:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level N1
     fyo:{test_type: 'inlist',       setup: ["u","o"]}, // Depends on data source
     case: {test_type: 'integer',      setup: 'none'}, 
     death:{test_type: 'integer',      setup: 'none'}, 

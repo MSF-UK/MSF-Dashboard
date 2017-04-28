@@ -566,21 +566,25 @@ module_colorscale.lockcolor = function(source){
 			//console.log("lockcolor, in else if");
 			var admvalues_current = [100,80,60,40,20,0];
 		}else{ //} if(g.module_colorscale.mapunitcurrent == 'Incidence'){
-			//console.log("lockcolor");
+			//console.log("in module_colorscale.lockcolor else");
+			//console.log(admlevel_current);
+			//console.log(Object.keys(g.viz_currentvalues[admlevel_current]));  //HEIDI - need to populate this somewhere with hospital names
 			var admvalues_current = Object.keys(g.viz_currentvalues[admlevel_current]).map(function (key,keynum,keylist) {
+				//console.log("keynum: ", keynum, "  key: ", key, "  keylist: ", keylist);
 				if(keynum == keylist.length - 1){
 					var temp = g.viz_currentvalues[admlevel_current][key];
-					//console.log("keynum ", keynum, "  key ", key, "  temp: ", temp);
+					//console.log("keynum: ", keynum, "  key: ", key, "  keylist: ", keylist, "  temp: ", temp);
 				}else{
 					var temp = module_colorscale.nice_limits(g.viz_currentvalues[admlevel_current][key]);
-					//console.log("keynum ", keynum, "  key ", key, "  temp: ", temp);
+					//console.log("keynum: ", keynum, "  key: ", key, "  keylist: ", keylist, "  temp: ", temp);
 				}
 				//console.log("temp: ", temp);
 				return temp;
 			});
 			
 			var admvalues_current = admvalues_current.filter(function(element) {
-			  return !(isNaN(element)); // Filter div by 0
+			  //return !(isNaN(element)); // Filter div by 0
+			  return isFinite(element);  //Checks whether is a number or +/- Infinity
 			});
 		}
 

@@ -54,6 +54,7 @@ var files = [
     ['css','css/main-core.css',prg_folder],
     ['js','js/main-core.js',prg_folder],
     ['js','js/module-epitime.js',prg_folder],       //HEIDI - where should this be?
+    ['js','js/module-population.js',prg_folder],       //HEIDI - where should this be?
     ['css','css/module-intro.css',prg_folder],
     ['js','js/module-intro.js',prg_folder],
     ['css','css/module-interface.css',prg_folder],
@@ -63,7 +64,7 @@ var files = [
     ['js','js/main-getdata.js',prg_folder]
 ];
 
-function include_librairies(files) {
+function include_libraries(files) {
     inc_count = -1;
     inc_total = files.length - 1;
     var loadScript = function(files, callback){
@@ -103,4 +104,4 @@ function include_librairies(files) {
 var g = {};
 var modules_list = {};
 
-include_librairies(files); 
+include_libraries(files); 

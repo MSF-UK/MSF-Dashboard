@@ -409,29 +409,54 @@ function generateDashboard(){
         var dimensionBuilder = {
             multiadm: function(none){
                 var mapDimension = {};
-                g.geometry_keylist.forEach(function(key2,key2num,key2list) {
+                g.geometry_keylist.forEach(function(key2,key2num,key2list) {    //e.g. key2=admN1, key2num=0, key2list=[admN1,admN2]
                     //console.log ("multiadm dimension parameters: ", key2,key2num,key2list); 
                     mapDimension[key2] = cf.dimension(function(rec){ 
-                        //console.log ("multiadm dimension: ", key2, rec);
-                        var count = key2num;
-                        if(g.module_datacheck.definition_value[key2].setup == 'normalize'){      
-                            var loc_current = toTitleCase(rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' '));
-                        }else{
-                            var loc_current = rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' ');
-                        }
-                        while(count > 0){
+                        //console.log ("multiadm dimension: ", key2, rec);    //e.g. key2=admN1, rec=individual record
+
+
+                        if(key2=='hosp'){     //HEIDI - fix this
+                            var count = 1;
+                            var loc_current = rec['PHU'].trim().split('_').join(' ');
                             count--;
+                            loc_current = rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' ')+', '+loc_current;
+                        } else {
+
+                            var count = key2num;
                             if(g.module_datacheck.definition_value[key2].setup == 'normalize'){      
-                                loc_current = toTitleCase(rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' '))+', '+loc_current;
+                                var loc_current = toTitleCase(rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' '));
                             }else{
-                                loc_current = rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' ')+', '+loc_current;
+                                var loc_current = rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' ');
+                            }
+                            while(count > 0){
+                                count--;
+                                if(g.module_datacheck.definition_value[key2].setup == 'normalize'){      
+                                    loc_current = toTitleCase(rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' '))+', '+loc_current;
+                                }else{
+                                    loc_current = rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' ')+', '+loc_current;
+                                }
                             }
                         }
                         //console.log ("multiadm dimension: ", loc_current);   //one for each row in spreadsheet - so here could do IF mapcurrent=Cases etc?
                         return loc_current;
-                    });
+
+                        //} 
+                        /*else {  //hospital geometry
+                            //console.log ("multiadm dimension: ", key2, rec);    //e.g. key2=admN1, rec=individual record
+                            var count = key2num;
+                            var loc_current = toTitleCase(rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' '));
+                            var hospitals = ['Lion Heart Medical Centre', 'Magburaka Government Hospital', 'Masanga Leprosy Hospital'];
+                            if (loc_current=='Lion Heart Medical Centre') {console.log("got Lion Heart")};
+                            if (!(hospitals.indexOf(loc_current)==-1)) {
+                                console.log("include in hospital dimension: ", loc_current);
+                                return loc_current;
+                            }
+                        }*/
+                        
+                    }); 
+                    //console.log ("multiadm dimension: ", key2,  mapDimension[key2].top(Infinity));   
                 })
-                //console.log ("multiadm dimension: ", mapDimension);   
+               
                 return mapDimension;                        //one for each adm level
             },
 
@@ -665,6 +690,7 @@ function generateDashboard(){
             multiadm: function(dimkey,keylistgroup){
                 var mapGroup = {};
                 g.geometry_keylist.forEach(function(key2) {
+                    //console.log("in mapGroup ", key2, dimkey, keylistgroup);
                     mapGroup[key2] = g.viz_definition[dimkey].dimension[key2].group().reduce(
                     function(p,v) {
                         p['Records']++;
@@ -1498,8 +1524,14 @@ function generateDashboard(){
                  * @todo Implement completeness without year chart...
                  */
 
+
+
                 function getPopNumYr(yr, definedPopYears, loc) {
-                    if (definedPopYears.indexOf(yr)!=-1) {     //2 - if year 'yr' is in this then take that value
+                    //console.log("in getPopNumYr: ", yr, definedPopYears, loc);
+                    if (definedPopYears.length==0) {
+                        var pop_temp = 0;
+
+                    } else if (definedPopYears.indexOf(yr)!=-1) {     //2 - if year 'yr' is in this then take that value
                         //var pop_temp = g.population_databyloc.pop[select_locs[i]]['yr_'+yr]; 
 
                         for (var key in g.population_headerlist.pop) {
@@ -1612,7 +1644,21 @@ function generateDashboard(){
 
                 function valueAccessor(d){
                     //console.log("IN VALUE ACCESSOR FOR MULTIADM - ", g.module_colorscale.mapunitcurrent, d);
-                    temp_adm = g.geometry_keylist[d.key.split(', ').length - 1];
+
+                    var layer_level = d.key.split(', ').length - 1;
+                    //console.log("layer_level = ", layer_level);
+                    if (layer_level==1) {
+                        //console.log(d.key.split(', ')[1]);
+                        if (g.medical_hospitals.indexOf(d.key.split(', ')[1])!=-1) {   //if in hospitals list (remove chiefdom name)
+                            temp_adm = 'hosp';
+                            //console.log("temp_adm = ", temp_adm);  //e.g. temp_adm = admN2
+                        } else {    //if not in hospitals list
+                            temp_adm = g.geometry_keylist[d.key.split(', ').length - 1];
+                        }
+                    } else {
+                        temp_adm = g.geometry_keylist[d.key.split(', ').length - 1];
+                    }
+                    //console.log("temp_adm = ", temp_adm);  //e.g. temp_adm = admN2
 
                     if ((g.module_colorscale.mapunitcurrent == 'IncidenceProp') || (g.module_colorscale.mapunitcurrent == 'MortalityProp')) {
 
@@ -1684,13 +1730,15 @@ function generateDashboard(){
                             var current_epiweeks = select_weeks;
                         }
                         //console.log("CURRENTLY FILTERED EPIWEEKS (accounted for filtered years): ", filterswklength, current_epiweeks.length, current_epiweeks);
-                        
+                    
 
                         var definedPopYears = [];
                         for (var year in g.population_databyloc.pop[d.key]) {  //1 - get the years for which pop is defined for this location
                             //console.log(year, g.population_databyloc.pop[d.key], g.population_databyloc.pop[d.key][year]);
                             //definedPopYears.push(parseInt(year.substr(3,6)));
-                            definedPopYears.push(g.population_headerlist.pop[year]);
+                            if (!(isNaN(g.population_databyloc.pop[d.key][year]))) {       //only include year in definedPopYears list if it is a number
+                                definedPopYears.push(g.population_headerlist.pop[year]);
+                            };
                         }
                         //console.log(g.population_databyloc.pop[d.key], definedPopYears);
 
@@ -2247,7 +2295,7 @@ function generateDashboard(){
                     } else if (g.module_colorscale.mapunitcurrent == 'Deaths'){ // Deaths
                         var accessed_value = d.value.Values_d;
                     };
-
+                    
                     g.viz_currentvalues[temp_adm][d.key] = accessed_value;
                     //console.log(g.module_colorscale.mapunitcurrent, d.key, accessed_value);
                     return accessed_value; 
@@ -2278,7 +2326,8 @@ function generateDashboard(){
                 g.viz_definition[key1].maps = {};
                 g.viz_definition[key1].legend ={};					
 
-                g.geometry_keylist.forEach(function(key2){
+                g.geometry_keylist.forEach(function(key2){      //e.g. key2 = admN1, admN2, hosp    e.g. key1 = multiadm
+                    //console.log("creating multiadm map for ", key1, key2);
                     var div_id = '#map-' + key2;					
                     var filter_id = div_id + '-filter';
                     g.viz_definition[key1].charts[key2]
@@ -2414,6 +2463,7 @@ function generateDashboard(){
 					
                     var extralay_keys = Object.keys(g.module_getdata.extralay);
                     extralay_keys.forEach(function(key_ex) {
+                        //console.log("extralay_keys: ", key_ex);
                         if(key_ex == 'mask'){
                             var myStyle = {
                                 "color": "#663d00",
@@ -2459,7 +2509,27 @@ function generateDashboard(){
                             pointsLayer.addTo(g.viz_definition[key1].maps[key2]);
                             pointsLayer.bringToFront(); 
 							ptLayer = pointsLayer;
-                        }
+                        }/*else if(key_ex == 'hosp'){
+                            console.log("should load hosp points here");
+                            var myStyle = {
+                                "radius": 300,
+                                "color": "#284576",
+                                "weight": 1,
+                                "opacity": 1,
+                                "fillColor": "#558ae5",
+                                "fillOpacity": 0.6,
+                            };                          
+                            var pointsLayer = L.geoJson(g.extralay_data.points, {
+                                    onEachFeature: onPointsFeature,
+                                    pointToLayer: function (feature, latlng) {
+                                        console.log("pointToLayer: ", feature, latlng);
+                                        return L.circleMarker(latlng, myStyle);
+                                    }
+                                });                         
+                            pointsLayer.addTo(g.viz_definition[key1].maps[key2]);
+                            pointsLayer.bringToFront(); 
+                            ptLayer = pointsLayer;
+                        }*/
                     });
 
                     g.viz_definition[key1].legend[key2].addTo(g.viz_definition[key1].maps[key2]);
@@ -2815,7 +2885,7 @@ function generateDashboard(){
                 };
 
                 function getPopNum(yr) {       //return population for all currently selected regions for given year
-                    //console.log("in getPopNum for yr: ", yr);
+                    //console.log("in getPopNum for yr (composite chart): ", yr);
                     var pop = 0;
                     //if selected adm level in map is one of those defined - i.e. an integer between 0 and g.geometry_keylist.length-1
                     //console.log("tabcurrentnum is an integer ", Number.isInteger(g.module_multiadm.tabcurrentnum));
@@ -2839,6 +2909,7 @@ function generateDashboard(){
                     //loop through locations adding them up
                     for (i=0; i<=select_locs.length-1; i++) {
                         //console.log("i = ", i, "   add in ", select_locs[i], g.population_databyloc.pop[select_locs[i]]);
+
                         //pop += g.population_databyloc.pop[select_locs[i]];
 
                         if (g.pop_new_format) {
@@ -2847,9 +2918,14 @@ function generateDashboard(){
                             for (var year in g.population_databyloc.pop[select_locs[i]]) {  //1 - get the years for which pop is defined for this location
                                 //console.log(year, g.population_databyloc.pop[select_locs[i]], g.population_databyloc.pop[select_locs[i]][year]);
                                 //definedPopYears.push(parseInt(year.substr(3,6)));
-                                definedPopYears.push(g.population_headerlist.pop[year]);
+                                if (!(isNaN(g.population_databyloc.pop[select_locs[i]][year]))) {       //only include year in definedPopYears list if it is a number
+                                    definedPopYears.push(g.population_headerlist.pop[year]);
+                                };
                             }
                             //console.log(select_locs[i], definedPopYears);
+                            /*if (select_locs[i]=="Yoni, Matawa MCHP") {
+                                console.log(select_locs[i], "   definedPopYears: ", definedPopYears);
+                            }*/
 
                             /*var minYear = Math.min(...definedPopYears);
                             var maxYear = Math.max(...definedPopYears);
@@ -2858,7 +2934,9 @@ function generateDashboard(){
                             
 
                             yr = parseInt(yr);
-                            if (definedPopYears.indexOf(yr)!=-1) {     //2 - if year 'yr' is in this then take that value
+                            if (definedPopYears.length==0) {
+                                var pop_temp = 0;
+                            } else if (definedPopYears.indexOf(yr)!=-1) {     //2 - if year 'yr' is in this then take that value
                                 //var pop_temp = g.population_databyloc.pop[select_locs[i]]['yr_'+yr]; 
 
                                 for (var key in g.population_headerlist.pop) {
@@ -2877,6 +2955,9 @@ function generateDashboard(){
                                 //console.log(yr, " is NOT in ", definedPopYears);
                                 var minDefinedPopYear = Math.min(...definedPopYears);
                                 var maxDefinedPopYear = Math.max(...definedPopYears);
+                                /*if (select_locs[i]=="Yoni, Matawa MCHP") {
+                                    console.log("yr: ", yr, "   minYear: ", minDefinedPopYear, "   maxYear: ", maxDefinedPopYear);
+                                }*/
                                 //console.log("minYear: ", minDefinedPopYear, "   maxYear: ", maxDefinedPopYear);
 
                                 if ((yr > minDefinedPopYear) && (yr < maxDefinedPopYear)) {   //3 - if year 'yr' is between two values then do linear interpolation
@@ -2923,7 +3004,11 @@ function generateDashboard(){
 
 
                                 } else if (yr < minDefinedPopYear) {  //4 - if year 'yr' is less than lowest year then do 3% increment
+
                                     var yearDiff = minDefinedPopYear - yr;      //get difference in years
+                                    /*if (select_locs[i]=="Yoni, Matawa MCHP") {
+                                        console.log("yr: ", yr, "   minDefinedYear: ", minDefinedPopYear, "   yearDiff: ", yearDiff);
+                                    }*/
 
                                     for (var key in g.population_headerlist.pop) {
                                         //console.log(key, g.population_headerlist.pop);
@@ -2941,6 +3026,9 @@ function generateDashboard(){
                                     var pop_temp = minPop/Math.pow((1+(g.pop_annual_growth/100)),yearDiff);
                                     //console.log("min pop: ", minPop, " in yr ", minDefinedPopYear);
                                     //console.log("in year ", yr, " pop = ", pop_temp);
+                                    /*if (select_locs[i]=="Yoni, Matawa MCHP") {
+                                        console.log("in year ", yr, " pop = ", pop_temp, "    minPop = ", minPop);
+                                    }*/
 
                                 } else if (yr > maxDefinedPopYear) {  //5 - if year 'yr' is more than highest year then do 3% increment
                                     var yearDiff = yr - maxDefinedPopYear;      //get difference in years
@@ -2969,7 +3057,17 @@ function generateDashboard(){
                         } else {        //not g.new_pop_format
                             pop_temp = g.population_databyloc.pop[select_locs[i]];
                         }
-                        pop += pop_temp;
+
+                        //console.log("pop_temp = ", pop_temp);
+                        if (!(isNaN(pop_temp))) {
+                            /*if (select_locs[i]=="Yoni, Matawa MCHP") {
+                                console.log("in year ", yr, " pop = ", pop_temp, "    pop = ", pop);
+                            }*/
+                            pop += pop_temp;
+                        } /*else {
+                            console.log("Note: no population data available for ", select_locs[i]);
+                        }*/
+                        
                     }
 
                     //Deals with getting population for appropriate age class

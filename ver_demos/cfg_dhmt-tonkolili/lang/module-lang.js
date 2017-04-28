@@ -152,6 +152,9 @@ g.module_lang.text.fra = {
 	map_admN2: {
 		title: 'PHU'
 	},
+	map_hosp: {
+		title: 'Hospitals'
+	},
 
 	chartwarper_tab_containter_bar:'Par classe d\'age',
 	chartwarper_tab_containter_lin:'Par année',
@@ -288,7 +291,7 @@ g.module_lang.text.eng = {
 		IncidenceProp: 'Incidence Rate (/10,000)',
 		Deaths: 'Number of Deaths',
 		MortalityProp: 'Mortality Rate (/10,000)',
-		Completeness: 'Frequency structures report (%)'
+		Completeness: 'Frequency report (%)'
 	},
 	map_unit_title: {		//HEIDI added this
 		Cases: 'Cases',
@@ -303,6 +306,9 @@ g.module_lang.text.eng = {
 	},
 	map_admN2: {
 		title: 'PHU'
+	},
+	map_hosp: {
+		title: 'Hospitals'
 	},
 
 	//chartwarper_tab_containter_bar:'By age group',  
