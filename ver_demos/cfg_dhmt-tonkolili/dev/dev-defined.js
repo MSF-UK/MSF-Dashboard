@@ -78,6 +78,7 @@ g.dev_defined.definition_incidence = function(value,pop,periode) {
  */
 g.dev_defined.ignore_empty = true;
 //g.dev_defined.ignore_errors = true;    //HEIDI - added this as a test - used in module-datacheck.js
+
 /**
  * Contains the list of implemented map units.
  * <br> Defined in {@link module:module_colorscale}.
@@ -98,9 +99,16 @@ if(!g.module_colorscale){
 }
 g.module_colorscale.mapunitlist = ['Cases', 'Deaths','IncidenceProp','MortalityProp','Completeness'];
 
-/*if(!g.module_chartwarper){
-    g.module_chartwarper = {}; 
-}*/
+//Combinations of map unit/geometry buttons that are not compatible 
+// (i.e. one from g.module_colorscale.mapunitlist, one from g.geometry_keylist)
+g.dev_defined.incompatible_buttons = [{unit: 'IncidenceProp',
+                                       geo: 'hosp'},
+                                      {unit: 'MortalityProp',
+                                       geo: 'hosp'
+                                      }]
+
+
+g.new_layout = true;
 
 //OPTIONAL FOR IF WE WANT SOMETHING DIFFERENT TO DEFAULT DEFINED IN module-chartwarper.js
 g.dev_defined.epiweek_container_id = 'containter_bar_lin';
@@ -114,10 +122,6 @@ g.dev_defined.chartcontainers_list = [{
                                         height: '400px'
                                       }];  
 
-/*g.module_chartwarper.tabcontainer_id = 'containter_bar_lin_tabs';   //HEIDI - moved over from module-charwarper.js
-//g.module_chartwarper.chartcontainers_list = ['containter_bar','containter_lin'];   
-g.module_chartwarper.chartcontainers_list = ['containter_ser','containter_lin'];   //HEIDI - added 'containter_ser', removed 'containter_bar'
-*/
 
 /**
  * Defines the data parsed in the dashboard (urls and sources type). Order matters.<br>
@@ -144,11 +148,6 @@ g.module_getdata = {
             options: {  url: './data/geo_chief.geojson',
                         type: 'json'}
             },
-        /*admN2: {          //HEIDI - original file
-            method:  'geometryd3',
-            options: {  url: './data/geo_phu.geojson',
-                        type: 'json'}
-            },*/
         admN2: {
             method:  'geometryd3',
             options: {  url: './data/geo_phu_poly.geojson',
@@ -171,11 +170,6 @@ g.module_getdata = {
             options: {  url: './data/geo_chief.geojson',
                         type: 'json'}
         },
-        /*hosp:{
-            method: 'd3',
-            options: {  url: './data/geo_hosp_poly.geojson',
-                        type: 'json'}
-        }*/
     },
     medical:{
         medical: {
@@ -193,6 +187,7 @@ g.module_getdata = {
     }
 };
 
+
 /**
  Lists the keys used to refer to specific {@link module:g.medical_data} fields. It makes the link between headers in the data files and unambiguous keys used in the code.<br>
  Each element in the object is coded in the following way:
@@ -206,16 +201,16 @@ g.medical_headerlist = {
     epiwk: 'epiweek',     // Epidemiological week: format YYYY-WW
     admN1: 'chiefdom',    // Name of administrative/health division level N1 
     admN2: 'PHU',
-    //hosp: 'PHU_2',  //HEIDI - seems strange  - this should be for hospitals 
-    //hosp: 'hosp',
     disease: 'disease',
     fyo: 'fyo',
     case: 'cas', 
     death: 'dth', 
 };
 
+//HEIDI - is it worth creating a look up that defines whether a PHU is an admN2 or a hosp (i.e. siblings?) - see valueAccessor in main-core where we define temp_adm = 'hosp';
 g.medical_hospitals_fullname = ["Kholifa Rowalla, Masanga Leprosy Hospital", "Gbonkolenken, Lion Heart Medical Centre", "Kholifa Rowalla, Magburaka Government Hospital"]; //HEIDI - same as g.geometry_loclists.hosp - do we need to redefine here at all?
 g.medical_hospitals = ["Masanga Leprosy Hospital", "Lion Heart Medical Centre", "Magburaka Government Hospital"];  //for a separate layer to admN2
+
 /**
  Lists the keys used to refer to specific {@link module:g.population_data} fields. It makes the link between headers in the data files and unambiguous keys used in the code.<br>
  Each element in the object is coded in the following way:
@@ -230,6 +225,8 @@ g.medical_hospitals = ["Masanga Leprosy Hospital", "Lion Heart Medical Centre", 
  * @type {Object} 
  * @alias module:g.population_headerlist
  */
+
+g.pop_new_format = true;    //HEIDI defined this where each year is given column heading of e.g. 'yr_2015', 'yr_2020', etc.
 g.population_headerlist = {
     admNx: 'name',
     //pop: 'population'
@@ -240,16 +237,12 @@ g.population_headerlist = {
 
 g.pop_perc_u5 = 18.9;   //HEIDI added this - percentage of population assumed to be under 5 -- put it in g.population_data?
 g.pop_annual_growth = 3.0; //HEIDI added this - assumed percentage increase per year if pop data not supplied
-g.pop_new_format = true;    //HEIDI defined this where each year is given column heading of e.g. 'yr_2015', 'yr_2020', etc.
-/*g.pop_age_groups = {'u': 'Under 5',   //HEIDI added this
-                    'o': 'Over 5',
-                    'a': 'All'}*/
+
 g.pop_age_groups = [ {group: 'a', label: 'All'},
                      {group: 'u', label: 'Under 5'},   //HEIDI added this - could get from g.medical_read just below???
                      {group: 'o', label: 'Over 5'}]
 
 
-g.new_layout = true;
 
 function main_loadfiles_readvar(){
     /**
@@ -293,14 +286,11 @@ if(!g.module_datacheck){
     g.module_datacheck = {}; 
 }
 g.module_datacheck.definition_value = {
-    epiwk:  {test_type: 'epiwk',        setup: 'none'},     // Epidemiological week: format YYYY-WW
+    epiwk:  {test_type: 'epiwk',        setup: 'none'}, // Epidemiological week: format YYYY-WW
     admN1:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level N1 
-    admN2:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level N1
-    //admN1:  {test_type: 'none',   setup: 'none'}, // Name of division level N1 - HEIDI just to test how fast it is
-    //admN2:  {test_type: 'none',   setup: 'none'}, // Name of division level N1
-    //hosp:  {test_type: 'none',   setup: 'none'}, // Name of division level N1
-    hosp:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level N1
-    fyo:{test_type: 'inlist',       setup: ["u","o"]}, // Depends on data source
+    admN2:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level 
+    hosp:  {test_type: 'ingeometry',   setup: 'none'},  // Name of division level
+    fyo:{test_type: 'inlist',       setup: ["u","o"]},  // Depends on data source
     case: {test_type: 'integer',      setup: 'none'}, 
     death:{test_type: 'integer',      setup: 'none'}, 
 };
@@ -454,51 +444,6 @@ g.viz_definition = {
                 buttons_list: ['help'],
                 
             },
-   /* case_bar: { domain_builder: 'epiweek',
-                domain_parameter: 'custom_ordinal',   
-
-                instance_builder: 'stackedbar',
-
-                dimension_builder: 'auto',
-                dimension_parameter: {  column: 'epiwk',
-                                        shared: true,
-                                        namespace: 'epiweek'},
-
-                group_builder: 'stackedbar',
-                group_parameter: {  column: ['case','fyo']},
-
-                sync_to: ['death_bar'],
-
-                display_axis:   {x:'',
-                                 y:g.module_lang.text[g.module_lang.current].chart_case_labely},
-                display_colors: [4,2],            
-                display_intro_position: 'top',           
-                display_idcontainer: 'container_casedeath_bar',
-                display_filter: true,
-                buttons_list: ['reset','help'],             
-            },
-
-    death_bar: {domain_builder: 'epiweek',
-                domain_parameter: 'custom_ordinal',  
-
-                instance_builder: 'stackedbar',
-
-                dimension_builder: 'auto',
-                dimension_parameter: {  column: 'epiwk',
-                                        shared: true,
-                                        namespace: 'epiweek'},
-                group_builder: 'stackedbar',
-                group_parameter: {  column: ['death', 'fyo']},
-
-                sync_to: ['case_bar'],
-
-                display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_death_labelx,
-                                 y:g.module_lang.text[g.module_lang.current].chart_death_labely},
-                display_colors: [4,2],            
-                display_intro_position: 'none',
-                buttons_list: ['reset','help'],
-            }, */
-
   
     case_ser: { domain_builder: 'date_extent',              
                 domain_parameter: 'heidi_custom_time',        //HEIDI - can change name, doesn't have to match casedeath_ser_range domain_parameter name
@@ -742,6 +687,18 @@ g.viz_timeshare = ['case_ser', 'death_ser'];
  * @alias module:g.viz_locations
  */
 g.viz_locations = 'multiadm';
+
+
+/**
+ Defines the layer position for each map layer. If the parent has the same name as the layer name, then it represents the highest level. If multiple layers have the same parent then they are siblings.
+ * @constant
+ * @type {String} 
+ * @alias module:g.viz_parent_layer
+ */
+//HEIDI - need to attach diagram to demonstrate tree structure for numbering - see https://www.google.co.uk/search?q=tree+structure+numbering&tbm=isch&imgil=6gMJx-3aO3M0bM%253A%253BZ5hcRIa_-vtGmM%253Bhttps%25253A%25252F%25252Fwww.smartsheet.com%25252Ffree-work-breakdown-structure-templates&source=iu&pf=m&fir=6gMJx-3aO3M0bM%253A%252CZ5hcRIa_-vtGmM%252C_&usg=__qTvP_O0d3nAqBnwjc-J8jMjcT_8%3D&biw=1920&bih=974&ved=0ahUKEwikub6a4djTAhXoD8AKHT2PAQ4QyjcIMg&ei=vnAMWaTiAeifgAa9noZw#imgrc=6gMJx-3aO3M0bM:
+g.viz_layer_pos = [{name: 'admN1', pos: '0'}, // 0 = top layer
+                   {name: 'admN2', pos: '1'}, 
+                   {name: 'hosp', pos: '2'}]; 
 
 //g.dev_defined.intro_order = [];
 g.dev_defined.intro_order = ['intro', 'menu', 'multiadm', 'disease', 'containter_bar_lin', 'case_ser', 'casedeath_ser_range','case_lin', 'fyo', 'year', 'table'];

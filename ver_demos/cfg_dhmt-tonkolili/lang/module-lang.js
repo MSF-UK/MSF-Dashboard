@@ -300,6 +300,8 @@ g.module_lang.text.eng = {
 		MortalityProp: 'Mortality Rate',
 		Completeness: 'Completeness'
 	},
+	map_viewby_text: 'View by: ',		//HEIDI added this
+	map_quickzoom_text: 'Quick zoom: ',	//HEIDI added this
 	jumpto: 'No Zoom',
 	map_admN1: {
 		title: 'Chiefdom'

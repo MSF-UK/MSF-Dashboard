@@ -72,11 +72,12 @@ module_multiadm.display = function(){
 	html += '</div></div>';
 
 	// Title + filters
-	if (g.new_layout) {
+	if (g.new_layout) {		
 		html += '<div class="row">';
 		//html += '<div class="col-md-7" style="height:30px;">';
 		html += '<div class="col-md-7" id="map-title">';
 		html += '<span id="map-unit" class="map-unit-title">'+g.module_lang.text[g.module_lang.current].map_unit[g.module_colorscale.mapunitcurrent]+'</span>';
+		//Map unit buttons (i.e. Cases, Deaths, Incidence Rate, Mortality Rate, Completeness)
 		g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
 			if (unitnum == 0) {
 				var text = g.module_lang.text[g.module_lang.current].colorscale_unitintro;
@@ -85,47 +86,32 @@ module_multiadm.display = function(){
 			};
 			if (unit == g.module_colorscale.mapunitcurrent) {
 				html += '<button id='+unit+' class="btn_map button_mapunit on">'+g.module_lang.text[g.module_lang.current].map_unit_title[unit]+'</button>';
-				//html += '<button id='+unit+' class="button_mapunit on checked">'+g.module_lang.text[g.module_lang.current].map_unit_title[unit]+'</button>';
 			} else {
 				html += '<button id='+unit+' class="btn_map button_mapunit">'+g.module_lang.text[g.module_lang.current].map_unit_title[unit]+'</button>';
 			};
-			//html += '<button id='+unit+' class="button_mapunit">'+g.module_lang.text[g.module_lang.current].map_unit_title[unit]+'</button>';
 		});
 		html += '</div>';
 
 		html += '<div class="col-md-3" id="map-text">';
-		html += '<span class="map-text">View by:</span><br>'; //HEIDI - need to add this to module-lang.js
-		//html += '<span class="map-unit-title">'+g.module_lang.text[g.module_lang.current].jumpto+'</span>';
-		//var temp_key = 'admN1';
+		html += '<span class="map-text">'+g.module_lang.text[g.module_lang.current].map_viewby_text+'</span><br>'; 
 		g.geometry_keylist.forEach(function(key,keynum){
 			//console.log(key, keynum);
 			if (keynum == 0) {
-				//var temp_key = key;
-				//var temp = 'map-'+key+'-btn';
-				//console.log('map id = ', temp);
 				html += '<button id="map-'+key+'-btn" class="btn_map button_mapadm on">'+g.module_lang.text[g.module_lang.current]['map_'+key].title+'</button>';
 			} else {
-				//var tab_status ='inactive';
-				//var temp = 'map-'+key+'-btn';
-				//console.log('map id = ', temp);
 				html += '<button id="map-'+key+'-btn" class="btn_map button_mapadm">'+g.module_lang.text[g.module_lang.current]['map_'+key].title+'</button>';
 			}			
 		});
 		html += '</div>';
 
 		html += '<div class="col-md-2">';
-		html += '<span class="map-text">Quick zoom:</span><br>'; //HEIDI - need to add this to module-lang.js
+		html += '<span class="map-text">'+g.module_lang.text[g.module_lang.current].map_quickzoom_text+'</span><br>'; 
 					
-		//console.log("tabcurrent now: ", g.module_multiadm.tabcurrentnum, g.module_multiadm.tabcurrent);			
-		// 'jumpto' dropdown list
 		g.geometry_keylist.forEach(function(key,keynum){
-			//console.log(key, keynum);
 			html +=  '<div class="list-content" id="map-'+key+'-jumpto"></div>';
 		});
-		//html +=  '<div class="tab-content" id="map-'+temp_key+'-jumpto"></div>';
-		html +=  '</div>';
-
 		html += '</div></div>';
+
 	} else {
 		html += '<b>'+g.module_lang.text[g.module_lang.current].map_title+' - <small><span id="map-unit">'+g.module_lang.text[g.module_lang.current].map_unit[g.module_colorscale.mapunitcurrent]+'</b></span></small> | '+g.module_lang.text[g.module_lang.current].filtext +' ';
 		g.geometry_keylist.forEach(function(key,keynum,keylist){
@@ -134,59 +120,29 @@ module_multiadm.display = function(){
 				html += ' >';
 			}
 		});
-	}
-		
-		//Map Units (i.e. Cases, Deaths, Incidence Rate, Mortality Rate, Completeness) go here
-		//if (g.new_layout) {
-			//html += '<div class="col-md-4">';
-			// Unit
-			/*html += '<p><table style="font-size:1em;">';
-
-				g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
-					if(unitnum == 0){
-						var text = g.module_lang.text[g.module_lang.current].colorscale_unitintro;
-					}else{
-						var text = '';
-					}
-					if(unit == g.module_colorscale.mapunitcurrent){
-						html += '<tr><td>'+text+' </td><td><input type="radio" name="group1" id="'+unit+'" value='+unitnum+' checked> '+unit+'</td></tr>';
-					}else{
-						html += '<tr><td>'+text+'</td><td><input type="radio" name="group1" id="'+unit+'" value='+unitnum+'> '+unit+'</td></tr>';
-					}
-				});
-				
-			html +=	'</table></p>';*/
-
-			/*g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
-				html += '<button id='+unit+' class="button_mapunit">'+g.module_lang.text[g.module_lang.current].map_unit_title[unit]+'</button>';
-			});*/
-
-			//if(g.medical_datatype == 'surveillance'){html += '</div><div class="col-md-4">';}
-			//html += '</div>';
-		//}
 
 		// Tabs + 'jumpto' dropdown lists
-		if (!(g.new_layout)) {
-			html += '<div>';
-				g.geometry_keylist.forEach(function(key,keynum){
-					if (keynum == 0) {
-						var tab_status ='active';
-					} else {
-						var tab_status ='inactive';
-					}
-					html +=  '<div id="map-'+key+'-tab" class="'+tab_status+' tab">';
-					
-					// Tab title
-					html +=  '<div class="col-md-7 tab-content">'+g.module_lang.text[g.module_lang.current]['map_'+key].title+'</div>';
-					
-					// 'jumpto' dropdown list
-					html +=  '<div class="col-md-5 tab-content" id="map-'+key+'-jumpto"></div>';
-					html +=  '</div>';
-				});
-			html += '</div>';
-		}
+		html += '<div>';
+		g.geometry_keylist.forEach(function(key,keynum){
+			if (keynum == 0) {
+				var tab_status ='active';
+			} else {
+				var tab_status ='inactive';
+			}
+			html +=  '<div id="map-'+key+'-tab" class="'+tab_status+' tab">';
+			
+			// Tab title
+			html +=  '<div class="col-md-7 tab-content">'+g.module_lang.text[g.module_lang.current]['map_'+key].title+'</div>';
+			
+			// 'jumpto' dropdown list
+			html +=  '<div class="col-md-5 tab-content" id="map-'+key+'-jumpto"></div>';
+			html +=  '</div>';
+		});
+		html += '</div>';
 
-	html += '</div>';
+	}
+
+	//html += '</div>';
 
 	// Maps
 	html += '<div class="row">';
@@ -228,19 +184,6 @@ module_multiadm.display = function(){
  * @alias module:module_multiadm.interaction
  */
 module_multiadm.interaction = function(){
-
-	/*//Map unit 'onclick' events
-	g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
-		$('#'+unit).on('click',function(){   
-			if (!($('#'+unit).hasClass('on'))) {
-				console.log('CLICKED ON: ', unit);
-				$('.button_mapunit').removeClass('on')
-				$('.button_mapunit').removeClass('checked')
-				$('#'+unit).addClass('on');
-				$('#'+unit).addClass('checked');
-			};
-		});
-	});*/
 
 	// 3) a. Tabs Interactions
 	//------------------------------------------------------------------------------------
@@ -287,7 +230,8 @@ module_multiadm.interaction = function(){
      * @constant
      * @alias module:module_multiadm.tabcurrent
      */
-	g.module_multiadm.tabcurrent = 'map-admN1';
+	g.module_multiadm.tabcurrent = 'map-' + g.geometry_keylist[0];   //Initialise current display with first map in g.geometry_keylist
+
 	/**
      * Contains the number associated with the tab currently displayed {@link module:module_multiadm.tabcurrent}. 
      * <br> Defined in {@link module:module_multiadm.interaction_tab}.
@@ -299,154 +243,126 @@ module_multiadm.interaction = function(){
 	g.module_multiadm.tabcurrentnum = 0;
 	//console.log("ASSIGNED TABCURRENTNUM HERE: ", g.module_multiadm.tabcurrentnum, g.module_multiadm.tabcurrent);
 
+	g.module_multiadm.focuscurrent = {};
+		g.geometry_keylist.forEach(function(key){ 
+			g.module_multiadm.focuscurrent[key] = 'NA';
+		});
+
+
+	//HEIDI - don't really need these as new variables below, just using them for g.new_layout for clarity
+	//g.module_multiadm.current_layer = g.module_multiadm.tabcurrent.substring(4);
+	g.module_multiadm.prev_layer = g.module_multiadm.tabcurrent.substring(4);
+	g.module_multiadm.current_zoom = {};
+		g.geometry_keylist.forEach(function(key){ 
+			g.module_multiadm.current_zoom[key] = 'NA';
+		});
+
 	// Tabs 'onclick' events
 	g.geometry_keylist.forEach(function(key1,key1num){
 		if (g.new_layout) {
+
 			$('#map-'+key1+'-btn').on('click',function(){  
-				console.log("CLICKED ON ", key1);			//HEIDI - will need to enable/disable lists here
+				//console.log("CLICKED ON BTN ", key1);			
 
-				if (!(g.module_multiadm.tabcurrent == 'map-'+key1)) {
+				if (!(g.module_multiadm.tabcurrent == 'map-'+key1)) {	//if user clicks on a new button
 
-					if (key1=='hosp') {
-						$('#IncidenceProp').attr('disabled', true);
-						$('#MortalityProp').attr('disabled', true);
+					//Disable non-compatible buttons if selected
+					g.dev_defined.incompatible_buttons.forEach(function(btn_set) {
+						if (key1==btn_set.geo) {
+							$('#'+btn_set.unit).attr('disabled', true);
+						} else {
+							$('#'+btn_set.unit).attr('disabled', false);
+						}
+					})
 
-						//filter to hospitals list
-						g.viz_definition.multiadm.charts[key1].filterAll();	
-						g.medical_hospitals_fullname.forEach(function(h) {
-							//console.log(h);
-							g.viz_definition.multiadm.charts[key1].filter(h);
-						});
-
-						dc.redrawAll();
-					} else {
-						$('#IncidenceProp').attr('disabled', false);
-						$('#MortalityProp').attr('disabled', false);
-					}
-
-					// Temporarily store previous tab keys
+					//Temporarily store previous button (tab)
 			    	var key0 = g.module_multiadm.tabcurrent;
 			    	var key0num = g.module_multiadm.tabcurrentnum;
 
-			        // Swich current displayed map in global variable
+			        //Swich current displayed map 
 			        g.module_multiadm.tabcurrent = 'map-'+key1;
 					g.module_multiadm.tabcurrentnum = key1num;
 
 					$('#'+key0+'-btn').removeClass('on');
-			        //$('#'+key0+'-btn').addClass('inactive');
 			        $('#'+key0).css('z-index', 1);		
-			        //$('#map-'+key1+'-btn').removeClass('inactive');
 			        $('#map-'+key1+'-btn').addClass('on');
 			        $('#map-'+key1).css('z-index', 9999);	
 
+			        //Switch between zooms
+		        	//console.log("   clicked from ", g.module_multiadm.prev_layer, " to ", key1);
+		        	//console.log("   current zooms: ", g.module_multiadm.current_zoom);
 
-			        if (g.new_layout) {
-			        // For maps of lower administrative level: reset 'jumpto' dropdown list
-			        	if (key1=='admN1') {
-			        		module_multiadm.enableGoto(key1);
-			        		module_multiadm.disableGoto('admN2');
-			        		module_multiadm.disableGoto('hosp');
-			        	} else if (key1=='admN2') {
-			        		module_multiadm.enableGoto(key1);
-			        		module_multiadm.enableGoto('admN1');
-			        		module_multiadm.disableGoto('hosp');
-			        	} else if (key1=='hosp') {
-			        		module_multiadm.enableGoto('admN1');
-			        		module_multiadm.disableGoto('admN2');
-			        		module_multiadm.enableGoto(key1);
-			        	}
-			        	dc.redrawAll();
-				    
-					} else {
-				        // For maps of lower administrative level: reset 'jumpto' dropdown list
-				        if (key1num < key0num){
-					        g.geometry_keylist.forEach(function(key2,key2num){
-					        	console.log(key0, key0num, key1, key1num, key2, key2num);
-					        	if (key2num>key1num) {
-						        	module_multiadm.resetGoto(key2);
-						        	g.viz_definition.multiadm.charts[key2].filterAll();		
-					        	}
-					        });
-					        dc.redrawAll();
-					    }
-					}
+		        	var top_layer = getTopLayer(); 
+		        	//console.log("top_layer = ", top_layer);
+		        	if (key1==top_layer) {	
+			        	g.geometry_keylist.forEach(function(key2) {	        		
+			        		if (key1!=key2) {
+			        			//console.log("key1, key2, prev_layer: ", key1, key2, g.module_multiadm.prev_layer);
+			        			if (key2==g.module_multiadm.prev_layer) {     //click from layer key2
+				        			g.module_multiadm.current_zoom[key2] = 'NA';   //reset key2 zoom variable to no zoom
+						        	$('#select-'+key2).val('NA');				//reset key2 zoom text to no zoom
+						        	module_multiadm.enableGoto(key1);			//enable key1 zoom list
+					        		module_multiadm.zoomTo(key1, g.module_multiadm.current_zoom[key1]);   //zoom map to key1 zoom	
+				        		}
+				        		module_multiadm.disableGoto(key2);  //disable all other zoom lists except top layer
+				        	};
+			        	});
 
-				    // Why? - To maintain coherence if a feature is selected in the new adm level? Does that work? 
-				    console.log("about to go to propGoto: ", key1, key1num);
-				    module_multiadm.propGoto(key1,key1num);		
+			    	} else {  //key1 = admN2 or hosp, i.e. clicked on new layer that is not top layer   //CLICKED FROM key2 TO key1
+			    		g.geometry_keylist.forEach(function(key2) {	    			
+			    			if (key1!=key2) {
+			    				//console.log("key1, key2, prev_layer: ", key1, key2, g.module_multiadm.prev_layer);  
+				    			if (key2==g.module_multiadm.prev_layer) {
 
+					    			if (key2==top_layer) {		//clicking from top layer to another
+										//console.log("in if, ", key2, g.module_multiadm.prev_layer, ' == admN1');
+										module_multiadm.enableGoto(key1);			//enable key1 zoom list 
+					        			if (g.module_multiadm.current_zoom[key2] != 'NA') {		//if admN1 was already zoomed then keep zoom
+					        				//console.log("in if, should zoom to ", g.module_multiadm.current_zoom[key2]);	
+					        				module_multiadm.zoomTo(key2, g.module_multiadm.current_zoom[key2]); //zoom to selection of admN1
+					        				module_multiadm.subsetGoto(key1, g.module_multiadm.current_zoom[key2]);  
+					        			} else {	
+					        				//console.log("in else, should zoom to ", g.module_multiadm.current_zoom[key1]);	
+					        				module_multiadm.zoomTo(key1, g.module_multiadm.current_zoom[key1]);
+					        				//module_multiadm.subsetGoto(key1, g.module_multiadm.current_zoom[key2]);   
+					        			}
+						        		module_multiadm.enableGoto(key2);
+						        		g.geometry_keylist.forEach(function(key3) {	 
+						        			if ((key3!=key2) && (isSibling(key1, key3))) {
+						        				//console.log("disable sibling here: ", key3);
+						        				module_multiadm.disableGoto(key3);  //here we need to disable buttons that are siblings to key1 and not top layer
+					    					}
+					    				});
+
+					    			} else {   //clicking between layers that are not top layer - assume they are siblings
+					    				//console.log("in else, ", key2, g.module_multiadm.prev_layer, ' != admN1');
+										g.module_multiadm.current_zoom[key2] = 'NA';   //remove zoom from key2
+							        	$('#select-'+key2).val('NA');
+										if (g.module_multiadm.current_zoom[top_layer] != 'NA') {		//if admN1 was already zoomed then keep zoom
+					        				module_multiadm.zoomTo(top_layer, g.module_multiadm.current_zoom[top_layer]); //zoom to selection of admN1
+					        				module_multiadm.subsetGoto(key1, g.module_multiadm.current_zoom[top_layer]);  
+					        			} else {		
+					        				module_multiadm.zoomTo(key1, g.module_multiadm.current_zoom[key1]);	//zoom to extent of admN2
+					        			}
+						        		module_multiadm.enableGoto(top_layer);
+						        		module_multiadm.enableGoto(key1);
+						        		module_multiadm.disableGoto(key2);
+
+					    			}
+					    		}
+				    		}
+			    		});
+
+			    	}
+
+		        	dc.redrawAll();
+		        	//g.module_multiadm.current_layer = key1;
+		        	g.module_multiadm.prev_layer = key1;
 				};
 
 			    // Why? - 'lockcolor' only locks color on current adm level map.
 	    		module_colorscale.lockcolor('Auto');   
 			})	
-
-
-/*		if (g.new_layout) {
-			$('#map-'+key1+'-btn').on('click',function(){  
-				console.log("CLICKED ON ", key1);
-
-				if (!(g.module_multiadm.tabcurrent == 'map-'+key1)) {
-					if (key1=='hosp') {
-						if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
-							$('#Cases').click();
-						}
-						$('#IncidenceProp').attr('disabled', true);
-						$('#MortalityProp').attr('disabled', true);
-
-						//filter to hospitals list
-						g.viz_definition.multiadm.charts[key1].filterAll();	
-
-						g.medical_hospitals_fullname.forEach(function(h) {
-							console.log(h);
-							g.viz_definition.multiadm.charts[key1].filter(h);
-						});
-
-						//g.viz_definition.multiadm.charts[key1].filter('Gbonkolenken, Lion Heart Medical Centre');
-						var filters = g.viz_definition.multiadm.charts[key1].filters();
-						console.log("filters: ", filters);
-						dc.redrawAll();
-					} else {
-						$('#IncidenceProp').attr('disabled', false);
-						$('#MortalityProp').attr('disabled', false);
-					}
-
-					// Temporarily store previous tab keys
-			    	var key0 = g.module_multiadm.tabcurrent;
-			    	var key0num = g.module_multiadm.tabcurrentnum;
-
-			        // Swich current displayed map in global variable
-			        g.module_multiadm.tabcurrent = 'map-'+key1;
-					g.module_multiadm.tabcurrentnum = key1num;
-
-					$('#'+key0+'-btn').removeClass('on');
-			        //$('#'+key0+'-btn').addClass('inactive');
-			        $('#'+key0).css('z-index', 1);		
-			        //$('#map-'+key1+'-btn').removeClass('inactive');
-			        $('#map-'+key1+'-btn').addClass('on');
-			        $('#map-'+key1).css('z-index', 9999);	
-
-			        // For maps of lower administrative level: reset 'jumpto' dropdown list
-			        if (key1num < key0num){
-				        g.geometry_keylist.forEach(function(key2,key2num){
-				        	if (key2num>key1num) {
-					        	module_multiadm.resetGoto(key2);
-					        	g.viz_definition.multiadm.charts[key2].filterAll();		
-				        	}
-				        });
-				        dc.redrawAll();
-				    }
-
-				    // Why? - To maintain coherence if a feature is selected in the new adm level? Does that work? 
-				    module_multiadm.propGoto(key1,key1num);		
-
-				};
-
-			    // Why? - 'lockcolor' only locks color on current adm level map.
-			    //console.log("about to autolock color");
-	    		module_colorscale.lockcolor('Auto');    	
-	    		//console.log("autolocked color");
-			})	*/
 
 		} else {
 			$('#map-'+key1+'-tab').on('click',function(){        
@@ -512,169 +428,102 @@ module_multiadm.interaction = function(){
 	 * @method
 	 * @alias module:module_multiadm.propGoto
 	 */
-	module_multiadm.propGoto = function(key1,key1num) {		//HEIDI - should be list changes only (not button changes)
-		console.log("propGoto: ", key1, key1num);
+	module_multiadm.propGoto = function(key1,key1num) {	
+		//console.log("propGoto function: ", key1, key1num);
 		$('#select-'+key1).change(function(){
-			console.log("propGoto changed for: ", key1, key1num);
-
-        	var loc_new = $('#select-' + key1).val();
+			var loc_new = $('#select-' + key1).val();
             if (!(loc_new == g.module_multiadm.focuscurrent[key1])) {
             	module_multiadm.zoomTo(key1,loc_new);
             };
-            
             g.module_multiadm.focuscurrent[key1] = loc_new;
 
-           if (g.new_layout) {
-			//HEIDI - if there is a 'shared' adm level
-				if ((key1=='admN1') && ($('#map-admN1-btn').hasClass('on'))) {		//HEIDI - fix direct reference here
-					console.log("selected from admN1 (Chiefdom) list, and View by is on admN1 (Chiefdom)");
-
-					module_multiadm.disableGoto('admN2');
-					module_multiadm.disableGoto('hosp');
-			    	//if selected from admN1 (Chiefdom) list, and View by is on admN1 (Chiefdom)
-			    	/*var key2 = 'admN1';
-			    	module_multiadm.enableGoto(key2);
-					var html = '<select class="select-adm" id="select-'+key2+'">';
-	            	//console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')');
-		            html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')'+'</option>'; 
-		            //console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key1].title+')');  
-				    //html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+'</option>';   
-				    g.medical_loclists[key2].forEach(function(loc){
-				        if (loc.slice(0,loc_new.length) == loc_new) {
-				        	html +='<option value="'+loc+'">'+loc+'</option>';
-				    	}
-				    });
-				    html += '</select></div>';
-				    $('#map-'+key2+'-jumpto').html(html);*/
-				};
-
-			    if ((key1=='admN1') && ($('#map-admN2-btn').hasClass('on'))) {		//HEIDI - fix direct reference here
-			    	console.log("selected from admN1 (Chiefdom) list, and View by is on admN2 (PHU)");
-			    	//if selected from admN1 (Chiefdom) list, and View by is on admN2 (PHU)
-			    	var key2 = 'admN2';
-			    	module_multiadm.enableGoto(key2);
-					var html = '<select class="select-adm" id="select-'+key2+'">';
-	            	//console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')');
-		            html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')'+'</option>'; 
-		            //console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key1].title+')');  
-				    //html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+'</option>';   
-				    g.medical_loclists[key2].forEach(function(loc){
-				        if (loc.slice(0,loc_new.length) == loc_new) {
-				        	html +='<option value="'+loc+'">'+loc+'</option>';
-				    	}
-				    });
-				    html += '</select></div>';
-				    $('#map-'+key2+'-jumpto').html(html);
-				};
-
-				if ((key1=='admN1') && ($('#map-hosp-btn').hasClass('on'))) {		//HEIDI - fix direct reference here
-					console.log("selected from admN1 (Chiefdom) list, and View by is on hosp (Hospitals)");
-					//if selected from admN1 (Chiefdom) list, and View by is on hosp (Hospitals)
-				    var key2 = 'hosp';
-				    module_multiadm.enableGoto(key2);
-					var html = '<select class="select-adm" id="select-'+key2+'">';
-	            	//console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')');
-		            html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')'+'</option>'; 
-		            //console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key1].title+')');  
-				    //html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+'</option>';   
-				    g.medical_loclists[key2].forEach(function(loc){
-				        if (loc.slice(0,loc_new.length) == loc_new) {
-				        	html +='<option value="'+loc+'">'+loc+'</option>';
-				    	}
-				    });
-				    html += '</select></div>';
-				    $('#map-'+key2+'-jumpto').html(html);
-			    };
-
-			    if ((key1=='admN2') && ($('#map-admN1-btn').hasClass('on'))) {		//HEIDI - fix direct reference here
-			    	console.log("selected from admN2 (PHU) list, and View by is on admN1 (Chiefdom)");
-					//if selected from admN2 (PHU) list, and View by is on admN1 (Chiefdom)
-					var key2 = 'admN1';
-				    module_multiadm.enableGoto(key2);
-				    console.log("SHOULDN'T EVER HAPPEN???");
-				    module_multiadm.disableGoto('admN2');
-					module_multiadm.disableGoto('hosp');
-			    };
-
-			    if ((key1=='admN2') && ($('#map-admN2-btn').hasClass('on'))) {		//HEIDI - fix direct reference here
-			    	console.log("selected from admN2 (PHU) list, and View by is on admN2 (PHU)");
-					//if selected from admN2 (PHU) list, and View by is on admN2 (PHU)
-					var key2 = 'admN2';
-				    module_multiadm.enableGoto(key2);
-				    /*var html = '<select class="select-adm" id="select-'+key2+'">';
-	            	//console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')');
-		            html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')'+'</option>'; 
-		            //console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key1].title+')');  
-				    //html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+'</option>';   
-				    g.medical_loclists[key2].forEach(function(loc){
-				        if (loc.slice(0,loc_new.length) == loc_new) {
-				        	html +='<option value="'+loc+'">'+loc+'</option>';
-				    	}
-				    });
-				    html += '</select></div>';
-				    $('#map-'+key2+'-jumpto').html(html);*/
-			    };
-
-			    if ((key1=='admN2') && ($('#map-hosp-btn').hasClass('on'))) {		//HEIDI - fix direct reference here
-			    	console.log("selected from admN2 (PHU) list, and View by is on hosp (Hospitals)");
-					//if selected from admN2 (PHU) list, and View by is on hosp (Hospitals)
-					var key2 = 'hosp';
-				    module_multiadm.enableGoto(key2);
-				    module_multiadm.disableGoto('admN2');
-			    };
-
-			    if ((key1=='hosp') && ($('#map-admN1-btn').hasClass('on'))) {		//HEIDI - fix direct reference here
-			    	console.log("selected from hosp (Hospitals) list, and View by is on admN1 (Chiefdom)");
-					//if selected from hosp (Hospitals) list, and View by is on admN1 (Chiefdom)
-					var key2 = 'admN1';
-				    module_multiadm.enableGoto(key2);
-				    console.log("SHOULDN'T EVER HAPPEN???");
-				    module_multiadm.disableGoto('admN2');
-					module_multiadm.disableGoto('hosp');
-			    };
-
-			    if ((key1=='hosp') && ($('#map-admN2-btn').hasClass('on'))) {		//HEIDI - fix direct reference here
-			    	console.log("selected from hosp (Hospitals) list, and View by is on admN2 (PHU)");
-					//if selected from hosp (Hospitals) list, and View by is on admN2 (PHU)
-					var key2 = 'admN2';
-				    module_multiadm.enableGoto(key2);
-					module_multiadm.disableGoto('hosp');
-			    };
-
-			    if ((key1=='hosp') && ($('#map-hosp-btn').hasClass('on'))) {		//HEIDI - fix direct reference here
-			    	console.log("selected from hosp (Hospitals) list, and View by is on hosp (Hospitals)");
-					//if selected from hosp (Hospitals) list, and View by is on hosp (Hospitals)
-					var key2 = 'hosp';
-				    module_multiadm.enableGoto(key2);
-			    };
-
-
-			} else {
-	            // Initialize the next dropdown list
-	            var key2num = key1num + 1; 
-	            if(g.geometry_keylist[key2num]){
-	            	var key2 = g.geometry_keylist[key2num];
-	            	var html = '<select class="select-adm" id="select-'+key2+'">';
-	            	console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')');
-		            html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')'+'</option>'; 
-		            //console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key1].title+')');  
-				    //html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+'</option>';   
-				    g.medical_loclists[key2].forEach(function(loc){
-				        if (loc.slice(0,loc_new.length) == loc_new) {
-				        	html +='<option value="'+loc+'">'+loc+'</option>';
-				    	}
-				    });
-				    html += '</select></div>';
-				    $('#map-'+key2+'-jumpto').html(html);
-				    module_multiadm.propGoto(key2,key2num);
-	            } 
-	        }
-
+            // Initialize the next dropdown list
+            var key2num = key1num + 1; 
+            if(g.geometry_keylist[key2num]){
+            	var key2 = g.geometry_keylist[key2num];
+            	var html = '<select class="select-adm" id="select-'+key2+'">';
+            	console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')');
+	            html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_'+key2].title+')'+'</option>'; 
+	            //console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key1].title+')');  
+			    //html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+'</option>';   
+			    g.medical_loclists[key2].forEach(function(loc){
+			        if (loc.slice(0,loc_new.length) == loc_new) {
+			        	html +='<option value="'+loc+'">'+loc+'</option>';
+			    	}
+			    });
+			    html += '</select></div>';
+			    $('#map-'+key2+'-jumpto').html(html);
+			    module_multiadm.propGoto(key2,key2num);
+            } 
             
 		});
-		console.log("propGoto could still implement here: ", key1, key1num);
 
 	}
+
+	module_multiadm.setupGoto = function() {	
+
+		g.geometry_keylist.forEach(function(key1) {		
+			//console.log("setupGoto function: ", key1);
+			$('#select-'+key1).on('change', function(){  //user selects zoom from drop down list - key1
+				var loc_new = $('#select-' + key1).val();
+				g.module_multiadm.current_zoom[key1] = loc_new;	
+				//console.log("ZOOM CHANGED TO: ", key1, loc_new);
+				//console.log("Current selections: ", $('#select-admN1').val(), $('#select-admN2').val(), $('#select-hosp').val());            
+	            
+				var top_layer = getTopLayer(); 	
+				if (key1==top_layer) {		//if selected zoom is from top layer drop down list (key1)
+
+					g.geometry_keylist.forEach(function(key2) {	  //check which layer button is on - key2
+						if (($('#map-'+key2+'-btn').hasClass('on')) && (key2==key1)) {	//if top layer button is also on
+							//console.log("View by: admN1,   Zoom to: ", key1);
+							module_multiadm.zoomTo(key1,loc_new);
+							g.geometry_keylist.forEach(function(key3) {	 
+			        			if (key1!=key3) {
+			        				module_multiadm.disableGoto(key3);  //disable all other zoom lists besides top layer
+		    					}
+	    					});
+	    				} else if ($('#map-'+key2+'-btn').hasClass('on')) {
+					    	//console.log("View by: ", key2, "   Zoom to: ", key1);
+					    	module_multiadm.zoomTo(key1,loc_new);				
+					    	module_multiadm.subsetGoto(key2, g.module_multiadm.current_zoom[key1]);
+						    module_multiadm.enableGoto(key2);
+						    g.geometry_keylist.forEach(function(key3) {	 
+			        			if ((key1!=key3) && (key2!=key3)) {
+			        				module_multiadm.disableGoto(key3);  //disable all other zoom lists besides top layer
+		    					}
+	    					});
+	    				};
+					});
+
+				} else {   //if selected zoom is NOT from top layer drop down list e.g. key1 = 'admN2' or 'hosp'
+
+					g.geometry_keylist.forEach(function(key2) {	  //check which layer button is on - key2
+						if (($('#map-'+key2+'-btn').hasClass('on')) && (key2==key1)) {	
+							//console.log("View by: ", key2, "   Zoom to: ", key1);						
+							if ((g.module_multiadm.current_zoom[top_layer]=='NA') && (g.module_multiadm.current_zoom[key1]=='NA')) {
+								module_multiadm.zoomTo(key1, g.module_multiadm.current_zoom[key1]);
+								module_multiadm.enableGoto(key1);
+							} else if ((g.module_multiadm.current_zoom[top_layer]!='NA') && (g.module_multiadm.current_zoom[key1]=='NA')) {
+								module_multiadm.zoomTo(top_layer, g.module_multiadm.current_zoom[top_layer]);
+					    		module_multiadm.subsetGoto(key1, g.module_multiadm.current_zoom[top_layer]);
+							    module_multiadm.enableGoto(key1);
+							} else if (g.module_multiadm.current_zoom[key1]!='NA') {
+								module_multiadm.zoomTo(key1, g.module_multiadm.current_zoom[key1]);					
+							} 
+							g.geometry_keylist.forEach(function(key3) {	 
+			        			if ((top_layer!=key3) && (isSibling(key2,key3))) {
+			        				module_multiadm.disableGoto(key3);  //disable siblings, not top layer
+		    					}
+	    					});
+						};
+					});
+
+			    };
+			})
+		})
+	}
+
+
 
 	/**
 	 * Initiates the 'Goto' dropdown lists for the highest administrative level. Other lower administrative levels will be initiated by {@link module:module_multiadm.resetGoto}.
@@ -708,33 +557,54 @@ module_multiadm.interaction = function(){
 	     * @constant
 	     * @alias module:module_multiadm.focuscurrent
 	     */
-		g.module_multiadm.focuscurrent = {};
+		/*g.module_multiadm.focuscurrent = {};
 		g.geometry_keylist.forEach(function(key){ 
 			g.module_multiadm.focuscurrent[key] = 'NA';
-		});
+		});*/
 		
-		console.log("in initGoto: ", g.medical_loclists.admN1);
-        // Initialize first jumpto
-	    var html = '<select class="select-adm" id="select-admN1">';
-	    //console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key1].title+')');  
-	    html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_admN1'].title+')'+'</option>';
-	    g.medical_loclists.admN1.sort().forEach(function(loc){
-	        html +='<option value="'+loc+'">'+loc+'</option>';
-	    });
-	    html += '</select></div>';
-	    $('#map-admN1-jumpto').html(html);
+		if (g.new_layout) {
+			//console.log("in initGoto: ", g.medical_loclists);
+	        // Initialize zoom dropdown lists
+	        g.geometry_keylist.forEach(function(key, keynum){
+				var html = '<select class="select-adm" id="select-' + key + '">'; 
+			    html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_'+key].title+')'+'</option>';
+			    g.medical_loclists[key].sort().forEach(function(loc){
+			        html +='<option value="'+loc+'">'+loc+'</option>';
+			    });
+			    html += '</select></div>';
+			    $('#map-' + key + '-jumpto').html(html);
+			    if (keynum!=0) {
+			    	module_multiadm.disableGoto(key);
+			    };
+	        });
 
-		module_multiadm.propGoto('admN1',0);
+		    module_multiadm.setupGoto();
+
+		} else {
+			//console.log("in initGoto: ", g.medical_loclists.admN1);
+	        // Initialize first jumpto
+		    var html = '<select class="select-adm" id="select-admN1">';
+		    html +='<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_admN1'].title+')'+'</option>';
+		    g.medical_loclists.admN1.sort().forEach(function(loc){
+		        html +='<option value="'+loc+'">'+loc+'</option>';
+		    });
+		    html += '</select></div>';
+		    $('#map-admN1-jumpto').html(html);
+
+		    module_multiadm.propGoto('admN1',0);
+		}
+		
 	}
 
 	// Initialisation
 	module_multiadm.initGoto();
-	g.geometry_keylist.forEach(function(key,keynum){
-		if (!(keynum == 0)) {
-			module_multiadm.resetGoto(key);
-			module_multiadm.disableGoto(key);
-		}   
-	});
+	if (!(g.new_layout)) {
+		g.geometry_keylist.forEach(function(key,keynum){
+			if (!(keynum == 0)) {
+				module_multiadm.resetGoto(key);			
+			}   
+		});
+	};
 
 }
 
@@ -756,9 +626,9 @@ module_multiadm.interaction = function(){
  * @alias module:module_multiadm.zoomTo
  */		 
 module_multiadm.zoomTo = function(key,loc){
-	console.log("zoomTo: ", key, loc);
+	//console.log("zoomTo: ", key, loc);
     if (loc == "NA") {
-    	console.log("should be zooming out here for ", key);
+    	//console.log("should be zooming out here for ", key);
         zoomToGeom(g.geometry_data[key],g.viz_definition.multiadm.maps[key]);
     }else{
         var mapLayers = g.viz_definition.multiadm.maps[key]._layers;
@@ -788,10 +658,9 @@ module_multiadm.zoomTo = function(key,loc){
  * @alias module:module_multiadm.resetGoto
  */
 module_multiadm.resetGoto = function(key){	  //key=adm level, e.g. admN2 		//this function populates list with all locations
-	console.log("resetGoto: ", key);
+	console.log("**** resetGoto: ", key);
 	// Reset jumpto dropdown lists content
     var html = '<select class="select-adm" id="select-'+ key +'">';
-    //console.log(' ('+g.module_lang.text[g.module_lang.current]['map_'+key].title+')');
     html += '<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_'+key].title+')'+'</option>';
     g.medical_loclists[key].sort().forEach(function(loc){	
         html +='<option value="'+loc+'">'+loc+'</option>';
@@ -799,34 +668,45 @@ module_multiadm.resetGoto = function(key){	  //key=adm level, e.g. admN2 		//thi
     html += '</select></div>';
     $('#map-'+key+'-jumpto').html(html);
     g.module_multiadm.focuscurrent[key] = 'NA';		//g.module_multiadm.focuscurrent[key] - current value selected in zoom list
+    g.module_multiadm.current_zoom[key] = 'NA';
 }
 
 //HEIDI - new functions:
-module_multiadm.disableGoto = function(key){	  //key=adm level, e.g. admN2
-	console.log("disableGoto: ", key);
-	module_multiadm.resetGoto(key);
-	g.viz_definition.multiadm.charts[key].filterAll();
-	dc.redrawAll();
-	// Disable jumpto dropdown lists content
-    $('#select-'+key).attr('disabled', true);	
-    g.module_multiadm.focuscurrent[key] = 'NA';	  //g.module_multiadm.focuscurrent[key] - current value selected in zoom list
+module_multiadm.subsetGoto = function(key, region){	  //key=adm level, e.g. admN2 		//this function populates list with all locations
+	//console.log("subsetGoto: ", key, region);
+	// Reset dropdown list options
+    var html = '';   
+    html += '<option value="NA">'+g.module_lang.text[g.module_lang.current].jumpto+' ('+g.module_lang.text[g.module_lang.current]['map_'+key].title+')'+'</option>';
+    g.medical_loclists[key].sort().forEach(function(loc){	
+        if ((region=='NA') || (loc.slice(0,region.length) == region)) {
+        	html +='<option value="'+loc+'">'+loc+'</option>';
+        	//console.log(loc);
+    	}
+    });
+
+    $('#select-'+key).html(html);
 }
 
+//Disable zoom dropdown list
+module_multiadm.disableGoto = function(key){	  //key=adm level, e.g. admN2
+	//console.log("disableGoto: ", key);
+    $('#select-'+key).attr('disabled', true);	
+}
+
+//Enable zoom dropdown list
 module_multiadm.enableGoto = function(key){	  //key=adm level, e.g. admN2
-	console.log("enableGoto: ", key);
-	// Enable jumpto dropdown lists content
+	//console.log("enableGoto: ", key);
     $('#select-'+key).attr('disabled', false);	
-    g.module_multiadm.focuscurrent[key] = 'NA';	  //g.module_multiadm.focuscurrent[key] - current value selected in zoom list
 }
 
 
 module_multiadm.mapunit_interaction = function() {
 
 	//Map unit 'onclick' events
-	g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
+	g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {  //unit = Cases, Deaths, IncidenceProp, MortalityProp, Completeness
 		$('#'+unit).on('click',function(){   
 			if (!($('#'+unit).hasClass('on'))) {
-				console.log('mapunit_interaction CLICKED ON: ', unit);
+				//console.log('mapunit_interaction CLICKED ON: ', unit);
 				$('.button_mapunit').removeClass('on')
 				//$('.button_mapunit').removeClass('checked')
 				$('#'+unit).addClass('on');
@@ -849,8 +729,6 @@ module_multiadm.mapunit_interaction = function() {
 				if (g.module_colorscale.mapunitcurrent == 'Completeness') {
 					//console.log("SELECTED Completeness: ", g.module_colorscale.mapunitcurrent);
 
-					$('#map-hosp-btn').attr('disabled', false);		//HEIDI - need to automate hosp here
-
 					$('#selectform1').val('ReversedDiverging');	
 					g.module_colorscale.colorscurrent = 'ReversedDiverging';
 					//console.log("g.module_colorscale.colorscurrent: ", g.module_colorscale.colorscurrent);
@@ -870,14 +748,8 @@ module_multiadm.mapunit_interaction = function() {
 				} else if(g.module_colorscale.mapunitcurrent == 'Cases' || g.module_colorscale.mapunitcurrent == 'Deaths') {
 					//console.log("SELECTED Cases OR Deaths: ", g.module_colorscale.mapunitcurrent);
 
-					$('#map-hosp-btn').attr('disabled', false);		//HEIDI - need to automate hosp here
-
 					$('#selectform1').val('Classic');	
 					g.module_colorscale.colorscurrent = 'Classic';
-					//console.log("g.module_colorscale.colorscurrent: ", g.module_colorscale.colorscurrent);
-					//console.log("g.viz_definition.disease = ", g.viz_definition.disease);
-					//console.log("g.viz_definition.disease.chart.filter() = ", g.viz_definition.disease.chart.filter());
-					//console.log("g.medical_currentdisease = ", g.medical_currentdisease);
 					if(g.viz_definition.disease && g.viz_definition.disease.chart.filter() == undefined && g.medical_currentdisease){
 			            g.viz_definition.disease.chart.filter(g.medical_currentdisease);
 			            //console.log("IN IF for Cases or Deaths: ", g.medical_currentdisease);
@@ -891,8 +763,6 @@ module_multiadm.mapunit_interaction = function() {
 
 				} else if(g.module_colorscale.mapunitcurrent == 'IncidenceProp' || g.module_colorscale.mapunitcurrent == 'MortalityProp'){
 					//console.log("SELECTED Incidence or Mortality: ", g.module_colorscale.mapunitcurrent);
-
-					$('#map-hosp-btn').attr('disabled', true);		//HEIDI - need to automate hosp here
 
 					$('#selectform1').val('Classic');	
 					g.module_colorscale.colorscurrent = 'Classic';
@@ -918,6 +788,15 @@ module_multiadm.mapunit_interaction = function() {
 					dc.redrawAll(); //HEIDI ADDED TO TEST
 	          	}
 
+	          	for (var btn_set of g.dev_defined.incompatible_buttons) {
+	          		//console.log(btn_set);
+	          		$('#map-'+btn_set.geo+'-btn').attr('disabled', false);  //default is not to disable button
+	          		if (btn_set.unit==unit) {
+	          			$('#map-'+btn_set.geo+'-btn').attr('disabled', true);
+	          			break;
+	          		};
+	          	};
+
 	          	module_colorscale.changeMapColors();
 				module_colorscale.lockcolor('Manual');
 
@@ -926,4 +805,31 @@ module_multiadm.mapunit_interaction = function() {
 		//});
 	//});
 	};
+};
+
+
+
+getTopLayer = function() {
+	var name='';
+	g.viz_layer_pos.forEach(function(lyr) {
+		//console.log(lyr);
+		if (lyr.pos=='0') {name=lyr.name;}
+	});
+	return name;
+}
+
+//check whether lyr1 and lyr2 are siblings in tree structure of map layers
+isSibling = function(lyr1, lyr2) {
+
+	var depth1 = lyr1.split(".").length;
+	var depth2 = lyr2.split(".").length;
+	var branch1 = lyr1.substring(0, lyr1.lastIndexOf(".") + 1);
+	var branch2 = lyr2.substring(0, lyr2.lastIndexOf(".") + 1);
+
+	var cond_0 = (lyr1!=lyr2);						//not the same layer
+	var cond_1 = ((lyr1!='0') && (lyr2!='0'));		//neither layer is top layer
+	var cond_2 = (depth1==depth2);					//layers have same depth
+    var cond_3 = (branch1==branch2);				//layers have same leading branch
+
+    return cond_0 && cond_1 && cond_2 && cond_3;
 };

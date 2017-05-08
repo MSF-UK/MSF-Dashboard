@@ -42,7 +42,7 @@ g.module_chartwarper = {};
  * @type {String} 
  * @alias module:module_chartwarper.tabcontainer_id
  */
-g.module_chartwarper.tabcontainer_id = 'containter_bar_lin_tabs';			//default value
+g.module_chartwarper.tabcontainer_id = 'containter_bar-lin_tabs';			//default value
 if (g.dev_defined.tabcontainer_id) {
 	g.module_chartwarper.tabcontainer_id = g.dev_defined.tabcontainer_id;	//HEIDI - can be overwritten in dev_defined.js
 }
@@ -79,6 +79,8 @@ if (g.dev_defined.chartcontainers_list) {
  */
 module_chartwarper.display = function(tabcontainer_id,chartcontainers_list) {
 
+	//console.log("display chartwarper: ", tabcontainer_id, chartcontainers_list)
+
 	if (g.new_layout) {
 		var html = '<div>';
 		html += '<big><b><span id="chart_case_ser_title">'+g.module_lang.text[g.module_lang.current]['chart_case_ser_title']+'</span></b></big>';    //HEIDI - ***need to alternate with '<span id="chart_case_lin_title"></span>'
@@ -93,11 +95,11 @@ module_chartwarper.display = function(tabcontainer_id,chartcontainers_list) {
 			html +=  '<div id="'+key.container+'-tab" class="'+tab_status+' new_tab-cw">';
 			
 			// Tab title
-			if (g.new_layout) {
+			//if (g.new_layout) {
 				html +=  g.module_lang.text[g.module_lang.current]['chartwarper_tab_'+key.container];
-			} else {
+			/*} else {
 				html +=  g.module_lang.text[g.module_lang.current]['chartwarper_tab_'+key.container];
-			}
+			}*/
 							
 			html +=  '</div>';
 		});
@@ -107,6 +109,7 @@ module_chartwarper.display = function(tabcontainer_id,chartcontainers_list) {
 
 		var html = '<div>';
 		chartcontainers_list.forEach(function(key,keynum){
+			//console.log("create chart container for: ", key, keynum);
 			if (keynum == 0) {
 				var tab_status ='active-cw';
 			} else {
@@ -115,17 +118,17 @@ module_chartwarper.display = function(tabcontainer_id,chartcontainers_list) {
 			html +=  '<div id="'+key+'-tab" class="'+tab_status+' tab-cw">';
 			
 			// Tab title
-			if (g.new_layout) {
+			/*if (g.new_layout) {
 				html +=  '<b><big>'+g.module_lang.text[g.module_lang.current]['chartwarper_tab_'+key]+'</big></b>';
-			} else {
+			} else {*/
 				html +=  g.module_lang.text[g.module_lang.current]['chartwarper_tab_'+key];
-			}
+			//}
 							
 			html +=  '</div>';
 		});
 		html += '</div>';
 	}
-
+	//console.log(tabcontainer_id, html);
 	$('#' + tabcontainer_id).html(html);
 }
 

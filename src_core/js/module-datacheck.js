@@ -135,6 +135,7 @@ function toTitleCase(str){
  * @todo Should be broken down in smaller pieces.
  */
 module_datacheck.dataprocessing = function(){
+	console.log("in module_datacheck.dataprocessing");
 	// Test Value 
 	/**
 	 Defines datacheck tests on values.<br>
@@ -232,12 +233,14 @@ epiwk: function(rec,key,none){
 			//console.log("ingeometry: ", keylist, count);
 
 
-			if (key=='admN2'){     //HEIDI - fix this   - also if we have an extra admN2 layer such as hosp
+			if ((g.new_layout) && (key=='admN2')) {     //HEIDI - fix this   - also if we have an extra admN2 layer such as hosp
 				//console.log("ingeometry: ", rec, key, option); 
                 //count = 1;
 
                 //need to check whether in either geometry (admN2 or hosp) and then put in appropriate loclist
 
+                //if there are siblings that share geometry names???
+                //if ()
                 var loc_current = rec['PHU'].trim().split('_').join(' ');
                 //console.log("ok 1, ", loc_current);
 
@@ -249,15 +252,21 @@ epiwk: function(rec,key,none){
                 var cond_1a = !(g.geometry_loclists['hosp'].indexOf(loc_current) == -1);	//check if in hosp loclist
 				var cond_2 = g.medical_loclists[key].indexOf(loc_current) == -1;		//true = loc_current is not in medical locations list (because list not yet populated)
 				var cond_2a = g.medical_loclists['hosp'].indexOf(loc_current) == -1;
+				//console.log(loc_current, ": ", cond_1, cond_1a, cond_2, cond_2a);
 				//console.log("ok 2");
 				if(cond_1 && cond_2){		//checking if loc_current is in geojson and not yet in medical locations list
+					//console.log(loc_current, " in ", key);
 					g.medical_loclists[key].push(loc_current);
 					g.medical_loclists.all.push(loc_current);
 				} else if (cond_1a && cond_2a) {
+					//console.log(loc_current, " in ", hosp);
 					g.medical_loclists['hosp'].push(loc_current);
 					g.medical_loclists.all.push(loc_current);
+				} else {
+					//console.log(loc_current, "no conditions fulfilled");
 				}
 				//console.log("ok 3");
+
             } else {
             	//console.log("key != hosp");
                 //var count = key2num;
@@ -600,9 +609,12 @@ epiwk: function(rec,key,none){
 				if (key!=='disease' || !g.module_datacheck.diseasecheck) {  
 					//console.log("in if");
 					//if (key=='hosp') {console.log("found hosp")};
+					//console.log(g.module_datacheck.definition_value[key].test_type, rec, key);
 					var test_value = module_datacheck.testvalue[g.module_datacheck.definition_value[key].test_type](rec,key,g.module_datacheck.definition_value[key].setup);
+					//console.log("test_value: ", test_value);
 					module_datacheck.errorlogging(test_value,g.module_datacheck.definition_value[key].test_type,key,rec);
-					//if (key=='hosp') {console.log("test_value: ", test_value)};
+					//console.log("done errorlogging");
+					
 					if(!test_value){
 						//console.log("Errors in record number ", recnum, ": ", key, test_value, rec);
 						error_temp = true;
@@ -623,16 +635,19 @@ epiwk: function(rec,key,none){
 				//console.log("medical_hospitals: ", g.medical_hospitals);
 				//console.log(key, rec[key]);
 				if (key=='admN2') {				//HEIDI - fix admN2 and PHU references
+					//console.log("key=admN2");
 					//console.log(rec['PHU'], key);
 					//if (rec['PHU']=="Lion Heart Medical Centre") {console.log("WWWWWWWWWWWWWWWWWOOOOOOOOOOOOOOOOOOOOO")};
 					//console.log(g.medical_hospitals);
 					//console.log("Lion Heart in position: ", g.medical_hospitals.indexOf(rec['PHU']));
-					if (g.medical_hospitals.indexOf(rec['PHU']) != -1) {		//if the PHU name is in the list of hospital names
-						//console.log(g.medical_hospitals.indexOf(rec['PHU']), rec['PHU']);
-						rec['hosp'] = rec['PHU'];
-						//rec['PHU'] = '';
-						//console.log("PHU to hospital: ", rec);
-					} 
+					if (g.medical_hospitals) {	//put in condition for if hospitals exist
+						if (g.medical_hospitals.indexOf(rec['PHU']) != -1) {		//if the PHU name is in the list of hospital names
+							//console.log(g.medical_hospitals.indexOf(rec['PHU']), rec['PHU']);
+							rec['hosp'] = rec['PHU'];
+							//rec['PHU'] = '';
+							//console.log("PHU to hospital: ", rec);
+						} 
+					};
 				}
 
 			}

@@ -631,7 +631,9 @@ module_getdata.afterload_medical_d3 = function(data) {
 
   // Load Optional Module: module-datacheck.js
   module_datacheck.dataprocessing();
+  console.log("done dataprocessing");
   module_getdata.load_propagate();
+  console.log("done load_propagate");
 };
 
 // KoBo
