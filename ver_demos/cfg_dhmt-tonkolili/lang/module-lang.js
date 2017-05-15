@@ -121,7 +121,8 @@ g.module_lang.text.fra = {
 	chart_disease_title: 'Pathologies',
 	chart_disease_labelx: 'Nombre de Signalements',
 	chart_disease_labely: 'Pathologies',
-	chart_case_bar_title: 'Cas & Décès',
+	//chart_case_bar_title: 'Cas & Décès',
+	chart_case_ser_title: 'Cas & Décès',
 	chart_case_lin_title: 'Cas & Décès',
 	chart_case_labelx: 'Semaine Epi',
 	chart_case_labely: 'Cas',
@@ -156,8 +157,9 @@ g.module_lang.text.fra = {
 		title: 'Hospitals'
 	},
 
-	chartwarper_tab_containter_bar:'Par classe d\'age',
-	chartwarper_tab_containter_lin:'Par année',
+	//chartwarper_tab_container_bar:'Par classe d\'age',
+	chartwarper_tab_container_ser:'Par classe d\'age',
+	chartwarper_tab_container_lin:'Par année',
 	
 	colorscale_title: 'PARAMETRES DE LA CARTE',
 	colorscale_unitintro: 'Unité de la carte : ',
@@ -313,11 +315,11 @@ g.module_lang.text.eng = {
 		title: 'Hospitals'
 	},
 
-	//chartwarper_tab_containter_bar:'By age group',  
-	//chartwarper_tab_containter_lin:'By year',
-	chartwarper_tab_containter_ser:'by age group',				//HEIDI
-	chartwarper_tab_containter_bar:'Stacked bars (by age group, filterable)',  //HEIDI
-	chartwarper_tab_containter_lin:'by year',					//HEIDI
+	//chartwarper_tab_container_bar:'By age group',  
+	//chartwarper_tab_container_lin:'By year',
+	chartwarper_btn_container_ser:'by age group',				//HEIDI
+	//chartwarper_tab_container_bar:'Stacked bars (by age group, filterable)',  //HEIDI
+	chartwarper_btn_container_lin:'by year',					//HEIDI
 	
 	colorscale_title: 'MAP PARAMETERS',
 	colorscale_unitintro: 'Choose map unit: ',
@@ -400,8 +402,8 @@ g.module_lang.text.eng = {
 	//intro_disease: 'This row chart displays represented diseases.<br><i>Click on the bars to display data for a chosen disease.<br>The horizontal axis displays the number of times a disease has been reported ie. +1 per Area and per Week where 1 or more cases of the disease have been reported.</i>',
 	intro_disease: "<div style='font: 14px sans-serif;'><h4><b>Disease Chart</b></h4><p>This chart displays all diseases reported in the data. It measures the number of times each disease was reported (i.e. +1 per area and per week, where there was at least 1 case reported).</p><p>Clicking on the bars filters all data to that specific disease.</p></div>",
 
-	//intro_containter_bar_lin: "<div style='font: 14px sans-serif;'><h4><b>Epiweek Charts</b></h4><p>The charts in this section show either the number of Cases & Deaths or the Incidence & Mortality rates per epiweek, as selected in the buttons above the map. The charts can be viewed either by Age Group or by Year, which can be alternated using the buttons at the top. Hovering over a data point displays its value.</p><p> The Epiweek Range Chart (below) can be used to select a range of epiweeks as desired.</p></div>",
-	intro_containter_bar_lin: "<div style='font: 14px sans-serif;'><h4><b>Epiweek Charts</b></h4><p>The charts in this section show either the number of Cases & Deaths or the Incidence & Mortality rates per epiweek, as selected in the buttons above the map. The charts can be viewed either by Age Group or by Year, which can be alternated using the buttons at the top. Hovering over a data point displays its value.</p><p> The Epiweek Range Chart (below) can be used to select a range of epiweeks as desired.</p></div>",
+	//intro_container_bar_lin: "<div style='font: 14px sans-serif;'><h4><b>Epiweek Charts</b></h4><p>The charts in this section show either the number of Cases & Deaths or the Incidence & Mortality rates per epiweek, as selected in the buttons above the map. The charts can be viewed either by Age Group or by Year, which can be alternated using the buttons at the top. Hovering over a data point displays its value.</p><p> The Epiweek Range Chart (below) can be used to select a range of epiweeks as desired.</p></div>",
+	intro_container_ser_lin: "<div style='font: 14px sans-serif;'><h4><b>Epiweek Charts</b></h4><p>The charts in this section show either the number of Cases & Deaths or the Incidence & Mortality rates per epiweek, as selected in the buttons above the map. The charts can be viewed either by Age Group or by Year, which can be alternated using the buttons at the top. Hovering over a data point displays its value.</p><p> The Epiweek Range Chart (below) can be used to select a range of epiweeks as desired.</p></div>",
 
 	//intro_case_bar: 'These bar charts display case and death numbers by epi-week and by age group (+/- 5 years old).<br><i>Click on the bars to filter by a specific epi-week. You can select multiple epi-weeks. To reset, click again on the selected epi-weeks (one by one) or click the "<span class="ft">↻</span>" button.</i>',
 	intro_case_ser: "<div style='font: 14px sans-serif;'><h4><b>Epiweek Chart by Age Group</b></h4><p>These charts display case and death numbers by epiweek for each age group (Under 5 and Over 5 years old). They cannot be used filter the dataset. However, the chart automatically zooms in to those epiweeks selected in the Epiweek Range Chart.</p></div>",
@@ -467,8 +469,8 @@ g.module_lang.text.eng = {
         title: 'PHU'
     },
 
-    chartwarper_tab_containter_bar:'Por clase de edad',
-    chartwarper_tab_containter_lin:'Por año',
+    chartwarper_tab_container_bar:'Por clase de edad',
+    chartwarper_tab_container_lin:'Por año',
    
     colorscale_title: 'PARÁMETROS DEL MAPA',
     colorscale_unitintro: 'Unidad del mapa: ',

@@ -49,7 +49,7 @@ g.module_multiadm = {};
 //------------------------------------------------------------------------------------
 
 /**
- * Defines titles, filters container and tabs and parses it to the containter with if <code>chart-multiadm</code> that has been defined in the index.html layout.
+ * Defines titles, filters container and tabs and parses it to the container with if <code>chart-multiadm</code> that has been defined in the index.html layout.
  * <br>
  * Requires - *complete list [x]*:
  * <ul>
@@ -292,7 +292,7 @@ module_multiadm.interaction = function(){
 		        	//console.log("   clicked from ", g.module_multiadm.prev_layer, " to ", key1);
 		        	//console.log("   current zooms: ", g.module_multiadm.current_zoom);
 
-		        	var top_layer = getTopLayer(); 
+		        	var top_layer = module_multiadm.getTopLayer(); 
 		        	//console.log("top_layer = ", top_layer);
 		        	if (key1==top_layer) {	
 			        	g.geometry_keylist.forEach(function(key2) {	        		
@@ -328,7 +328,7 @@ module_multiadm.interaction = function(){
 					        			}
 						        		module_multiadm.enableGoto(key2);
 						        		g.geometry_keylist.forEach(function(key3) {	 
-						        			if ((key3!=key2) && (isSibling(key1, key3))) {
+						        			if ((key3!=key2) && (module_multiadm.isSibling(key1, key3))) {
 						        				//console.log("disable sibling here: ", key3);
 						        				module_multiadm.disableGoto(key3);  //here we need to disable buttons that are siblings to key1 and not top layer
 					    					}
@@ -470,7 +470,7 @@ module_multiadm.interaction = function(){
 				//console.log("ZOOM CHANGED TO: ", key1, loc_new);
 				//console.log("Current selections: ", $('#select-admN1').val(), $('#select-admN2').val(), $('#select-hosp').val());            
 	            
-				var top_layer = getTopLayer(); 	
+				var top_layer = module_multiadm.getTopLayer(); 	
 				if (key1==top_layer) {		//if selected zoom is from top layer drop down list (key1)
 
 					g.geometry_keylist.forEach(function(key2) {	  //check which layer button is on - key2
@@ -511,7 +511,7 @@ module_multiadm.interaction = function(){
 								module_multiadm.zoomTo(key1, g.module_multiadm.current_zoom[key1]);					
 							} 
 							g.geometry_keylist.forEach(function(key3) {	 
-			        			if ((top_layer!=key3) && (isSibling(key2,key3))) {
+			        			if ((top_layer!=key3) && (module_multiadm.isSibling(key2,key3))) {
 			        				module_multiadm.disableGoto(key3);  //disable siblings, not top layer
 		    					}
 	    					});
@@ -809,27 +809,178 @@ module_multiadm.mapunit_interaction = function() {
 
 
 
-getTopLayer = function() {
+module_multiadm.getTopLayer = function() {
 	var name='';
-	g.viz_layer_pos.forEach(function(lyr) {
+	/*g.viz_layer_pos.forEach(function(lyr) {
 		//console.log(lyr);
 		if (lyr.pos=='0') {name=lyr.name;}
 	});
-	return name;
+	return name;*/
+	for (var lyr in g.viz_layer_pos) {
+    	//console.log(lyr, g.viz_layer_pos, pos);
+    	if (g.viz_layer_pos[lyr]=='0') {
+    		name = lyr;
+    	}
+    } 
+    return name;
 }
 
-//check whether lyr1 and lyr2 are siblings in tree structure of map layers
-isSibling = function(lyr1, lyr2) {
+//check whether lyr1 and lyr2 are siblings in tree structure of map layers - return true or false
+module_multiadm.isSibling = function(lyr1, lyr2) {
+	var lyrpos1 = g.viz_layer_pos[lyr1];
+	var depth1 = lyrpos1.split(".").length;
+	var branch1 = lyrpos1.substring(0, lyrpos1.lastIndexOf("."));
+	var lyrpos2 = g.viz_layer_pos[lyr2];
+	var depth2 = lyrpos2.split(".").length;
+	var branch2 = lyrpos2.substring(0, lyrpos2.lastIndexOf("."));
+	var isSibling = false;
 
-	var depth1 = lyr1.split(".").length;
+	/*var depth1 = lyr1.split(".").length;
 	var depth2 = lyr2.split(".").length;
 	var branch1 = lyr1.substring(0, lyr1.lastIndexOf(".") + 1);
-	var branch2 = lyr2.substring(0, lyr2.lastIndexOf(".") + 1);
+	var branch2 = lyr2.substring(0, lyr2.lastIndexOf(".") + 1);*/
 
 	var cond_0 = (lyr1!=lyr2);						//not the same layer
-	var cond_1 = ((lyr1!='0') && (lyr2!='0'));		//neither layer is top layer
-	var cond_2 = (depth1==depth2);					//layers have same depth
-    var cond_3 = (branch1==branch2);				//layers have same leading branch
+	var cond_1 = (depth1==depth2);					//layers have same depth
+    var cond_2 = (branch1==branch2);				//layers have same leading branch
 
-    return cond_0 && cond_1 && cond_2 && cond_3;
+    //console.log("isSibling? ", lyr1, lyr2, cond_0, cond_1, cond_2);
+    return cond_0 && cond_1 && cond_2;
 };
+
+//check whether lyr has siblings in tree structure of map layers - return true or false
+module_multiadm.hasSiblings = function(lyr1) {
+	/*var lyrpos1 = g.viz_layer_pos[lyr1];
+	//console.log(lyr1, lyrpos1);
+	var depth1 = lyrpos1.split(".").length;
+	var branch1 = lyrpos1.substring(0, lyrpos1.lastIndexOf("."));*/
+	var hasSiblings = false;
+
+	for (var lyr2 in g.viz_layer_pos) {
+		/*var depth2 = g.viz_layer_pos[lyr2].split(".").length;
+		var branch2 = g.viz_layer_pos[lyr2].substring(0, g.viz_layer_pos[lyr2].lastIndexOf("."));
+
+		var cond_0 = (lyr1!=lyr2);				//not same layer
+		var cond_1 = (depth1==depth2);			//same depth
+	    var cond_2 = (branch1==branch2);		//same branch*/
+
+	    //console.log("isChild? ", lyr, lyrpos1, depth1, "  child = ", lyr2, g.viz_layer_pos[lyr2], depth2, branch2, " tests: ", cond_0, cond_1);
+	    //if (cond_0 && cond_1 && cond_2) {
+	    if (module_multiadm.isSibling(lyr1, lyr2)) {
+	    	hasSiblings = true;
+	    	break;
+	    }
+	};  
+
+	//console.log("hasSiblings? ", lyr1, hasSiblings)
+	return hasSiblings;
+};
+
+//return array of siblings in tree structure of map layers - returns array of 
+module_multiadm.getSiblings = function(lyr1) {
+	/*var lyrpos1 = g.viz_layer_pos[lyr1];
+	//console.log(lyr1, lyrpos1);
+	var depth1 = lyrpos1.split(".").length;
+	var branch1 = lyrpos1.substring(0, lyrpos1.lastIndexOf("."));*/
+	var siblings = [];
+
+	for (var lyr2 in g.viz_layer_pos) {
+		if (module_multiadm.isSibling(lyr1, lyr2)) {
+			siblings.push(lyr2);
+		}
+	};  
+	//console.log("getSiblings: ", lyr1, siblings)
+	return siblings;
+};
+
+//check whether lyr has children in tree structure of map layers - return true or false
+module_multiadm.hasChildren = function(lyr) {
+	var lyrpos1 = g.viz_layer_pos[lyr];
+	//console.log(lyr, lyrpos1);
+	var depth1 = lyrpos1.split(".").length;
+	//var branch1 = lyrpos1.substring(0, lyrpos1.lastIndexOf("."));
+	var hasChildren = false;
+
+	for (var lyr2 in g.viz_layer_pos) {
+		var depth2 = g.viz_layer_pos[lyr2].split(".").length;
+		var branch2 = g.viz_layer_pos[lyr2].substring(0, g.viz_layer_pos[lyr2].lastIndexOf("."));
+
+		var cond_0 = (depth1==depth2 - 1);			//lyr2 is one level deeper
+	    var cond_1 = (lyrpos1==branch2);				//lyr2's leading branch is the same as lyr
+
+	    //console.log("isChild? ", lyr, lyrpos1, depth1, "  child = ", lyr2, g.viz_layer_pos[lyr2], depth2, branch2, " tests: ", cond_0, cond_1);
+	    if (cond_0 && cond_1) {
+	    	hasChildren = true;
+	    	break;
+	    }
+	};    
+
+	//console.log("hasChildren? ", lyr, lyrpos1, hasChildren);
+	return hasChildren;
+}
+
+module_multiadm.getChildren = function(lyr) {
+	var lyrpos1 = g.viz_layer_pos[lyr];
+	//console.log(lyr, lyrpos1);
+	var depth1 = lyrpos1.split(".").length;
+	//var branch1 = lyrpos1.substring(0, lyrpos1.lastIndexOf("."));
+	var children = [];
+
+	for (var lyr2 in g.viz_layer_pos) {
+		var depth2 = g.viz_layer_pos[lyr2].split(".").length;
+		var branch2 = g.viz_layer_pos[lyr2].substring(0, g.viz_layer_pos[lyr2].lastIndexOf("."));
+
+		var cond_0 = (depth1==depth2 - 1);		//lyr2 is one level deeper
+	    var cond_1 = (lyrpos1==branch2);		//lyr2's leading branch is the same as lyr
+
+	    //console.log("isChild? ", lyr, lyrpos1, depth1, "  child = ", lyr2, g.viz_layer_pos[lyr2], depth2, branch2, " tests: ", cond_0, cond_1);
+	    if (cond_0 && cond_1) {
+	    	children.push(lyr2);
+	    }
+	};    
+
+	//console.log("children? ", lyr, lyrpos1, children);
+	return children;
+}
+
+module_multiadm.isParent = function(lyr) {
+	var lyrpos1 = g.viz_layer_pos[lyr];
+	var depth1 = lyrpos1.split(".").length;
+	var isParent = false;
+
+	//var parent_pos = lyrpos1.substring(0, lyrpos1.lastIndexOf("."));
+	for (var lyr2 in g.viz_layer_pos) {
+		var depth2 = g.viz_layer_pos[lyr2].split(".").length;
+		var branch2 = g.viz_layer_pos[lyr2].substring(0, g.viz_layer_pos[lyr2].lastIndexOf("."));
+
+		var cond_0 = (depth1==depth2-1);
+		var cond_1 = (branch2==lyrpos1);
+
+		if (cond_0 && cond_1) {
+	    	isParent = true;
+	    	break;
+	    }
+	}
+
+	//console.log(lyr, " is parent ", isParent);
+	return isParent;
+}
+
+//returns parent of layer in tree structure of map layers (string) - note there can only be 1 parent
+module_multiadm.getParent = function(lyr) {
+	var lyrpos1 = g.viz_layer_pos[lyr];
+	var parent = '';
+
+	if (lyrpos1!=0) {  //if layer is not top layer
+		//var parent_pos = lyrpos1.substring(0, lyrpos1.lastIndexOf("."));
+		for (var lyr2 in g.viz_layer_pos) {
+			if (g.viz_layer_pos[lyr2] == lyrpos1.substring(0, lyrpos1.lastIndexOf("."))) {
+				parent = lyr2;
+				break;
+			}
+		}
+	}
+
+	//console.log(lyr, " has parent ", parent);
+	return parent;
+}

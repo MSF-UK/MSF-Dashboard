@@ -412,14 +412,46 @@ function generateDashboard(){
                 g.geometry_keylist.forEach(function(key2,key2num,key2list) {    //e.g. key2=admN1, key2num=0, key2list=[admN1,admN2]
                     //console.log ("multiadm dimension parameters: ", key2,key2num,key2list); 
                     mapDimension[key2] = cf.dimension(function(rec){ 
-                        //console.log ("multiadm dimension: ", key2, rec);    //e.g. key2=admN1, rec=individual record
+                        //console.log ("multiadm dimension: ", key2);    //e.g. key2=admN1, rec=individual record
 
 
-                        if(key2=='hosp'){     //HEIDI - fix this
+                        /*if (key2=='hosp') {     //HEIDI - fixed this somewhere else - see ingeometry in module-datacheck.js
                             var count = 1;
                             var loc_current = rec['PHU'].trim().split('_').join(' ');
                             count--;
                             loc_current = rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' ')+', '+loc_current;
+                            //if (g.hosp.indexOf(rec['PHU'])==-1) {loc_current=''}
+                            //else {console.log(rec['PHU'])};*/
+
+
+                        if (g.new_layout) {
+                            if(g.module_datacheck.definition_value[key2].setup == 'normalize'){ 
+                                var loc_current = toTitleCase(rec[g.medical_headerlist[key2]].trim().split('_').join(' '));
+                            } else {   
+                                var loc_current = rec[g.medical_headerlist[key2]].trim().split('_').join(' ');
+                            }
+                            var pos = g.viz_layer_pos[key2];
+                            var depth = g.viz_layer_pos[key2].split('.').length-1;
+                            //console.log(key2, g.viz_layer_pos[key2], "depth = ", depth);
+                            while(depth > 0){           //add names of higher levels into full g.medical_loclists name
+                                depth--;
+                                pos = pos.substring(0, pos.lastIndexOf("."));
+                                var name = '';
+                                for (var lyr in g.viz_layer_pos) {
+                                    if (g.viz_layer_pos[lyr]==pos) {
+                                        name = lyr;
+                                    }
+                                } 
+                                //console.log("name: ", name, rec[name]);
+                                if (g.module_datacheck.definition_value[key2].setup == 'normalize') {      
+                                    loc_current = toTitleCase(rec[g.medical_headerlist[name]].trim().split('_').join(' '))+', '+loc_current;
+                                } else {
+                                    loc_current = rec[g.medical_headerlist[name]].trim().split('_').join(' ')+', '+loc_current;
+                                }
+                            }
+                            //console.log(loc_current);
+
+
                         } else {
 
                             var count = key2num;
@@ -436,8 +468,9 @@ function generateDashboard(){
                                     loc_current = rec[g.medical_headerlist[key2list[count]]].trim().split('_').join(' ')+', '+loc_current;
                                 }
                             }
+
                         }
-                        //console.log ("multiadm dimension: ", loc_current);   //one for each row in spreadsheet - so here could do IF mapcurrent=Cases etc?
+                        //console.log ("multiadm dimension: ", key2, loc_current);   //one for each row in spreadsheet - so here could do IF mapcurrent=Cases etc?
                         return loc_current;
 
                         //} 
@@ -576,7 +609,8 @@ function generateDashboard(){
             },
             readcat: function(key){
                 var dimension = cf.dimension(function(rec) {
-                    var val = rec[g.medical_headerlist[key]];     
+                    var val = rec[g.medical_headerlist[key]];  
+                    //console.log(g.medical_read);   
                     var read = g.medical_read[key][val];
                     if(!read){read = 'NA';}
                     return read;
@@ -586,6 +620,7 @@ function generateDashboard(){
             readncombcat: function(key){
                 var dimension = cf.dimension(function(rec) {
                     var val = rec[g.medical_headerlist[key[0]]].toString() + rec[g.medical_headerlist[key[1]]].toString();
+                    //console.log(g.medical_read);
                     var read = g.medical_read[''+key[0]+key[1]][val];
                     if(!read){read = 'NA';}
                     return read; 
@@ -1528,9 +1563,41 @@ function generateDashboard(){
                 function valueAccessor(d){
                     //console.log("IN VALUE ACCESSOR FOR MULTIADM - ", g.module_colorscale.mapunitcurrent, d);
 
-                    var layer_level = d.key.split(', ').length - 1;
-                    //console.log("layer_level = ", layer_level);
-                    if (layer_level==1) {       //HEIDI - redefine tree structure separating admN2 and hospitals in dev-defined?
+                    if (g.new_layout) {
+                        var depth = d.key.split(', ').length - 1;
+                        //console.log(d.key, " depth = ", depth);
+
+                        //check whether multiple layers exist of the same depth
+                        var shared = [];
+                        for (var lyr in g.viz_layer_pos) {
+                            //console.log(depth, g.viz_layer_pos[lyr].split(".").length);
+                            if (g.viz_layer_pos[lyr].split(".").length-1 == depth) {
+                                shared.push(lyr);
+                            }
+                        }
+                        if (shared.length > 1) {
+                            for (var i=0; i<=shared.length-1; i++) {
+                                if (g[shared[i]]) {
+                                    if (g[shared[i]].indexOf(d.key.split(', ')[1])!=-1) {
+                                        temp_adm = shared[i];
+                                        break;
+                                    } 
+                                } else {
+                                    temp_adm = g.geometry_keylist[d.key.split(', ').length - 1];
+                                }
+                            }
+
+                        } else {
+                            temp_adm = g.geometry_keylist[d.key.split(', ').length - 1];
+                        }
+
+                    } else {
+                        temp_adm = g.geometry_keylist[d.key.split(', ').length - 1];
+                    }
+
+                    /*var depth = d.key.split(', ').length - 1;
+                    //console.log(d.key, " depth = ", depth);
+                    if (depth==1) {       //HEIDI - redefine tree structure separating admN2 and hospitals in dev-defined?
                         //console.log(d.key.split(', ')[1]);
                         if ((g.new_layout) && (g.medical_hospitals.indexOf(d.key.split(', ')[1])!=-1)) {   //if in hospitals list (remove chiefdom name)
                         //if (g.medical_hospitals.indexOf(d.key.split(', ')[1])!=-1) {
@@ -1541,7 +1608,8 @@ function generateDashboard(){
                         }
                     } else {
                         temp_adm = g.geometry_keylist[d.key.split(', ').length - 1];
-                    }
+                    }*/
+
                     //console.log("temp_adm = ", temp_adm);  //e.g. temp_adm = admN2
 
                     if ((g.module_colorscale.mapunitcurrent == 'IncidenceProp') || (g.module_colorscale.mapunitcurrent == 'MortalityProp')) {
@@ -1607,7 +1675,7 @@ function generateDashboard(){
 
                         var pop = 0;
 
-                        if ((g.pop_new_format) && (g.module_interface.autoplayon)) {
+                        if ((g.module_population.pop_new_format) && (g.module_interface.autoplayon)) {
                             //console.log("AUTOPLAYON");
                             //console.log("g.module_interface.autoplayweek: ", g.module_interface.autoplayweek);
                             //yr = 2015;
@@ -1617,7 +1685,7 @@ function generateDashboard(){
                         }
                         else {
                             for (i=0; i<=current_epiweeks.length-1;i++) {       //get sum of total population throughout time period                            
-                                if (g.pop_new_format) {
+                                if (g.module_population.pop_new_format) {
                                     yr = parseInt(current_epiweeks[i].substr(0,4));
                                     //console.log("yr: ", yr);
                                     //pop_temp = getPopNumYr(yr, definedPopYears, d.key);
@@ -1626,7 +1694,7 @@ function generateDashboard(){
                                     pop += pop_temp;
                                     //console.log("total so far = ", pop);
                                 } else {
-                                    pop += g.population_databyloc.pop[d.key];
+                                    pop += g.module_population.population_databyloc.pop[d.key];
                                     //console.log("total so far (not new pop format) = ", pop);
                                 }
                             } 
@@ -1641,11 +1709,11 @@ function generateDashboard(){
                             if ((select_age_class.indexOf('Under 5')>-1) && (select_age_class.length==1)) {  //filtered to only Under 5s
                                 //console.log("in Under 5 only");
                                 //var popAgeClass = g.population_databyloc.pop[d.key] * (g.pop_perc_u5/100);
-                                var popAgeClass = pop * (g.pop_perc_u5/100);
+                                var popAgeClass = pop * (g.module_population.pop_perc_u5/100);
                             } else if ((select_age_class.indexOf('Over 5')>-1) && (select_age_class.length==1)) {   //filtered to only Over 5s
                                 //console.log("in Over 5 only");
                                 //var popAgeClass = g.population_databyloc.pop[d.key] * ((100-g.pop_perc_u5)/100); 
-                                var popAgeClass = pop * ((100-g.pop_perc_u5)/100);  
+                                var popAgeClass = pop * ((100-g.module_population.pop_perc_u5)/100);  
                             } else {                                                                          //filtered to both or neither
                                 //console.log("in neither or both: ");
                                 //var popAgeClass = g.population_databyloc.pop[d.key];
@@ -1822,7 +1890,8 @@ function generateDashboard(){
                             var precision = 0;
                         }
                         var div = L.DomUtil.create('div', 'info legend');
-                        var html = '<table style="font-size:1em;">';
+                        var html = '<p id="legend_title">'+ g.module_lang.text[g.module_lang.current].map_unit[g.module_colorscale.mapunitcurrent] + '</p>';
+                        html += '<table style="margin-left: 5px; font-size:1em">';
                         for(var i = g.module_colorscale.valuescurrent.length - 1;i > 1;i--){
 							
                             var minVal = numberWithCommas(g.module_colorscale.valuescurrent[i - 1].toFixed(precision));
@@ -1836,8 +1905,14 @@ function generateDashboard(){
                             }
 							html += '<td align="right">' + minVal + '</td></tr>';  */
 							
+
 							html += '<tr><td><i style="background:' + g.module_colorscale.colors[g.module_colorscale.colorscurrent][i - 1] + '"></i></td>';
-							html += '<td>≤ </td><td align="right">' + maxVal + '</td></tr>';
+							if (g.module_colorscale.mapunitcurrent == 'Completeness') {
+                                html += '<td>≤ </td><td>' + maxVal + '%</td></tr>';
+                            } else {
+                                html += '<td>≤ </td><td>' + maxVal + '</td></tr>';
+                            }
+                            
 						
                         }
                         if(!(g.module_colorscale.mapunitcurrent == 'Completeness')){
@@ -2290,18 +2365,18 @@ function generateDashboard(){
                                             //console.log("select_age_class = ", select_age_class);
                                             if ((select_age_class.indexOf('Under 5')>-1) && (select_age_class.length==1)) {  //filtered to only Under 5s
                                                 //console.log("in Under 5 only");
-                                                if (g.pop_perc_u5) {         //if this value is defined in dev-defined.js
+                                                if (g.module_population.pop_perc_u5) {         //if this value is defined in dev-defined.js
                                                        //var pop = getPopNum()*(g.pop_perc_u5/100);
-                                                       var v =  g.dev_defined.definition_incidence(+d.value, module_population.getPopNum(yr)*(g.pop_perc_u5/100), 1);  //HEIDI - for under 5s
+                                                       var v =  g.dev_defined.definition_incidence(+d.value, module_population.getPopNum(yr)*(g.module_population.pop_perc_u5/100), 1);  //HEIDI - for under 5s
                                                        //console.log("in getValue u5:  (", +d.value,"*10,000) / (",getPopNum(),"*(",g.pop_perc_u5,"/100)*",1," = ", v);
                                                     } else {
                                                        var v = null;
                                                     };
                                             } else if ((select_age_class.indexOf('Over 5')>-1) && (select_age_class.length==1)) {   //filtered to only Over 5s
                                                 //console.log("in Over 5 only");
-                                                if (g.pop_perc_u5) {
+                                                if (g.module_population.pop_perc_u5) {
                                                        //var pop = getPopNum()*((100-g.pop_perc_u5)/100);
-                                                       var v = g.dev_defined.definition_incidence(+d.value, module_population.getPopNum(yr)*((100-g.pop_perc_u5)/100), 1);
+                                                       var v = g.dev_defined.definition_incidence(+d.value, module_population.getPopNum(yr)*((100-g.module_population.pop_perc_u5)/100), 1);
                                                        //console.log("in getValue o5:  (", +d.value,"*10,000) / (",getPopNum(),"*(",g.pop_perc_u5,"/100)*",1," = ", v);
                                                     } else {
                                                        var v = null;
@@ -2316,17 +2391,17 @@ function generateDashboard(){
                                         };
                                         //console.log("in getValue all:  (", +d.value,"*10,000) / (",getPopNum(yr),"*",1,") = ", v);
                                         break;
-                            case 'u5': if (g.pop_perc_u5) {         //if this value is defined in dev-defined.js
+                            case 'u5': if (g.module_population.pop_perc_u5) {         //if this value is defined in dev-defined.js
                                            //var pop = getPopNum()*(g.pop_perc_u5/100);
-                                           var v =  g.dev_defined.definition_incidence(+d.value, module_population.getPopNum(yr)*(g.pop_perc_u5/100), 1);  //HEIDI - for under 5s
+                                           var v =  g.dev_defined.definition_incidence(+d.value, module_population.getPopNum(yr)*(g.module_population.pop_perc_u5/100), 1);  //HEIDI - for under 5s
                                            //console.log("in getValue u5:  (", +d.value,"*10,000) / (",getPopNum(),"*(",g.pop_perc_u5,"/100)*",1," = ", v);
                                         } else {
                                            var v = null;
                                         };
                                         break;
-                            case 'o5': if (g.pop_perc_u5) {
+                            case 'o5': if (g.module_population.pop_perc_u5) {
                                            //var pop = getPopNum()*((100-g.pop_perc_u5)/100);
-                                           var v = g.dev_defined.definition_incidence(+d.value, module_population.getPopNum(yr)*((100-g.pop_perc_u5)/100), 1);
+                                           var v = g.dev_defined.definition_incidence(+d.value, module_population.getPopNum(yr)*((100-g.module_population.pop_perc_u5)/100), 1);
                                            //console.log("in getValue o5:  (", +d.value,"*10,000) / (",getPopNum(),"*(",g.pop_perc_u5,"/100)*",1," = ", v);
                                         } else {
                                            var v = null;
@@ -2349,7 +2424,7 @@ function generateDashboard(){
 
                 function valueAccessor2(d, age, year) {       
                     //console.log("in valueAccessor2: ", d, age, year);
-                    if(g.pop_new_format) {                                      //HEIDI - is this needed or could we pass current_yr through as undefined in old format?
+                    if(g.module_population.pop_new_format) {                                      //HEIDI - is this needed or could we pass current_yr through as undefined in old format?
                         if (d.key instanceof Date) {
                             var current_yr = d.key.getFullYear();
                         } else if (year!=null) {
@@ -2394,13 +2469,13 @@ function generateDashboard(){
                             switch (group) {
                                 case 'all': var t = d.key+ ": " + d3.format(",.2f")(valueAccessor2(d, 'a')); 
                                             break;
-                                case 'u5': if (g.pop_perc_u5) {
+                                case 'u5': if (g.module_population.pop_perc_u5) {
                                                var t = d.key+ ": " + d3.format(",.2f")(valueAccessor2(d, 'u')); 
                                             } else {
                                                var t = "Data not available";
                                             };
                                             break;
-                                case 'o5': if (g.pop_perc_u5) {
+                                case 'o5': if (g.module_population.pop_perc_u5) {
                                                var t = d.key+ ": " + d3.format(",.2f")(valueAccessor2(d, 'o')); 
                                             } else {
                                                var t = "Data not available";
@@ -2423,6 +2498,8 @@ function generateDashboard(){
                             return getTitle(d, 'o5');
                         }
                     }  
+
+                    g.module_population.pop_age_groups = module_population.getPopAgeGroups();
 
                     var color_count=-1;
                     g.viz_definition[key1].chart
@@ -2451,7 +2528,7 @@ function generateDashboard(){
 
                         //Note that /*.defined(function(d) {if (d.y !== null) {return d.y;}})*/ removes data entry of null but not of 0
                         .compose(
-                            g.pop_age_groups.map(function(age_group) {         //composes line for each year for which we have data
+                            g.module_population.pop_age_groups.map(function(age_group) {         //composes line for each year for which we have data
                                 color_count++;
                                 if (color_count>=color_list.length) {color_count=0};
                                 //console.log("in compose: ", g.pop_age_groups, age_group);
@@ -2494,6 +2571,18 @@ function generateDashboard(){
                 } else if  (g.viz_definition[key1].domain_parameter == 'heidi_custom_time'){
                     //console.log("in heidi_custom_time 1");
 
+                    /*g.module_population.pop_age_groups = [];
+                    //console.log(g.medical_read.fyo);
+                    for (var key in g.medical_read.fyo) {
+                      //console.log(key);
+                      if (key=='a') {
+                        g.module_population.pop_age_groups.unshift({group: key, label: g.medical_read.fyo[key]});  //add to beginning of array
+                      } else {
+                        g.module_population.pop_age_groups.push({group: key, label: g.medical_read.fyo[key]});
+                      }
+                    };
+                    console.log("pop_age_groups: ", g.module_population.pop_age_groups);*/
+                    g.module_population.pop_age_groups = module_population.getPopAgeGroups();
 
                     function getTitle(d, group) {
                         if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {    
@@ -2501,14 +2590,14 @@ function generateDashboard(){
                                 case 'all': //var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_all(d)); 
                                             var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor2(d, 'a'));
                                             break;
-                                case 'u5': if (g.pop_perc_u5) {
+                                case 'u5': if (g.module_population.pop_perc_u5) {
                                                //var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_u5(d)); 
                                                var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor2(d, 'u'));
                                             } else {
                                                var t = "Data not available";
                                             };
                                             break;
-                                case 'o5': if (g.pop_perc_u5) {
+                                case 'o5': if (g.module_population.pop_perc_u5) {
                                             var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor2(d, 'o'));
                                                //var t = d.key+ ": " + d3.format(",.2f")(valueAccessor_o5(d)); 
                                             } else {
@@ -2564,7 +2653,7 @@ function generateDashboard(){
 
                         //Note that /*.defined(function(d) {if (d.y !== null) {return d.y;}})*/ removes data entry of null but not of 0
                         .compose(
-                            g.pop_age_groups.map(function(age_group) {         //composes line for each year for which we have data
+                            g.module_population.pop_age_groups.map(function(age_group) {         //composes line for each year for which we have data
                                 color_count++;
                                 if (color_count>=color_list.length) {color_count=0};
                                 //console.log("in compose: ", g.pop_age_groups, age_group, age_group.group, age_group.label);
@@ -2875,8 +2964,14 @@ function generateDashboard(){
     module_multiadm.interaction();
     module_intro.setup();
     module_interface.display();
-    module_chartwarper.display(g.module_chartwarper.tabcontainer_id,g.module_chartwarper.chartcontainers_list);
-    module_chartwarper.interaction(g.module_chartwarper.chartcontainers_list);
+    /*if (g.new_layout) {
+        module_chartwarper.display(g.module_chartwarper.tabcontainer_id,g.module_chartwarper.chartcontainers_list);
+        module_chartwarper.interaction(g.module_chartwarper.chartcontainers_list);
+    } else {*/
+        module_chartwarper.display(g.module_chartwarper.tabcontainer_id,g.module_chartwarper.chartcontainers_list);
+        module_chartwarper.interaction(g.module_chartwarper.chartcontainers_list);
+    //};
+    
 
     // Key figures
     //... duplicate

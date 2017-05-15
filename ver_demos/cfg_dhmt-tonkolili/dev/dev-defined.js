@@ -99,6 +99,11 @@ if(!g.module_colorscale){
 }
 g.module_colorscale.mapunitlist = ['Cases', 'Deaths','IncidenceProp','MortalityProp','Completeness'];
 
+
+
+//**************************************************************************************
+g.new_layout = true;
+
 //Combinations of map unit/geometry buttons that are not compatible 
 // (i.e. one from g.module_colorscale.mapunitlist, one from g.geometry_keylist)
 g.dev_defined.incompatible_buttons = [{unit: 'IncidenceProp',
@@ -107,20 +112,54 @@ g.dev_defined.incompatible_buttons = [{unit: 'IncidenceProp',
                                        geo: 'hosp'
                                       }]
 
+//OPTIONAL FOR IF WE WANT SOMETHING DIFFERENT TO DEFAULT DEFINED IN module-chartwarper.js - i.e. names of containers for swapping between them
+if(!g.module_chartwarper){
+    g.module_chartwarper = {}; 
+}
 
-g.new_layout = true;
-
-//OPTIONAL FOR IF WE WANT SOMETHING DIFFERENT TO DEFAULT DEFINED IN module-chartwarper.js
-g.dev_defined.epiweek_container_id = 'containter_bar_lin';
-g.dev_defined.tabcontainer_id = 'containter_bar_lin_tabs'; 
-g.dev_defined.chartcontainers_list = [{
-                                        container: 'containter_ser',
+g.module_chartwarper.container_btns_id = 'container_ser_lin_btns'; 
+g.module_chartwarper.container_allcharts_id = 'container_ser_lin';
+g.module_chartwarper.container_chartlist = [{
+                                        container: 'container_ser',
                                         height: '600px'
                                       },
                                       {
-                                        container: 'containter_lin',
+                                        container: 'container_lin',
                                         height: '400px'
                                       }];  
+
+/**
+ Lists the keys used to refer to specific {@link module:g.population_data} fields. It makes the link between headers in the data files and unambiguous keys used in the code.<br>
+ Each element in the object is coded in the following way:
+ <pre>*key_in_dashboard*: '*header_in_datafile*',</pre>
+ <br>
+ Currently implemented keys are:
+ <ul>
+    <li><code>admNx</code> for administrative or medical division name, format: <code>Adm1_name, Adm2_name...</code>,</li>
+    <li><code>pop</code> for population.</li>
+ * </ul>
+ * @constant
+ * @type {Object} 
+ * @alias module:g.population_headerlist
+ */
+
+if(!g.module_population){
+    g.module_population = {}; 
+}
+g.module_population.pop_new_format = true;    //HEIDI defined this where each year is given column heading of e.g. 'yr_2015', 'yr_2020', etc.
+g.module_population.pop_headerlist = {
+    admNx: 'name',
+    //pop: 'population'
+    //pop: 'yr_2015'
+    pop: {'yr_2015': 2015,     //HEIDI added this - column headings with associated year
+          'yr_2017': 2017}  
+};
+
+g.module_population.pop_perc_u5 = 18.9;   //HEIDI added this - percentage of population assumed to be under 5 -- put it in g.population_data?
+g.module_population.pop_annual_growth = 3.0; //HEIDI added this - assumed percentage increase per year if pop data not supplied
+
+
+//**************************************************************************************
 
 
 /**
@@ -142,7 +181,7 @@ g.dev_defined.chartcontainers_list = [{
  * @alias module:g.module_getdata
  */
 g.module_getdata = {
-    geometry: {
+    geometry: {         //these will contain data in the map
         admN1: {
             method:  'geometryd3',
             options: {  url: './data/geo_chief.geojson',
@@ -159,7 +198,7 @@ g.module_getdata = {
                         type: 'json'}
             }
     },
-    extralay:{
+    extralay:{      //these don't contain data - are used for other purposes e.g. masks, backgrounds, drawing
         mask:{
             method: 'd3',
             options: {  url: './data/geo_mask.geojson',
@@ -201,48 +240,18 @@ g.medical_headerlist = {
     epiwk: 'epiweek',     // Epidemiological week: format YYYY-WW
     admN1: 'chiefdom',    // Name of administrative/health division level N1 
     admN2: 'PHU',
+    hosp: 'PHU',          //Note: shared attribute 'PHU' - have defined a list of hospitals to extract from PHU below (HEIDI should rename it); extraction defined in module_datacheck.dataprocessing 
     disease: 'disease',
     fyo: 'fyo',
     case: 'cas', 
     death: 'dth', 
+    //test: 'PHU',
 };
-
-//HEIDI - is it worth creating a look up that defines whether a PHU is an admN2 or a hosp (i.e. siblings?) - see valueAccessor in main-core where we define temp_adm = 'hosp';
-g.medical_hospitals_fullname = ["Kholifa Rowalla, Masanga Leprosy Hospital", "Gbonkolenken, Lion Heart Medical Centre", "Kholifa Rowalla, Magburaka Government Hospital"]; //HEIDI - same as g.geometry_loclists.hosp - do we need to redefine here at all?
+//HEIDI - define that admnN2+hosp=PHU - but all records have admN2 and only hospitals have hosp
+//HEIDI - is it worth creating a look up that defines whether a PHU is an admN2 or a hosp - see valueAccessor in main-core where we define temp_adm = 'hosp';
+//g.medical_hospitals_fullname = ["Kholifa Rowalla, Masanga Leprosy Hospital", "Gbonkolenken, Lion Heart Medical Centre", "Kholifa Rowalla, Magburaka Government Hospital"]; //HEIDI - same as g.geometry_loclists.hosp - do we need to redefine here at all?
 g.medical_hospitals = ["Masanga Leprosy Hospital", "Lion Heart Medical Centre", "Magburaka Government Hospital"];  //for a separate layer to admN2
-
-/**
- Lists the keys used to refer to specific {@link module:g.population_data} fields. It makes the link between headers in the data files and unambiguous keys used in the code.<br>
- Each element in the object is coded in the following way:
- <pre>*key_in_dashboard*: '*header_in_datafile*',</pre>
- <br>
- Currently implemented keys are:
- <ul>
-    <li><code>admNx</code> for administrative or medical division name, format: <code>Adm1_name, Adm2_name...</code>,</li>
-    <li><code>pop</code> for population.</li>
- * </ul>
- * @constant
- * @type {Object} 
- * @alias module:g.population_headerlist
- */
-
-g.pop_new_format = true;    //HEIDI defined this where each year is given column heading of e.g. 'yr_2015', 'yr_2020', etc.
-g.population_headerlist = {
-    admNx: 'name',
-    //pop: 'population'
-    //pop: 'yr_2015'
-    pop: {'yr_2015': 2015,     //HEIDI added this - column headings with associated year
-          'yr_2017': 2017}  
-};
-
-g.pop_perc_u5 = 18.9;   //HEIDI added this - percentage of population assumed to be under 5 -- put it in g.population_data?
-g.pop_annual_growth = 3.0; //HEIDI added this - assumed percentage increase per year if pop data not supplied
-
-g.pop_age_groups = [ {group: 'a', label: 'All'},
-                     {group: 'u', label: 'Under 5'},   //HEIDI added this - could get from g.medical_read just below???
-                     {group: 'o', label: 'Over 5'}]
-
-
+g.hosp = g.medical_hospitals;
 
 function main_loadfiles_readvar(){
     /**
@@ -255,11 +264,24 @@ function main_loadfiles_readvar(){
      * @todo Why is it in a function?
      */
     g.medical_read = {
-        fyo:        {u:g.module_lang.text[g.module_lang.current].chart_fyo_labelu,
+        fyo:        {
+                     u:g.module_lang.text[g.module_lang.current].chart_fyo_labelu,
                      o:g.module_lang.text[g.module_lang.current].chart_fyo_labelo,
                      a:g.module_lang.text[g.module_lang.current].chart_fyo_labela},         //HEIDI added this line
     };
 }
+//main_loadfiles_readvar();
+/*g.medical_read = {
+    fyo:        {
+                 u:g.module_lang.text[g.module_lang.current].chart_fyo_labelu,
+                 o:g.module_lang.text[g.module_lang.current].chart_fyo_labelo,
+                 a:g.module_lang.text[g.module_lang.current].chart_fyo_labela   //HEIDI added this line
+                 },         
+    };*/
+
+
+
+
 
 // 2) Data check parameters
 //------------------------------------------------------------------------------------
@@ -289,7 +311,7 @@ g.module_datacheck.definition_value = {
     epiwk:  {test_type: 'epiwk',        setup: 'none'}, // Epidemiological week: format YYYY-WW
     admN1:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level N1 
     admN2:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level 
-    hosp:  {test_type: 'ingeometry',   setup: 'none'},  // Name of division level
+    hosp:  {test_type: 'ingeometry',   setup: 'none'},  // Name of division level   //HEIDI - do we need this?
     fyo:{test_type: 'inlist',       setup: ["u","o"]},  // Depends on data source
     case: {test_type: 'integer',      setup: 'none'}, 
     death:{test_type: 'integer',      setup: 'none'}, 
@@ -319,6 +341,7 @@ g.module_datacheck.definition_record = [
     {key: g.medical_headerlist.disease, isnumber: false}, // 'true' key as in data file
     {key: g.medical_headerlist.admN1, isnumber: false}, // 'true' key as in data file
     {key: g.medical_headerlist.admN2, isnumber: false}, // 'true' key as in data file
+    //{key: g.medical_headerlist.hosp, isnumber: false}, // 'true' key as in data file   //not needed for unique record identification
     {key: g.medical_headerlist.fyo, isnumber: false}, // 'true' key as in data file
 ];
 
@@ -472,7 +495,7 @@ g.viz_definition = {
                 display_colors: [0,1,2],   
                 display_intro_position: 'top',           
                 display_intro_container: 'container_casedeath_ser',  
-                //display_intro_container: 'containter_bar_lin',
+                //display_intro_container: 'container_ser_lin',
                 display_filter: false,
                 buttons_list: ['help'],               
             },
@@ -690,34 +713,46 @@ g.viz_locations = 'multiadm';
 
 
 /**
- Defines the layer position for each map layer. If the parent has the same name as the layer name, then it represents the highest level. If multiple layers have the same parent then they are siblings.
+ Defines the layer position for each map layer. Heidi - attach diagram. If multiple layers have the same parent then they are siblings.
  * @constant
  * @type {String} 
  * @alias module:g.viz_parent_layer
  */
 //HEIDI - need to attach diagram to demonstrate tree structure for numbering - see https://www.google.co.uk/search?q=tree+structure+numbering&tbm=isch&imgil=6gMJx-3aO3M0bM%253A%253BZ5hcRIa_-vtGmM%253Bhttps%25253A%25252F%25252Fwww.smartsheet.com%25252Ffree-work-breakdown-structure-templates&source=iu&pf=m&fir=6gMJx-3aO3M0bM%253A%252CZ5hcRIa_-vtGmM%252C_&usg=__qTvP_O0d3nAqBnwjc-J8jMjcT_8%3D&biw=1920&bih=974&ved=0ahUKEwikub6a4djTAhXoD8AKHT2PAQ4QyjcIMg&ei=vnAMWaTiAeifgAa9noZw#imgrc=6gMJx-3aO3M0bM:
-g.viz_layer_pos = [{name: 'admN1', pos: '0'}, // 0 = top layer
-                   {name: 'admN2', pos: '1'}, 
-                   {name: 'hosp', pos: '2'}]; 
+/*g.viz_layer_pos = [{name: 'admN1', pos: '0'},     // 0 = top layer
+                   {name: 'admN2', pos: '0.1'}, 
+                   {name: 'hosp', pos: '0.2'}]; */
 
+g.viz_layer_pos = {admN1: '0',     // 0 = top layer
+                   admN2: '0.1',   // 0.1 = child of 0, sibling to 0.2
+                   hosp: '0.2'};   // 0.2 = child of 0, sibling to 0.1
+
+
+if(!g.module_intro){
+    g.module_intro = {}; 
+}
 //g.dev_defined.intro_order = [];
-g.dev_defined.intro_order = ['intro', 'menu', 'multiadm', 'disease', 'containter_bar_lin', 'case_ser', 'casedeath_ser_range','case_lin', 'fyo', 'year', 'table'];
-g.dev_defined.intro_position = [{container: 'containter_bar_lin',
+//Define order of all intro topics, can either be charts (defined by name given above) or divs (defined in index.html)
+//For and div intros, need to also define intro_position
+g.module_intro.intro_order = ['intro', 'menu', 'multiadm', 'disease', 'container_ser_lin', 'case_ser', 'case_lin', 'casedeath_ser_range', 'fyo', 'year', 'table'];
+g.module_intro.intro_position = [{container: 'container_ser_lin',
                                  position: 'top'
                                 }];
-g.dev_defined.intro_beforechange = [{           //HEIDI - make all this easier somehow???
-                                     element: 'containter_casedeath_ser',
-                                     click: '#containter_ser-tab'
+//Here define which buttons (defined by div id) to click on before an intro element is called (to ensure appropriate chart/div is 'open' or not 'hidden' at the time it is called)
+//Buttons defined in module_chartwarper.js
+g.module_intro.intro_beforechange = [{           
+                                     element: 'container_casedeath_ser',  
+                                     click: '#container_ser-btn'
                                     }, {
                                      element: 'container_rangechart',
-                                     click: '#containter_ser-tab'
+                                     click: '#container_ser-btn'
                                     },{
-                                     element: 'containter_bar_lin',
-                                     click: '#containter_ser-tab'
+                                     element: 'container_ser_lin',
+                                     click: '#container_ser-btn'
                                     },{
                                      element: 'chart-fyo',
-                                     click: '#containter_ser-tab'
+                                     click: '#container_ser-btn'
                                     },{
                                      element: 'container_casedeath_lin',
-                                     click: '#containter_lin-tab'
+                                     click: '#container_lin-btn'
                                     }]

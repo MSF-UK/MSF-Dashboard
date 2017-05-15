@@ -257,23 +257,52 @@ module_getdata.process_geometry = function(){
             g.geometry_loclists[key].push(f.properties.name.trim());    //add it into the geometry_loclists
             g.geometry_loclists.all.push(f.properties.name.trim());
 
-            // Compute number of Sub-Area in Area
-            //if (keynum == g.geometry_keylist.length - 1) {        //if it is lowest geometry  
-            if (keynum==1) {                                        //HEIDI - must fix to not count up hospitals (key='hosp')
-                //console.log("lowest geometry: ", keynum, g.geometry_keylist.length, g.geometry_keylist);
-                g.geometry_subnum[f.properties.name.trim()] = 1 ;
-                var temp_loc = '';
-                //for (var i=0; i<=g.geometry_keylist.length-2; i++) {
-                for (var i=0; i<=0; i++) {          //HEIDI - must fix to not count up hospitals (key='hosp')
-                    for (var j=0; j<=i; j++) {
-                        temp_loc += ', ' + f.properties.name.trim().split(', ')[j].split('_').join(' ');
+            
+            if (g.new_layout) {
+                // Compute number of Sub-Area in Area
+                //if (keynum == g.geometry_keylist.length - 1) {        //if it is lowest geometry - i.e. if it has no children
+                if (!(module_multiadm.hasChildren(key))) {              //if it is lowest geometry - i.e. if it has no children
+                //if (keynum==1) {
+                    //console.log("has no children layers: ", key, keynum, g.geometry_keylist.length, g.geometry_keylist);
+                    g.geometry_subnum[f.properties.name.trim()] = 1 ;   //full geometry name = 1 subarea/itself (e.g. temp_loc=admN1,admN2,admN3)
+
+                    var temp_key = module_multiadm.getParent(key);
+                    var temp_loc = '';
+                    //var depth2 = 
+                    while (temp_key != '') {
+                        temp_loc += ', ' + f.properties.name.trim().split(', ')[g.geometry_levellist[temp_key]].split('_').join(' ');  //add parent name to beginning
+                        g.geometry_subnum[temp_loc.substring(2, temp_loc.length)]++;    //add to g.geometry_subnum
+                        temp_key = module_multiadm.getParent(temp_key);                 //get next parent up
                     }
-                    temp_loc = temp_loc.substring(2, temp_loc.length);
-                    g.geometry_subnum[temp_loc]++;
+                    //temp_loc = temp_loc.substring(2, temp_loc.length);
+                    //g.geometry_subnum[temp_loc]++;
+
+                } else {      //if it is not lowest geometry
+                    //console.log("has children layers: ", key, keynum, g.geometry_keylist.length, g.geometry_keylist);
+                    if (!(g.geometry_subnum[f.properties.name.trim()])) {        //HEIDI - TRY THIS OUT, I THINK ITS CORRECT TO KEEP IN IF
+                        g.geometry_subnum[f.properties.name.trim()] = 0 ;
+                    }
                 }
-            } else {      //if it is not lowest geometry
-                //console.log("not lowest geometry: ", keynum, g.geometry_keylist.length, g.geometry_keylist);
-                g.geometry_subnum[f.properties.name.trim()] = 0 ;
+
+            } else {    //not g.new_layout
+                // Compute number of Sub-Area in Area
+                if (keynum == g.geometry_keylist.length - 1) {        //if it is lowest geometry
+                    g.geometry_subnum[f.properties.name.trim()] = 1 ;       //full geometry name = 1 subarea/itself (e.g. temp_loc=admN1,admN2,admN3)
+                    var temp_loc = '';
+                    for (var i=0; i<=g.geometry_keylist.length-2; i++) {       //for each higher adm level
+                       for (var j=0; j<=i; j++) {
+                            temp_loc += ', ' + f.properties.name.trim().split(', ')[j].split('_').join(' ');   //recreate geometry name(e.g. for admN2 name is admN1, admN2)
+                        }
+                        temp_loc = temp_loc.substring(2, temp_loc.length);
+                        g.geometry_subnum[temp_loc]++;
+                    }
+                    //console.log(temp_loc);
+
+                } else {      //if it is not lowest geometry
+                    //console.log("has children layers: ", key, keynum, g.geometry_keylist.length, g.geometry_keylist);
+                    g.geometry_subnum[f.properties.name.trim()] = 0 ;
+                }
+
             }
         });
     });
@@ -298,7 +327,7 @@ module_getdata.process_population = function(){
      * @type {Object.<Array.<String>>}
      * @alias module:g.population_loclists
      */
-    g.population_loclists = {};
+    g.module_population.population_loclists = {};
     /**
      * Restores population figures from {@link module:g.population_data} in order that each administrative level is stored in a different Object.
          <br>
@@ -307,7 +336,7 @@ module_getdata.process_population = function(){
      * @type {Object.<Array.<String>>}
      * @alias module:g.population_databyloc
      */
-    g.population_databyloc = {};   //HEIDI - normally here is only 1 value per location, need to change this
+    g.module_population.population_databyloc = {};   //HEIDI - normally here is only 1 value per location, need to change this
 
     /**
      * Stores keys of each administrative level extracted from the {@link module:g.module_getdata.population}.
@@ -317,30 +346,33 @@ module_getdata.process_population = function(){
      * @type {Object.<Array.<String>>}
      * @alias module:g.population_keylist
      */
-    g.population_keylist = Object.keys(g.module_getdata.population);
-    if (g.pop_new_format) {
+    g.module_population.population_keylist = Object.keys(g.module_getdata.population);
+    if (g.module_population.pop_new_format) {                               //Note: hardcoding of admNx here
         //console.log("PREPPING NEW POPULATION DATA FORMAT");
-        g.population_keylist.forEach(function(key){
-            g.population_loclists[key] = [];
-            g.population_databyloc[key] = {};
+        g.module_population.population_keylist.forEach(function(key){
+            g.module_population.population_loclists[key] = [];
+            g.module_population.population_databyloc[key] = {};
             g.population_data[key].forEach(function(f){
-                g.population_loclists[key].push(f[g.population_headerlist.admNx.trim()]);
+                g.module_population.population_loclists[key].push(f[g.module_population.pop_headerlist.admNx.trim()]);
                 //console.log("f[g.population_headerlist.admNx.trim()] = ", f[g.population_headerlist.admNx.trim()]);
                 temp={};
-                for (pop_yr in g.population_headerlist.pop) {
+                for (pop_yr in g.module_population.pop_headerlist.pop) {
                     //console.log(g.population_headerlist.pop, pop_yr, g.population_headerlist.pop[pop_yr], parseInt(f[pop_yr]));
                     temp[pop_yr] = parseInt(f[pop_yr]);
                 };
-                g.population_databyloc[key][f[g.population_headerlist.admNx.trim()]] = temp;
+                g.module_population.population_databyloc[key][f[g.module_population.pop_headerlist.admNx.trim()]] = temp;
             });            
         });
     } else {        
-        g.population_keylist.forEach(function(key){
-            g.population_loclists[key] = [];
-            g.population_databyloc[key] = {};
+        g.module_population.population_keylist.forEach(function(key){
+            g.module_population.population_loclists[key] = [];
+            g.module_population.population_databyloc[key] = {};
             g.population_data[key].forEach(function(f){
-                g.population_loclists[key].push(f[g.population_headerlist.admNx.trim()]);
-                g.population_databyloc[key][f[g.population_headerlist.admNx.trim()]] = parseInt(f[g.population_headerlist.pop]);
+                //g.module_population.population_loclists[key].push(f[g.module_population.pop_headerlist.admNx.trim()]);
+                //g.module_population.population_databyloc[key][f[g.module_population.pop_headerlist.admNx.trim()]] = parseInt(f[g.module_population.pop_headerlist.pop]);
+                g.module_population.population_loclists[key].push(f[g.population_headerlist.admNx.trim()]);
+                g.module_population.population_databyloc[key][f[g.population_headerlist.admNx.trim()]] = parseInt(f[g.population_headerlist.pop]);
+            
             });
         });
     }

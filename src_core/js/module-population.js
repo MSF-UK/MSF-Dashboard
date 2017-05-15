@@ -37,7 +37,9 @@ modules_list.population = true;
  * @type {Object} 
  * @alias module:g.module_multiadm
  */
-g.module_population = {};
+if(!g.module_population){
+    g.module_population = {}; 
+}
 
 // 1) Data Processing
 //------------------------------------------------------------------------------------
@@ -46,11 +48,11 @@ g.module_population = {};
 //var definedPopYears = [];
 module_population.definedPopYears = function(loc){
 	var definedPopYears = [];
-	for (var year in g.population_databyloc.pop[loc]) {  //1 - get the years for which pop is defined for this location
-	    //console.log(year, g.population_databyloc.pop[d.key], g.population_databyloc.pop[d.key][year]);
+	for (var year in g.module_population.population_databyloc.pop[loc]) {  //1 - get the years for which pop is defined for this location
+	    //console.log(year, g.module_population.population_databyloc.pop[d.key], g.module_population.population_databyloc.pop[d.key][year]);
 	    //definedPopYears.push(parseInt(year.substr(3,6)));
-	    if (!(isNaN(g.population_databyloc.pop[loc][year]))) {       //only include year in definedPopYears list if it is a number
-	        definedPopYears.push(g.population_headerlist.pop[year]);
+	    if (!(isNaN(g.module_population.population_databyloc.pop[loc][year]))) {       //only include year in definedPopYears list if it is a number
+	        definedPopYears.push(g.module_population.pop_headerlist.pop[year]);
 	    };
 	}
 	//console.log(loc, definedPopYears);
@@ -70,19 +72,19 @@ var definedPopYears	= module_population.definedPopYears(loc);
         var pop_temp = 0;
 
     } else if (definedPopYears.indexOf(yr)!=-1) {     //2 - if year 'yr' is in this then take that value
-        //var pop_temp = g.population_databyloc.pop[select_locs[i]]['yr_'+yr]; 
+        //var pop_temp = g.module_population.population_databyloc.pop[select_locs[i]]['yr_'+yr]; 
 
-        for (var key in g.population_headerlist.pop) {
-            //console.log(key, g.population_headerlist.pop);
-            if (g.population_headerlist.pop[key]==yr) {
-                //console.log(g.population_headerlist.pop[key], prevYr);
+        for (var key in g.module_population.pop_headerlist.pop) {
+            //console.log(key, g.module_population.pop_headerlist.pop);
+            if (g.module_population.pop_headerlist.pop[key]==yr) {
+                //console.log(g.module_population.pop_headerlist.pop[key], prevYr);
                 var currKey = key;
             };
         }
         //console.log("key ref: ", currKey);
 
         //get pop
-        var pop_temp = g.population_databyloc.pop[loc][currKey]; 
+        var pop_temp = g.module_population.population_databyloc.pop[loc][currKey]; 
         //console.log(yr, " is in ", definedPopYears, "  pop_temp = ", pop_temp);
     } else {
         //console.log(yr, " is NOT in ", definedPopYears);
@@ -111,21 +113,21 @@ var definedPopYears	= module_population.definedPopYears(loc);
             [prevYr, nextYr] = getNearestYrs();
             //console.log("prev & next years: ", prevYr, nextYr);
 
-            for (var key in g.population_headerlist.pop) {
-                //console.log(key, g.population_headerlist.pop);
-                if (g.population_headerlist.pop[key]==prevYr) {
-                    //console.log(g.population_headerlist.pop[key], prevYr);
+            for (var key in g.module_population.pop_headerlist.pop) {
+                //console.log(key, g.module_population.pop_headerlist.pop);
+                if (g.module_population.pop_headerlist.pop[key]==prevYr) {
+                    //console.log(g.module_population.pop_headerlist.pop[key], prevYr);
                     var prevKey = key;
-                } else if (g.population_headerlist.pop[key]==nextYr) {
+                } else if (g.module_population.pop_headerlist.pop[key]==nextYr) {
                     var nextKey = key;
                 };
             }
             //console.log("prev & next refs: ", prevKey, nextKey);
 
             //get both pops
-            //console.log(g.population_databyloc.pop[select_locs[i]]);
-            var prevPop = g.population_databyloc.pop[loc][prevKey]; 
-            var nextPop = g.population_databyloc.pop[loc][nextKey];
+            //console.log(g.module_population.population_databyloc.pop[select_locs[i]]);
+            var prevPop = g.module_population.population_databyloc.pop[loc][prevKey]; 
+            var nextPop = g.module_population.population_databyloc.pop[loc][nextKey];
             //console.log("prev & next pops: ", prevPop, nextPop);
 
             //interpolate
@@ -136,40 +138,40 @@ var definedPopYears	= module_population.definedPopYears(loc);
         } else if (yr < minDefinedPopYear) {  //4 - if year 'yr' is less than lowest year then do 3% increment
             var yearDiff = minDefinedPopYear - yr;      //get difference in years
 
-            for (var key in g.population_headerlist.pop) {
-                //console.log(key, g.population_headerlist.pop);
-                if (g.population_headerlist.pop[key]==minDefinedPopYear) {
-                    //console.log(g.population_headerlist.pop[key], minDefinedPopYear);
+            for (var key in g.module_population.pop_headerlist.pop) {
+                //console.log(key, g.module_population.pop_headerlist.pop);
+                if (g.module_population.pop_headerlist.pop[key]==minDefinedPopYear) {
+                    //console.log(g.module_population.pop_headerlist.pop[key], minDefinedPopYear);
                     var minKey = key;
                 };
             }
             //console.log("min ref: ", minKey);
 
-            var minPop = g.population_databyloc.pop[loc][minKey]; 
+            var minPop = g.module_population.population_databyloc.pop[loc][minKey]; 
             //console.log("min pop: ", minPop);
 
             //calculate pop
-            var pop_temp = minPop/Math.pow((1+(g.pop_annual_growth/100)),yearDiff);
+            var pop_temp = minPop/Math.pow((1+(g.module_population.pop_annual_growth/100)),yearDiff);
             //console.log("min pop: ", minPop, " in yr ", minDefinedPopYear);
             //console.log("in year ", yr, " pop = ", pop_temp);
 
         } else if (yr > maxDefinedPopYear) {  //5 - if year 'yr' is more than highest year then do 3% increment
             var yearDiff = yr - maxDefinedPopYear;      //get difference in years
 
-            for (var key in g.population_headerlist.pop) {
-                //console.log(key, g.population_headerlist.pop);
-                if (g.population_headerlist.pop[key]==maxDefinedPopYear) {
-                    //console.log(g.population_headerlist.pop[key], maxDefinedPopYear);
+            for (var key in g.module_population.pop_headerlist.pop) {
+                //console.log(key, g.module_population.pop_headerlist.pop);
+                if (g.module_population.pop_headerlist.pop[key]==maxDefinedPopYear) {
+                    //console.log(g.module_population.pop_headerlist.pop[key], maxDefinedPopYear);
                     var maxKey = key;
                 };
             }
             //console.log("max ref: ", maxKey);
 
-            var maxPop = g.population_databyloc.pop[loc][maxKey]; 
+            var maxPop = g.module_population.population_databyloc.pop[loc][maxKey]; 
             //console.log("max pop: ", maxPop);
 
             //calculate pop
-            var pop_temp = maxPop*Math.pow((1+(g.pop_annual_growth/100)),yearDiff);
+            var pop_temp = maxPop*Math.pow((1+(g.module_population.pop_annual_growth/100)),yearDiff);
             //console.log("max pop: ", maxPop, " in yr ", maxDefinedPopYear);
             //console.log("in year ", yr, " pop = ", pop_temp);
         } else {
@@ -208,18 +210,18 @@ module_population.getPopNum = function(yr){
 
     //loop through locations adding them up
     for (i=0; i<=select_locs.length-1; i++) {
-        //console.log("i = ", i, "   add in ", select_locs[i], g.population_databyloc.pop[select_locs[i]]);
+        //console.log("i = ", i, "   add in ", select_locs[i], g.module_population.population_databyloc.pop[select_locs[i]]);
 
-        //pop += g.population_databyloc.pop[select_locs[i]];
+        //pop += g.module_population.population_databyloc.pop[select_locs[i]];
 
-        if (g.pop_new_format) {
+        if (g.module_population.pop_new_format) {
 
             var definedPopYears = [];
-            for (var year in g.population_databyloc.pop[select_locs[i]]) {  //1 - get the years for which pop is defined for this location
-                //console.log(year, g.population_databyloc.pop[select_locs[i]], g.population_databyloc.pop[select_locs[i]][year]);
+            for (var year in g.module_population.population_databyloc.pop[select_locs[i]]) {  //1 - get the years for which pop is defined for this location
+                //console.log(year, g.module_population.population_databyloc.pop[select_locs[i]], g.module_population.population_databyloc.pop[select_locs[i]][year]);
                 //definedPopYears.push(parseInt(year.substr(3,6)));
-                if (!(isNaN(g.population_databyloc.pop[select_locs[i]][year]))) {       //only include year in definedPopYears list if it is a number
-                    definedPopYears.push(g.population_headerlist.pop[year]);
+                if (!(isNaN(g.module_population.population_databyloc.pop[select_locs[i]][year]))) {       //only include year in definedPopYears list if it is a number
+                    definedPopYears.push(g.module_population.pop_headerlist.pop[year]);
                 };
             }
             //console.log(select_locs[i], definedPopYears);
@@ -237,19 +239,19 @@ module_population.getPopNum = function(yr){
             if (definedPopYears.length==0) {
                 var pop_temp = 0;
             } else if (definedPopYears.indexOf(yr)!=-1) {     //2 - if year 'yr' is in this then take that value
-                //var pop_temp = g.population_databyloc.pop[select_locs[i]]['yr_'+yr]; 
+                //var pop_temp = g.module_population.population_databyloc.pop[select_locs[i]]['yr_'+yr]; 
 
-                for (var key in g.population_headerlist.pop) {
-                    //console.log(key, g.population_headerlist.pop);
-                    if (g.population_headerlist.pop[key]==yr) {
-                        //console.log(g.population_headerlist.pop[key], prevYr);
+                for (var key in g.module_population.pop_headerlist.pop) {
+                    //console.log(key, g.module_population.pop_headerlist.pop);
+                    if (g.module_population.pop_headerlist.pop[key]==yr) {
+                        //console.log(g.module_population.pop_headerlist.pop[key], prevYr);
                         var currKey = key;
                     };
                 }
                 //console.log("key ref: ", currKey);
 
                 //get pop
-                var pop_temp = g.population_databyloc.pop[select_locs[i]][currKey]; 
+                var pop_temp = g.module_population.population_databyloc.pop[select_locs[i]][currKey]; 
                 //console.log(yr, " is in ", definedPopYears, "  pop_temp = ", pop_temp);
             } else {
                 //console.log(yr, " is NOT in ", definedPopYears);
@@ -281,21 +283,21 @@ module_population.getPopNum = function(yr){
                     [prevYr, nextYr] = getNearestYrs();
                     //console.log("prev & next years: ", prevYr, nextYr);
 
-                    for (var key in g.population_headerlist.pop) {
-                        //console.log(key, g.population_headerlist.pop);
-                        if (g.population_headerlist.pop[key]==prevYr) {
-                            //console.log(g.population_headerlist.pop[key], prevYr);
+                    for (var key in g.module_population.pop_headerlist.pop) {
+                        //console.log(key, g.module_population.pop_headerlist.pop);
+                        if (g.module_population.pop_headerlist.pop[key]==prevYr) {
+                            //console.log(g.module_population.pop_headerlist.pop[key], prevYr);
                             var prevKey = key;
-                        } else if (g.population_headerlist.pop[key]==nextYr) {
+                        } else if (g.module_population.pop_headerlist.pop[key]==nextYr) {
                             var nextKey = key;
                         };
                     }
                     //console.log("prev & next refs: ", prevKey, nextKey);
 
                     //get both pops
-                    //console.log(g.population_databyloc.pop[select_locs[i]]);
-                    var prevPop = g.population_databyloc.pop[select_locs[i]][prevKey]; 
-                    var nextPop = g.population_databyloc.pop[select_locs[i]][nextKey];
+                    //console.log(g.module_population.population_databyloc.pop[select_locs[i]]);
+                    var prevPop = g.module_population.population_databyloc.pop[select_locs[i]][prevKey]; 
+                    var nextPop = g.module_population.population_databyloc.pop[select_locs[i]][nextKey];
                     //console.log("prev & next pops: ", prevPop, nextPop);
 
                     //interpolate
@@ -310,20 +312,20 @@ module_population.getPopNum = function(yr){
                         console.log("yr: ", yr, "   minDefinedYear: ", minDefinedPopYear, "   yearDiff: ", yearDiff);
                     }*/
 
-                    for (var key in g.population_headerlist.pop) {
-                        //console.log(key, g.population_headerlist.pop);
-                        if (g.population_headerlist.pop[key]==minDefinedPopYear) {
-                            //console.log(g.population_headerlist.pop[key], minDefinedPopYear);
+                    for (var key in g.module_population.pop_headerlist.pop) {
+                        //console.log(key, g.module_population.pop_headerlist.pop);
+                        if (g.module_population.pop_headerlist.pop[key]==minDefinedPopYear) {
+                            //console.log(g.module_population.pop_headerlist.pop[key], minDefinedPopYear);
                             var minKey = key;
                         };
                     }
                     //console.log("min ref: ", minKey);
 
-                    var minPop = g.population_databyloc.pop[select_locs[i]][minKey]; 
+                    var minPop = g.module_population.population_databyloc.pop[select_locs[i]][minKey]; 
                     //console.log("min pop: ", minPop);
 
                     //calculate pop
-                    var pop_temp = minPop/Math.pow((1+(g.pop_annual_growth/100)),yearDiff);
+                    var pop_temp = minPop/Math.pow((1+(g.module_population.pop_annual_growth/100)),yearDiff);
                     //console.log("min pop: ", minPop, " in yr ", minDefinedPopYear);
                     //console.log("in year ", yr, " pop = ", pop_temp);
                     /*if (select_locs[i]=="Yoni, Matawa MCHP") {
@@ -333,20 +335,20 @@ module_population.getPopNum = function(yr){
                 } else if (yr > maxDefinedPopYear) {  //5 - if year 'yr' is more than highest year then do 3% increment
                     var yearDiff = yr - maxDefinedPopYear;      //get difference in years
 
-                    for (var key in g.population_headerlist.pop) {
-                        //console.log(key, g.population_headerlist.pop);
-                        if (g.population_headerlist.pop[key]==maxDefinedPopYear) {
-                            //console.log(g.population_headerlist.pop[key], maxDefinedPopYear);
+                    for (var key in g.module_population.pop_headerlist.pop) {
+                        //console.log(key, g.module_population.pop_headerlist.pop);
+                        if (g.module_population.pop_headerlist.pop[key]==maxDefinedPopYear) {
+                            //console.log(g.module_population.pop_headerlist.pop[key], maxDefinedPopYear);
                             var maxKey = key;
                         };
                     }
                     //console.log("max ref: ", maxKey);
 
-                    var maxPop = g.population_databyloc.pop[select_locs[i]][maxKey]; 
+                    var maxPop = g.module_population.population_databyloc.pop[select_locs[i]][maxKey]; 
                     //console.log("max pop: ", maxPop);
 
                     //calculate pop
-                    var pop_temp = maxPop*Math.pow((1+(g.pop_annual_growth/100)),yearDiff);
+                    var pop_temp = maxPop*Math.pow((1+(g.module_population.pop_annual_growth/100)),yearDiff);
                     //console.log("max pop: ", maxPop, " in yr ", maxDefinedPopYear);
                     //console.log("in year ", yr, " pop = ", pop_temp);
                 } else {
@@ -355,7 +357,7 @@ module_population.getPopNum = function(yr){
             } 
 
         } else {        //not g.new_pop_format
-            pop_temp = g.population_databyloc.pop[select_locs[i]];
+            pop_temp = g.module_population.population_databyloc.pop[select_locs[i]];
         }
 
         //console.log("pop_temp = ", pop_temp);
@@ -372,3 +374,23 @@ module_population.getPopNum = function(yr){
     
     return pop;
 };
+
+
+module_population.getPopAgeGroups = function(){
+//function getPopAgeGroups() {
+
+    var age_groups = [];
+    //console.log(g.medical_read.fyo);
+    for (var key in g.medical_read.fyo) {
+      //console.log(key);
+      if ((key=='a') || (key=='all')) {
+        age_groups.unshift({group: key, label: g.medical_read.fyo[key]});  //add to beginning of array
+      } else {
+        age_groups.push({group: key, label: g.medical_read.fyo[key]});
+      }
+    };
+    //console.log("pop_age_groups: ", age_groups);
+    return age_groups;
+
+};
+//g.module_population.pop_age_groups = getPopAgeGroups();
