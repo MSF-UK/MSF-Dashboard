@@ -353,11 +353,12 @@ module_getdata.process_population = function(){
             g.module_population.population_loclists[key] = [];
             g.module_population.population_databyloc[key] = {};
             g.population_data[key].forEach(function(f){
+                //console.log("f = ", f);
                 g.module_population.population_loclists[key].push(f[g.module_population.pop_headerlist.admNx.trim()]);
                 //console.log("f[g.population_headerlist.admNx.trim()] = ", f[g.population_headerlist.admNx.trim()]);
                 temp={};
                 for (pop_yr in g.module_population.pop_headerlist.pop) {
-                    //console.log(g.population_headerlist.pop, pop_yr, g.population_headerlist.pop[pop_yr], parseInt(f[pop_yr]));
+                    //console.log(g.module_population.pop_headerlist.pop, pop_yr, g.module_population.pop_headerlist.pop[pop_yr], parseInt(f[pop_yr]));
                     temp[pop_yr] = parseInt(f[pop_yr]);
                 };
                 g.module_population.population_databyloc[key][f[g.module_population.pop_headerlist.admNx.trim()]] = temp;

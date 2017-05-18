@@ -2695,6 +2695,7 @@ function generateDashboard(){
 
 
                 } else if (g.viz_definition[key1].domain_parameter == 'custom_linear'){
+                    console.log(key1, "in custom_linear");
                     //console.log("COLOR LIST = ", color_list);
                     //console.log("COLOR DOMAIN = ", color_domain);
                     var color_count=-1;
@@ -2857,6 +2858,14 @@ function generateDashboard(){
                                 .attr('dx', '-5')
                                 .attr('dy', '5')
                         });
+                } else if (g.viz_definition[key1].domain_builder == 'week') {
+                    g.viz_definition[key1].chart
+                        .xAxis().tickFormat(function(d, i) {
+                            //console.log(key1, " week ", d, Number.isInteger(d));
+                            if (Number.isInteger(d)) {
+                                return parseInt(d);
+                            };
+                        });                
                 }
       
 

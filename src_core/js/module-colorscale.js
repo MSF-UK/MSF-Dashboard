@@ -128,7 +128,7 @@ g.module_colorscale.colors = {
 	Diverging: ['#DDDDDD','#1a9641','#a6d96a','#ffffbf','#fdae61','#d7191c'],
 	Qualitative: ['#DDDDDD','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33'], 
 	ReversedDiverging: ['#DDDDDD','#d7191c','#fdae61','#ffffbf','#a6d96a','#1a9641'],
-	Composite: ['#333333', '#17becf', '#bcbd22', '#9467bd', '#6A6AB4', '#f69318'],   //HEIDI - should be in here!!! this is outputted in modal dialog
+	Composite: ['#333333', '#17becf', '#bcbd22', '#9467bd', '#428bca', '#f69318'],   //HEIDI - should be in here!!! this is outputted in modal dialog
 };
 
 /**
