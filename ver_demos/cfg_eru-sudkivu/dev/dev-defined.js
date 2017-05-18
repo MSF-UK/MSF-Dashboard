@@ -197,7 +197,6 @@ g.module_getdata = {
     }
 };
 
-
 /**
  Lists the keys used to refer to specific {@link module:g.medical_data} fields. It makes the link between headers in the data files and unambiguous keys used in the code.<br>
  Each element in the object is coded in the following way:
@@ -211,12 +210,12 @@ g.medical_headerlist = {
     epiwk: 'epiweek',     // Epidemiological week: format YYYY-WW
     admN1: 'ZS',    // Name of administrative/health division level N1 
     admN2: 'AS',    // Name of administrative/health division level N2
-    disease: 'disease',
-    case: 'nb_cases', 
-    death: 'nb_deaths', 
+    disease: 'disease', //'pathologie', 'disease'
+    case: 'nb_cases', //'nb_cas', 'nb_cases'
+    death: 'nb_deaths', //'nb_deces', 'nb_deaths'
     date: 'info_date',
     source: 'info_source',
-    comment: 'comment'
+    comment: 'commentaire'
 };
 
 
@@ -260,7 +259,7 @@ if(!g.module_datacheck){
 }
 g.module_datacheck.definition_value = {
     epiwk:  {test_type: 'epiwk',        setup: 'none'},     // Epidemiological week: format YYYY-WW
-    admN1:  {test_type: 'ingeometry',   setup: 'normalize'}, // Name of division level N1 
+    admN1:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level N1 
     admN2:  {test_type: 'none',   setup: 'none'}, // No geom file yet 
     pop:    {test_type: 'integer',      setup: 'none'},     // Population of adm
     case: {test_type: 'integer',      setup: 'none'}, 
@@ -583,7 +582,7 @@ g.viz_definition = {
                                  y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely}, 
                 //display_colors: [], 
                 color_group: 'age_classes', 
-                display_colors: [4,5],            
+                display_colors: [3,4,5,6],            
                 display_intro_position: 'top',   
                 display_intro_container: 'container_casedeath_lin',        
                 //display_idcontainer: 'container_casedeath_lin',
@@ -612,7 +611,7 @@ g.viz_definition = {
                                  y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely}, 
                 //display_colors: [],
                 color_group: 'age_classes', 
-                display_colors: [4,5],                  
+                display_colors: [3,4,5,6],                  
                 display_intro_position: 'none',
                 buttons_list: ['help'],
             },
@@ -676,7 +675,7 @@ g.viz_definition = {
                 group_parameter: {  column: ['case']},
 
                 color_group: 'age_classes', 
-                display_colors: [4,5],      
+                display_colors: [3,4,5,6],       
 
                 display_intro_position: 'left',           
                 //display_idcontainer: 'chart-year',

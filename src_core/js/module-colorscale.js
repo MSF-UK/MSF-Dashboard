@@ -128,7 +128,9 @@ g.module_colorscale.colors = {
 	Diverging: ['#DDDDDD','#1a9641','#a6d96a','#ffffbf','#fdae61','#d7191c'],
 	Qualitative: ['#DDDDDD','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33'], 
 	ReversedDiverging: ['#DDDDDD','#d7191c','#fdae61','#ffffbf','#a6d96a','#1a9641'],
-	Composite: ['#333333', '#17becf', '#bcbd22', '#9467bd', '#428bca', '#f69318'],   //HEIDI - should be in here!!! this is outputted in modal dialog
+	Composite: ['#333333', '#17becf', '#bcbd22', '#428bca', '#f69318','#9467bd', '#1b9e77', '#66a61e'],   //HEIDI - should be in here!!! this is outputted in modal dialog
+	//Composite: ['#333333', '#17becf', '#bcbd22', '#1f78b4','#ff7f00','#cab2d6','#33a02c','#fb9a99','#fdbf6f','#6a3d9a','#a6cee3','#e31a1c','#b2df8a']
+	//Composite: ['#333333', '#17becf', '#bcbd22','#1b9e77','#d95f02','#7570b3','#e7298a','#66a61e','#e6ab02','#a6761d','#666666']
 };
 
 /**

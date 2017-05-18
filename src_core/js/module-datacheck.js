@@ -376,6 +376,7 @@ epiwk: function(rec,key,none){
 			//console.log("end of ingeometry ", cond_1);
 			//return cond_1;
 			if (g.new_layout) {
+				//if (!(cond_1 || cond_1a)) {console.log("ingeometry failed: ", key, rec, g.geometry_loclists[key], loc_current, cond_1, cond_1a)};
 				return cond_1 || cond_1a;
 			} else {
 				return cond_1;
@@ -383,11 +384,17 @@ epiwk: function(rec,key,none){
 			
 		},
 		empty: function(rec,key,none){
+			//console.log(g.medical_headerlist);
+			//console.log(key, rec[g.medical_headerlist[key]], " check if empty: ", rec);
 			if(rec[g.medical_headerlist[key]] == undefined || rec[g.medical_headerlist[key]] == '_NA'){
 				var cond_1 = true;
 			}else{
 				var cond_1 = rec[g.medical_headerlist[key]] == '';
 			}
+
+			/*if ((key=='pathologie') || (key=='disease')) {
+				console.log(key, rec[g.medical_headerlist[key]], " check if empty: ", rec, cond_1);
+			}*/
 			return cond_1;
 		},
 		none: function(rec,key,none){
@@ -875,8 +882,10 @@ epiwk: function(rec,key,none){
 
 		// Surveillance
 		//------------------------------------------------------------------------------------
-		// If disease array is provided empty		
+		// If disease array is provided empty		//HEIDI - check word disease/pathologie below - other dashboards work with 'disease'
+		//console.log("should be putting in disease list below");
 		if(!(module_datacheck.testvalue.empty(rec,'disease','none')) && (g.medical_diseaseslist.indexOf(rec[g.medical_headerlist.disease].trim()) == -1) && g.module_datacheck.diseasecheck ){
+			//console.log("adding in disease: ", toTitleCase(rec[g.medical_headerlist.disease].trim().split('_').join(' ')));
 			g.medical_diseaseslist.push(toTitleCase(rec[g.medical_headerlist.disease].trim().split('_').join(' ')));
 		}
 

@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------------
     MSF Dashboard - module-lang.js
-    (c) 2015-2016, MSF-Dashboard contributors for MSF
+    (c) 2015-2017, MSF-Dashboard contributors for MSF
     List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
     Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
 ------------------------------------------------------------------------------------*/

@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------------
     MSF Dashboard - dev-defined.js
-    (c) 2015-2016, MSF-Dashboard contributors for MSF
+    (c) 2015-2017, MSF-Dashboard contributors for MSF
     List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
     Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
 ------------------------------------------------------------------------------------*/
@@ -139,8 +139,6 @@ if(!g.module_population){
 g.module_population.pop_new_format = true;    
 g.module_population.pop_headerlist = {
     admNx: 'name',
-    //pop: 'population'
-    //pop: 'yr_2015'
     pop: {'pop': 2016}     //HEIDI assumed year for Katanga
 };
 
@@ -185,7 +183,7 @@ g.module_getdata = {
                         type: 'json'}
         }
     },
-     medical:{
+    medical:{
         medical: {
             method: 'medicald3noserver',
             options: {  url: 'input/eru_surveillance-legere_data-katanga_v0.5_demodata.csv',
@@ -586,7 +584,7 @@ g.viz_definition = {
                                  y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely}, 
                 //display_colors: [], 
                 color_group: 'age_classes', 
-                display_colors: [4],            
+                display_colors: [3,4],            
                 display_intro_position: 'top',   
                 display_intro_container: 'container_casedeath_lin',        
                 //display_idcontainer: 'container_casedeath_lin',
@@ -615,7 +613,7 @@ g.viz_definition = {
                                  y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely}, 
                 //display_colors: [],
                 color_group: 'age_classes', 
-                display_colors: [4],                  
+                display_colors: [3,4],                  
                 display_intro_position: 'none',
                 buttons_list: ['help'],
             },
@@ -679,7 +677,7 @@ g.viz_definition = {
                 group_parameter: {  column: ['case']},
 
                 color_group: 'age_classes', 
-                display_colors: [4,5],      
+                display_colors: [3,4],      
 
                 display_intro_position: 'left',           
                 //display_idcontainer: 'chart-year',

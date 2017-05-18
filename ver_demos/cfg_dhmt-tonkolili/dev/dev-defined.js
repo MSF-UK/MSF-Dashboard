@@ -488,8 +488,7 @@ g.viz_definition = {
 
                 display_axis:   {x:'',
                                  y: g.module_lang.text[g.module_lang.current].chart_case_labely,
-                                 y_imr: g.module_lang.text[g.module_lang.current].chart_ir_labely,
-                                 y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely},    
+                                 y_imr: g.module_lang.text[g.module_lang.current].chart_imr_labely},    
 
                 //display_colors: [4,2,1],     
                 //display_colors: [999, 0,1],           //HEIDI - temporary fix   
@@ -523,8 +522,7 @@ g.viz_definition = {
 
                 display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_death_labelx,
                                  y:g.module_lang.text[g.module_lang.current].chart_death_labely,
-                                 y_imr: g.module_lang.text[g.module_lang.current].chart_mr_labely,
-                                 y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely}, 
+                                 y_imr: g.module_lang.text[g.module_lang.current].chart_imr_labely},
                 //display_colors: [4,2,1],      
                 //display_colors: [999, 0,1],           //HEIDI - temporary fix  
                 color_group: 'age_classes', 
@@ -596,11 +594,10 @@ g.viz_definition = {
 
                 display_axis:   {x:'',
                                  y: g.module_lang.text[g.module_lang.current].chart_case_labely,
-                                 y_imr: g.module_lang.text[g.module_lang.current].chart_ir_labely,
-                                 y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely},       
+                                 y_imr: g.module_lang.text[g.module_lang.current].chart_imr_labely},       
                 //display_colors: [4,2,1],  
                 color_group: 'age_classes',
-                display_colors: [4,5],          
+                display_colors: [3,4],          
                 display_intro_position: 'top',                  
                 display_intro_container: 'container_casedeath_lin',
                 buttons_list: ['help'],
@@ -623,11 +620,10 @@ g.viz_definition = {
 
                 display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_death_labelx,
                                  y:g.module_lang.text[g.module_lang.current].chart_death_labely,
-                                 y_imr: g.module_lang.text[g.module_lang.current].chart_mr_labely,
-                                 y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely},        
+                                 y_imr: g.module_lang.text[g.module_lang.current].chart_imr_labely},        
                 //display_colors: [4,2,1],            
                 color_group: 'age_classes',
-                display_colors: [4,5],
+                display_colors: [3,4],
                 display_intro_position: 'none',
                 buttons_list: ['help'],
             },    
@@ -668,7 +664,7 @@ g.viz_definition = {
                 group_parameter: {  column: ['case']},
 
                 color_group: 'age_classes',
-                display_colors: [4,5],
+                display_colors: [3,4],
 
                 display_intro_position: 'left',           
                 //display_idcontainer: 'chart-year',

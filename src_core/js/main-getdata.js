@@ -480,20 +480,21 @@ module_getdata.load_medical_xls = function() {
             temp_array.push(val);
         }
 
-        if(!test_empty){
-            medical_data.push(
-                {
-                    Region: temp_array[0],
-                    ZS: temp_array[1],
-                    AS: temp_array[2],
-                    epiweek: temp_array[3],
-                    disease: temp_array[4],
-                    nb_cases: temp_array[5],
-                    nb_deaths: temp_array[6],
-                    info_date: temp_array[7],
-                    info_source: temp_array[8],
-                    comment: temp_array[9]
-                }
+        if(!test_empty){       //TODO: Order of xlsx headings is significant here; need to get correctly named column heading instead of it being sequential
+            temp_data = {};
+            temp_data['Region'] = temp_array[0];
+            temp_data[g.medical_headerlist['admN1']] = temp_array[1];
+            temp_data[g.medical_headerlist['admN2']] = temp_array[2];
+            temp_data[g.medical_headerlist['epiwk']] = temp_array[3];
+            temp_data[g.medical_headerlist['disease']] = temp_array[4];
+            temp_data[g.medical_headerlist['case']] = temp_array[5];
+            temp_data[g.medical_headerlist['death']] = temp_array[6];
+            temp_data[g.medical_headerlist['date']] = temp_array[7];
+            temp_data[g.medical_headerlist['source']] = temp_array[8];
+            temp_data[g.medical_headerlist['comment']] = temp_array[9];
+
+            medical_data.push(     
+                temp_data
             );
         }
 
