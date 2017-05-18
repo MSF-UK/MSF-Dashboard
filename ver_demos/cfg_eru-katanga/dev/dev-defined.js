@@ -63,7 +63,8 @@ g.medical_datatype = 'surveillance'; // 'outbreak' or 'surveillance'
  * @alias module:dev_defined.definition_incidence
  */
 g.dev_defined.definition_incidence = function(value,pop,periode) {
-    return value * 100000 / (pop); 
+    //return value * 100000 / (pop); 
+    return value * 100000 / (pop * periode); 
 };
 
 /**
@@ -93,6 +94,63 @@ if(!g.module_colorscale){
     g.module_colorscale = {}; 
 }
 g.module_colorscale.mapunitlist = ['Cases', 'Deaths','IncidenceProp','MortalityProp','Completeness'];
+
+//**************************************************************************************
+g.new_layout = true;
+
+//Combinations of map unit/geometry buttons that are not compatible 
+// (i.e. one from g.module_colorscale.mapunitlist, one from g.geometry_keylist)
+//g.dev_defined.incompatible_buttons = [];
+
+//OPTIONAL FOR IF WE WANT SOMETHING DIFFERENT TO DEFAULT DEFINED IN module-chartwarper.js - i.e. names of containers for swapping between them
+if(!g.module_chartwarper){
+    g.module_chartwarper = {}; 
+}
+
+g.module_chartwarper.container_btns_id = 'container_ser_lin_btns'; 
+g.module_chartwarper.container_allcharts_id = 'container_ser_lin';
+g.module_chartwarper.container_chartlist = [{
+                                        container: 'container_ser',
+                                        height: '600px'
+                                      },
+                                      {
+                                        container: 'container_lin',
+                                        height: '400px'
+                                      }];  
+
+/**
+ Lists the keys used to refer to specific {@link module:g.population_data} fields. It makes the link between headers in the data files and unambiguous keys used in the code.<br>
+ Each element in the object is coded in the following way:
+ <pre>*key_in_dashboard*: '*header_in_datafile*',</pre>
+ <br>
+ Currently implemented keys are:
+ <ul>
+    <li><code>admNx</code> for administrative or medical division name, format: <code>Adm1_name, Adm2_name...</code>,</li>
+    <li><code>pop</code> for population.</li>
+ * </ul>
+ * @constant
+ * @type {Object} 
+ * @alias module:g.population_headerlist
+ */
+
+if(!g.module_population){
+    g.module_population = {}; 
+}
+g.module_population.pop_new_format = true;    
+g.module_population.pop_headerlist = {
+    admNx: 'name',
+    //pop: 'population'
+    //pop: 'yr_2015'
+    pop: {'pop': 2016}     //HEIDI assumed year for Katanga
+};
+
+//g.module_population.pop_perc_u5 = 18.9;   //HEIDI added this - percentage of population assumed to be under 5 -- put it in g.population_data?
+g.module_population.pop_annual_growth = 3.0; //HEIDI added this - assumed percentage increase per year if pop data not supplied
+
+
+//**************************************************************************************
+
+
 
 /**
  * Defines the data parsed in the dashboard (urls and sources type). Order matters.<br>
@@ -127,7 +185,7 @@ g.module_getdata = {
                         type: 'json'}
         }
     },
-    medical:{
+     medical:{
         medical: {
             method: 'medicald3noserver',
             options: {  url: 'input/eru_surveillance-legere_data-katanga_v0.5_demodata.csv',
@@ -154,7 +212,8 @@ g.module_getdata = {
 
 g.medical_headerlist = {
     epiwk: 'epiweek',     // Epidemiological week: format YYYY-WW
-    admN1: 'ZS',    // Name of administrative/health division level N1 
+    admN1: 'ZS',    // Name of administrative/health division level N1
+    admN2: 'AS',    // Name of administrative/health division level N2
     disease: 'disease',
     case: 'nb_cases', 
     death: 'nb_deaths', 
@@ -163,24 +222,7 @@ g.medical_headerlist = {
     comment: 'comment'
 };
 
-/**
- Lists the keys used to refer to specific {@link module:g.population_data} fields. It makes the link between headers in the data files and unambiguous keys used in the code.<br>
- Each element in the object is coded in the following way:
- <pre>*key_in_dashboard*: '*header_in_datafile*',</pre>
- <br>
- Currently implemented keys are:
- <ul>
-    <li><code>admNx</code> for administrative or medical division name, format: <code>Adm1_name, Adm2_name...</code>,</li>
-    <li><code>pop</code> for population.</li>
- * </ul>
- * @constant
- * @type {Object} 
- * @alias module:g.population_headerlist
- */
-g.population_headerlist = {
-    admNx: 'name',
-    pop: 'pop'
-};
+
 
 function main_loadfiles_readvar(){
     /**
@@ -223,6 +265,7 @@ if(!g.module_datacheck){
 g.module_datacheck.definition_value = {
     epiwk:  {test_type: 'epiwk',        setup: 'none'},     // Epidemiological week: format YYYY-WW
     admN1:  {test_type: 'ingeometry',   setup: 'normalize'}, // Name of division level N1 
+    admN2:  {test_type: 'none',   setup: 'none'}, // No geom file yet 
     pop:    {test_type: 'integer',      setup: 'none'},     // Population of adm
     case: {test_type: 'integer',      setup: 'none'}, 
     death: {test_type: 'integer',      setup: 'none'},
@@ -351,7 +394,7 @@ g.viz_definition = {
                 group_parameter: {  column: ['case','death']},
 
                 display_colors: [0,1,2,3,4,5],  
-                display_intro: 'bottom',
+                display_intro_position: 'bottom',
                 display_filter: true,
                 buttons_list: ['reset','help','expand','lockcolor','parameters'],
                 
@@ -372,12 +415,111 @@ g.viz_definition = {
                 display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_disease_labelx,
                                  y:g.module_lang.text[g.module_lang.current].chart_disease_labely},
                 display_colors: [2],            
-                display_intro: 'right',
+                display_intro_position: 'left',
                 display_filter: true,
                 buttons_list: ['help'],
                 
             },
-    case_bar: { domain_builder: 'epiweek',
+
+    case_ser: { domain_builder: 'date_extent',
+                domain_parameter: 'heidi_custom_time',   
+
+                instance_builder: 'composite',
+
+                dimension_builder: 'epidate',
+                dimension_parameter: {  column: 'epiwk',
+                                        shared: true,
+                                        namespace: 'epirange'},
+
+                group_builder: 'series_all',            //HEIDI - could be 'auto' / 'series_all'
+                //group_parameter: {  column: ['case','fyo']}, 
+                group_parameter: {  column: ['case']},
+                //group_parameter: {},
+
+                //sync_to: ['death_bar'],
+
+                display_axis:   {x:'',
+                                 y: g.module_lang.text[g.module_lang.current].chart_case_labely,
+                                 y_imr: g.module_lang.text[g.module_lang.current].chart_ir_labely,
+                                 y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely},      
+                color_group: 'age_classes',                                 //HEIDI - change this name?
+                display_colors: [0,1,2],            
+                display_intro_position: 'top',    
+                display_intro_container: 'container_casedeath_ser',         
+                //display_idcontainer: 'container_casedeath_ser',
+                display_filter: false,
+                buttons_list: ['help'],                
+            },
+
+    death_ser: {domain_builder: 'date_extent',
+                domain_parameter: 'heidi_custom_time',  
+
+                instance_builder: 'composite',
+
+                dimension_builder: 'epidate',
+                dimension_parameter: {  column: 'epiwk',
+                                        shared: true,
+                                        namespace: 'epirange'},
+                group_builder: 'series_all',                    //HEIDI - could be 'auto'
+                //group_parameter: {  column: ['case','epiwk']}, 
+                group_parameter: {  column: ['death']},
+                //group_parameter: {},
+
+                //sync_to: ['case_bar'],
+
+                display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_death_labelx,
+                                 y:g.module_lang.text[g.module_lang.current].chart_death_labely,
+                                 y_imr: g.module_lang.text[g.module_lang.current].chart_mr_labely,
+                                 y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely}, 
+                color_group: 'age_classes', 
+                display_colors: [0,1,2],          
+                display_intro_position: 'none',
+                display_filter: false,
+                buttons_list: ['help'],
+            },
+
+    casedeath_ser_range: { domain_builder: 'date_extent',         
+                domain_parameter: 'heidi_custom_time',       
+
+                instance_builder: 'bar',
+
+                dimension_builder: 'epidate',
+                dimension_parameter: {  column: 'epiwk',        
+                                        shared: true,
+                                        namespace: 'epirange'},
+ 
+                group_builder: 'auto',                   
+                group_parameter: {  column: ['case']},  
+                //group_parameter: {  column: ['case','fyo']},    
+
+                sync_to: ['case_ser', 'death_ser'],   
+                //sync_to: ['case_ser'], 
+                //sync_to: ['death_ser'],  
+                range_chart: true,                              //HEIDI - added new parameter
+                //HEIDI - should we also define range_focus_charts here? is it different to sync_to???
+                //HEIDI - quick filter currently has 3 button types: lastXepiweeks, lastXepimonths, lastXepiyears; could extend this though; 0 represents 'current' for epimonth and epiyear 
+                buttons_filt_range: [{btn_type: 'lastXepiweeks', btn_param: 1, btn_text: 'Last full epiweek'},  //note all buttons are 'relative' time
+                                    {btn_type: 'lastXepiweeks', btn_param: 4, btn_text: 'Last 4 epiweeks'},
+                                    {btn_type: 'lastXepiweeks', btn_param: 52, btn_text: 'Last 52 epiweeks', btn_default: true},
+                                    {btn_type: 'lastXepimonths', btn_param: 0, btn_text: 'Current epimonth'},     //0 for current (probably incomplete) epimonth
+                                    {btn_type: 'lastXepimonths', btn_param: 1, btn_text: 'Last full epimonth'},  
+                                    {btn_type: 'lastXepimonths', btn_param: 3, btn_text: 'Last 3 epimonths'}, 
+                                    {btn_type: 'lastXepiyears', btn_param: 0, btn_text: 'Current epiyear'},
+                                    {btn_type: 'lastXepiyears', btn_param: 1, btn_text: 'Last full epiyear'}],
+
+                display_axis:   {x:'',
+                                 y:'',
+                                 y_imr: ''},        //HEIDI - need to put this in module-lang.js
+                //display_colors: [4,2,1],     
+                //display_colors: [999, 0,1],           //HEIDI - temporary fix 
+                display_colors: [1],         
+                display_intro_position: 'right',           
+                display_intro_container: 'container_rangechart',
+                display_filter: true,
+                buttons_list: ['help'],               
+            },
+
+    /*case_bar: { domain_builder: 'epiweek',
                 domain_parameter: 'custom_ordinal',   
 
                 instance_builder: 'bar',
@@ -420,9 +562,66 @@ g.viz_definition = {
                 display_colors: [4,2],            
                 display_intro: 'none',
                 buttons_list: ['reset','help'],
-            },
+            },*/
 
     case_lin: { domain_builder: 'week',
+                domain_parameter: 'custom_linear',
+
+                instance_builder: 'composite',
+
+                dimension_builder: 'week_num',
+                dimension_parameter: {  column: 'epiwk',
+                                        shared: true,
+                                        namespace: 'week'},
+
+                group_builder: 'series_yr',
+                //group_parameter: {  column: ['case']},
+                group_parameter: {  column: ['case','epiwk']},
+
+                sync_to: ['death_lin'],
+
+                display_axis:   {x:'',
+                                 y:g.module_lang.text[g.module_lang.current].chart_case_labely,
+                                 y_imr: g.module_lang.text[g.module_lang.current].chart_ir_labely,
+                                 y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely}, 
+                //display_colors: [], 
+                color_group: 'age_classes', 
+                display_colors: [4],            
+                display_intro_position: 'top',   
+                display_intro_container: 'container_casedeath_lin',        
+                //display_idcontainer: 'container_casedeath_lin',
+                buttons_list: ['help'],
+            },
+
+    death_lin: {domain_builder: 'week',
+                domain_parameter: 'custom_linear',  
+
+                instance_builder: 'composite',
+
+                dimension_builder: 'week_num',
+                dimension_parameter: {  column: 'epiwk',
+                                        shared: true,
+                                        namespace: 'week'},
+
+                group_builder: 'series_yr',
+                group_parameter: {  column: ['death','epiwk']},
+                //group_parameter: {  column: ['death']},
+
+                sync_to: ['case_lin'],
+
+                display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_death_labelx,
+                                 y:g.module_lang.text[g.module_lang.current].chart_death_labely,
+                                 y_imr: g.module_lang.text[g.module_lang.current].chart_mr_labely,
+                                 y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely}, 
+                //display_colors: [],
+                color_group: 'age_classes', 
+                display_colors: [4],                  
+                display_intro_position: 'none',
+                buttons_list: ['help'],
+            },
+
+
+/*    case_lin: { domain_builder: 'week',
                 domain_parameter: 'custom_linear',
 
                 instance_builder: 'series',
@@ -464,7 +663,8 @@ g.viz_definition = {
                 display_colors: [],            
                 display_intro: 'none',
                 buttons_list: ['reset','help'],
-            },
+            },*/
+
     year: {     domain_builder: 'year',
                 domain_parameter: 'none',
 
@@ -478,11 +678,15 @@ g.viz_definition = {
                 group_builder: 'auto',
                 group_parameter: {  column: ['case']},
 
-                display_intro: 'left',           
-                display_idcontainer: 'chart-year',
+                color_group: 'age_classes', 
+                display_colors: [4,5],      
+
+                display_intro_position: 'left',           
+                //display_idcontainer: 'chart-year',
                 display_filter: true,
                 buttons_list: ['reset','help'],
             },
+
     table:  {   domain_builder: 'none',
                 domain_parameter: 'none',            
                 
@@ -496,7 +700,8 @@ g.viz_definition = {
                 group_builder: 'none',
                 group_parameter: {  column: 'none'},
 
-                display_intro: 'top',
+                display_intro_position: 'top',
+                display_intro_container: 'container_table',
                 buttons_list: ['help'],
             },
 };
@@ -507,7 +712,10 @@ g.viz_definition = {
  * @type {String} 
  * @alias module:g.viz_timeline
  */
-g.viz_timeline = 'case_bar';
+g.viz_timeline = 'casedeath_ser_range'; 
+g.dev_defined.autoplay_delay = 2000;    //currently only defined for rangeChart
+g.dev_defined.autoplay_rewind = false;  //at end of timeline, continues to play from beginning automatically; currently only defined for rangeChart
+
 
 /**
  Defines the charts that are using time dimensions and that should be synchronized with the reference defined with {@link module:g.viz_timeline}.
@@ -515,6 +723,54 @@ g.viz_timeline = 'case_bar';
  * @type {Array.<String>} 
  * @alias module:g.viz_timeshare
  * @todo Automate
- */ 
-g.viz_timeshare = ['death_bar'];
+ */
+g.viz_timeshare = ['case_ser', 'death_ser'];
 
+/**
+ Defines the chart used as a reference for location-related interactions (e.g. incidence rates).
+ * @constant
+ * @type {String} 
+ * @alias module:g.viz_locations
+ */
+g.viz_locations = 'multiadm';
+
+/**
+ Defines the layer position for each map layer. Heidi - attach diagram. If multiple layers have the same parent then they are siblings.
+ * @constant
+ * @type {String} 
+ * @alias module:g.viz_parent_layer
+ */
+//HEIDI - need to attach diagram to demonstrate tree structure for numbering - see https://www.google.co.uk/search?q=tree+structure+numbering&tbm=isch&imgil=6gMJx-3aO3M0bM%253A%253BZ5hcRIa_-vtGmM%253Bhttps%25253A%25252F%25252Fwww.smartsheet.com%25252Ffree-work-breakdown-structure-templates&source=iu&pf=m&fir=6gMJx-3aO3M0bM%253A%252CZ5hcRIa_-vtGmM%252C_&usg=__qTvP_O0d3nAqBnwjc-J8jMjcT_8%3D&biw=1920&bih=974&ved=0ahUKEwikub6a4djTAhXoD8AKHT2PAQ4QyjcIMg&ei=vnAMWaTiAeifgAa9noZw#imgrc=6gMJx-3aO3M0bM:
+/*g.viz_layer_pos = [{name: 'admN1', pos: '0'},     // 0 = top layer
+                   {name: 'admN2', pos: '0.1'}, 
+                   {name: 'hosp', pos: '0.2'}]; */
+
+g.viz_layer_pos = {admN1: '0',     // 0 = top layer
+                    };  
+
+
+if(!g.module_intro){
+    g.module_intro = {}; 
+}
+//g.dev_defined.intro_order = [];
+//Define order of all intro topics, can either be charts (defined by name given above) or divs (defined in index.html)
+//For and div intros, need to also define intro_position
+g.module_intro.intro_order = ['intro', 'menu', 'multiadm', 'disease', 'container_ser_lin', 'case_ser', 'case_lin', 'casedeath_ser_range', 'year', 'table'];
+g.module_intro.intro_position = [{container: 'container_ser_lin',
+                                 position: 'top'
+                                }];
+//Here define which buttons (defined by div id) to click on before an intro element is called (to ensure appropriate chart/div is 'open' or not 'hidden' at the time it is called)
+//Buttons defined in module_chartwarper.js
+g.module_intro.intro_beforechange = [{           
+                                     element: 'container_casedeath_ser',  
+                                     click: '#container_ser-btn'
+                                    }, {
+                                     element: 'container_rangechart',
+                                     click: '#container_ser-btn'
+                                    },{
+                                     element: 'container_ser_lin',
+                                     click: '#container_ser-btn'
+                                    },{
+                                     element: 'container_casedeath_lin',
+                                     click: '#container_lin-btn'
+                                    }]
