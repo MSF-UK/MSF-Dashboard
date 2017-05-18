@@ -7,6 +7,7 @@
 /**
  * This file loads synchronously all the librairies required.
  * @since 0.9
+ * @module main_getlibs
  * @requires index.html
  **/
 
@@ -53,8 +54,8 @@ var files = [
     ['js','js/module-datatable.js',prg_folder],   
     ['css','css/main-core.css',prg_folder],
     ['js','js/main-core.js',prg_folder],
-    ['js','js/module-epitime.js',prg_folder],       //HEIDI - where should this be?
-    ['js','js/module-population.js',prg_folder],       //HEIDI - where should this be?
+    ['js','js/module-epitime.js',prg_folder],      
+    ['js','js/module-population.js',prg_folder],     
     ['css','css/module-intro.css',prg_folder],
     ['js','js/module-intro.js',prg_folder],
     ['css','css/module-interface.css',prg_folder],
@@ -74,7 +75,7 @@ function include_libraries(files) {
             if(file[0] == 'css'){
                 document.getElementsByTagName("head")[0].innerHTML += ("<link href=\"" + file[2] + file[1] + "\" rel=\"stylesheet\" type=\"text/css\">");
                 if(file[1] == 'css/index.css'){
-                    $('.modal-content').html('<div id="loading" class="modal-body"><h2>Loading...</h2><br><span id="load_status">Loading javascript librairies...</span></div>');
+                    $('.modal-content').html('<div id="loading" class="modal-body"><h2>Loading...</h2><br><span id="load_status">Loading javascript libraries...</span></div>');
                 }
                 callback(files, callback);
             }else if(file[0] == 'js'){
@@ -101,7 +102,18 @@ function include_libraries(files) {
 }
 
 // Global Variables: permanent and modules list  
+/**
+ * Stores all global variables for the dashboard
+ * @global
+ * @namespace
+ **/
 var g = {};
+
+/**
+ * Stores a list of module names that have been run
+ * @global
+ * @namespace
+ **/
 var modules_list = {};
 
 include_libraries(files); 

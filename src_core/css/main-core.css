@@ -73,7 +73,7 @@
     font-size: 11px !important;
 }
 .dc-chart .pie-slice {
-    fill: #656F73;
+    fill: #000000;
 }
 .dc-chart g.row text {
     fill: black;

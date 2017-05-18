@@ -205,7 +205,7 @@ module_chartwarper.interaction = function(chartcontainers_list) {
 		chartcontainers_list.forEach(function(key1,key1num){
 		
 			$('#'+key1.container+'-btn').on('click',function(){ 
-				console.log("key1 on btn: ", key1.container, '#'+key1.container+'-btn', key1);
+				//console.log("key1 on btn: ", key1.container, '#'+key1.container+'-btn', key1);
 	      
 			    if (!(g.module_chartwarper.btncurrent == key1.container)) {
 			    	var filter_html = $('#' + key1.container +'_filter').html();

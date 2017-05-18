@@ -390,6 +390,9 @@ module_population.getPopAgeGroups = function(){
       }
     };
     //console.log("pop_age_groups: ", age_groups);
+    if (age_groups.length==0) {
+        age_groups.push({group: 'a', label: 'All Ages'});
+    }
     return age_groups;
 
 };

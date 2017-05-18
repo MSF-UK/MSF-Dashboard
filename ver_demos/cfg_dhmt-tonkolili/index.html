@@ -13,7 +13,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=0.2, maximum-scale=1.0, user-scalable=no" /> 
 
         <script>
-            // Librairies
+            // Libraries
             var lib_folder = '../../src_core/lib/';
             // Dashboard config and language files
             var ver_folder = '';
@@ -40,17 +40,11 @@
                 </div>                 
             </div>
 
+            
+		    <!-- Maps -->
             <div class="row">
-
-		<!-- Maps -->
                 <div class="col-md-9">
-                    <div id="chart-multiadm" class="row">
-                        <!-- <div class="row">
-                            <div class="col-md-12" style="height:30px;">
-                                <span id="buttons-multiadm"></span>
-                            </div>
-                        </div> -->
-                    </div>
+                    <div id="chart-multiadm" class="row"></div>             
                 </div>
 
                 <div class="col-md-3" id="disease_div">
@@ -62,30 +56,21 @@
                 </div>  
             </div>
 
-        <!-- Other Graphs -->                                                                              
+
+            <!-- Other Graphs -->                                                                              
             <div class="row">
-                <!-- <div class="col-md-2">
-                    <div id="buttons-disease"></div>
-                    <div id="chart-disease" class="viz">
-                        <p style="height: 60px;"><span id="chart_disease_title"></span> <span class="filter"> </span></p>
-                        <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_disease_title"></span></p>
-                    </div>
-                </div>   -->
 
                 <div id="container_ser_lin" class="col-md-9" style="height: 600px;">
 
                     <div id="container_ser_lin_btns"></div>
 
                     <div id="container_ser">
-                        <div class="col-md-12" id="container_casedeath_ser">
 
+                        <div class="col-md-12" id="container_casedeath_ser">
                             <div class="row">                        
                                 <div class="col-md-12">
                                     <div id="buttons-case_ser"></div>
-                                    <div id="chart-case_ser" class="viz">
-                                        <!-- <p style="height: 30px;"><span id="chart_case_ser_title"></span> <span class="filter"> </span></p> -->
-                                        <!-- <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_case_ser_title"></span></p> -->
-                                    </div>                       
+                                    <div id="chart-case_ser" class="viz"></div>                       
                                 </div>
                             </div>   
 
@@ -96,16 +81,15 @@
                             </div> 
                         </div>
 
-                            <div class="row">
-                                <div class="col-md-12" id="container_rangechart">
-                                    <p><span id="filters_qf-casedeath_ser_range"></span></p> 
-                                    <div id="buttons-casedeath_ser_range"></div>
-                                    <div id="chart-casedeath_ser_range" class="viz"></div>
-                                    <div id="buttons_qf-casedeath_ser_range"></div>
-                                </div>
-                               
-                            </div>                                                    
-                        <!-- </div> -->
+                        <div class="row">
+                            <div class="col-md-12" id="container_rangechart">
+                                <p><span id="filters_qf-casedeath_ser_range"></span></p> 
+                                <div id="buttons-casedeath_ser_range"></div>
+                                <div id="chart-casedeath_ser_range" class="viz"></div>
+                                <div id="buttons_qf-casedeath_ser_range"></div>
+                            </div>          
+                        </div>                                                    
+                        
                     </div>
 
                     <div id="container_lin">
@@ -113,10 +97,7 @@
                             <div class="row">                        
                                 <div class="col-md-12">
                                     <div id="buttons-case_lin"></div>
-                                    <div id="chart-case_lin" class="viz">
-                                        <!-- <p style="height: 30px;"><span id="chart_case_lin_title"></span> <span class="filter"> </span></p> -->
-                                        <!-- <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_case_lin_title"></span></p> -->
-                                    </div>                         
+                                    <div id="chart-case_lin" class="viz"></div>                         
                                 </div>
                             </div>
                             <div class="row">
@@ -134,7 +115,6 @@
                         <div class="row">
                             <div id="buttons-fyo"></div>
                             <div id="chart-fyo" class="viz">
-                                <!-- <p style="height: 30x;"><span id="chart_fyo_title"></span> <span class="filter"> </span></p> -->
                                 <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_fyo_title"></span></p>
                             </div>
                         </div>
@@ -143,7 +123,6 @@
                         <div class="row">
                             <div id="buttons-year"></div>
                             <div id="chart-year" class="viz">
-                                <!-- <p style="height: 30px;"><span id="chart_year_title"></span> <span class="filter"> </span></p> -->
                                 <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_year_title"></span></p>
                             </div>
                         </div>
@@ -151,18 +130,14 @@
                 </div>  
 
             </div>
-       <!--  </div> -->
 
-        <!-- Datatable -->
+            <!-- Datatable -->
             <div class="row">
                 <div class="col-md-12" id="container_table">
-                    <!-- <div class="row"> -->
-                        <p><a id="more-table"></a></p>
-                        <div id="container-table" hidden="true"></div>
-                    <!-- </div> -->
+                    <p><a id="more-table"></a></p>
+                    <div id="container-table" hidden="true"></div>
                 </div>
             </div>
-        <!-- </div> -->
 
         <!-- Menu -->
         <div class="row">

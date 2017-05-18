@@ -124,29 +124,55 @@ g.module_lang.text.fra = {
 	//chart_case_bar_title: 'Cas & Décès',
 	chart_case_ser_title: 'Cas & Décès',
 	chart_case_lin_title: 'Cas & Décès',
+	chart_case_ser_imr_title: 'Incidence & Mortality Rates',   //HEIDI translate / change var name?
+	chart_case_lin_imr_title: 'Incidence & Mortality Rates',   //HEIDI translate / change var name?
+	chart_case_ser_comp_title: 'Cases & Deaths - Completeness',
+	chart_case_lin_comp_title: 'Cases & Deaths - Completeness',
+
 	chart_case_labelx: 'Semaine Epi',
 	chart_case_labely: 'Cas',
 	chart_death_labelx: 'Semaine Epi',
 	chart_death_labely: 'Décès',
+	chart_ir_labely: 'Incidence Rate',					//HEIDI translate
+	chart_mr_labely: 'Mortality Rate',					//HEIDI translate
+	chart_comp_labely: 'Cases Reported',				//HEIDI translate
 	chart_year_title: 'Années',
 	chart_fyo_title: 'Classes d\'Ages',
-	chart_fyo_labelu: 'Under 5',
-	chart_fyo_labelo: 'Over 5',
+	chart_fyo_labelu: 'Under 5',							//HEIDI translate
+	chart_fyo_labelo: 'Over 5',								//HEIDI translate
+	chart_fyo_labela: 'All Ages',   						//HEIDI translate
+	chart_multiadm_title: 'Locations',						
+	chart_casedeath_ser_range_title: 'Semaine Epi',			
+
+	epiweek_all: 'All',										//HEIDI translate
+	epiweek_none: 'None',									//HEIDI translate
+	epiweek_playing: 'Currently playing epiweek: ',			//HEIDI translate
+	epiweek_selected: 'Epiweeks selected: ',				//HEIDI translate
 
 	filtext: 'Filtre actuel :',
 	
-	map_title: 'Carte',
+	map_title: '',
 	map_legendNA: '0',
 	map_legendEmpty: 'Absence de données',
 	map_hover: 'Survolez pour afficher',
 	map_unit: {
 		Cases: 'Nombre de cas',
 		IncidenceProp: 'Taux d\'incidence (/10 000 personnes)',
-		Deaths: 'Number de décès',
+		Deaths: 'Nombre de décès',
 		MortalityProp: 'Taux de mortalité (/10 000 personnes)',
-		Completeness: 'Fréquence de transmission des données, en %'
+		Completeness: 'Fréquence de transmission (%)'
 	},
-	jumpto: 'Aller...',
+	map_unit_title: {						//HEIDI added & translate
+		Cases: 'Cas',
+		IncidenceProp: 'Taux d\'incidence',
+		Deaths: 'Décès',
+		MortalityProp: 'Taux de mortalité',
+		Completeness: 'Fréquence de transmission'
+	},
+	map_viewby_text: 'View by: ',			//HEIDI translate
+	map_quickzoom_text: 'Quick zoom: ',		//HEIDI translate
+	jumpto: 'No Zoom',						//HEIDI translate
+	
 	map_admN1: {
 		title: 'Chiefdom'
 	},
@@ -154,12 +180,13 @@ g.module_lang.text.fra = {
 		title: 'PHU'
 	},
 	map_hosp: {
-		title: 'Hospitals'
+		title: 'Hospitals'					//HEIDI translate
 	},
 
+
 	//chartwarper_tab_container_bar:'Par classe d\'age',
-	chartwarper_tab_container_ser:'Par classe d\'age',
-	chartwarper_tab_container_lin:'Par année',
+	chartwarper_tab_container_ser:'par classe d\'age',
+	chartwarper_tab_container_lin:'par année',
 	
 	colorscale_title: 'PARAMETRES DE LA CARTE',
 	colorscale_unitintro: 'Unité de la carte : ',
@@ -224,24 +251,39 @@ g.module_lang.text.fra = {
     		pause: 'Pause'
 	},
 	interface_menucount: ['enregistrements sélectionés sur','','Chiffres clés :', 'Cas :','Décès :'],
-	
+	interface_menuviewfilt: 'View Current Filters',						//HEIDI - translate
+	interface_menufiltsum: 'Current filter summary',					//HEIDI - translate
+	interface_menunofilt: 'No filters applied',							//HEIDI - translate
+
 	interface_colorscale: 'Retourner au Dashboard',
 
+	//HEIDI - translate all below:
 	intro_intro: '<p>Il est possible d\'interagir avec les données du Dashboard en cliquant sur les éléments des graphiques (régions, barres d\'un histogramme...).</p><p><b>1) Filtrer une dimension du jeu de données.</b><br>Chaque interaction filtre le jeu de données et affecte ainsi l\'ensemble des graphiques.</p><p><b>2) Combiner les filtres.</b><br>Il est par exemple possible de filtrer les cas de "telle" semaine ET dans "telle" région.</p><p><b>3) Retirer des filtres.</b><br>Les filtres peuvent être retirés un par un, réinitialisés pour un graphique (en cliquant sur le bouton "<span class="ft">↻</span>") ou pour l\'ensemble du dashboard en cliquant le bouton "Réinitialiser" du menu latéral.</p><p><b>4) Survoler les éléments des graphiques pour afficher les valeurs associées.</b></p><br><p>Cliquez sur "Next" ou appuyez sur la flèche droite de votre clavier pour parcourir les différents graphiques et leur spécificités ou revenez plus tard si nécessaire : soit en cliquant le bouton "Aide" du menu latéral, soit les boutons "?" pour consulter l\'aide spécifique à chaque graphique.</p>',
+
+	intro_menu: 'Le Menu',
 
 	intro_multiadm: 'Cette carte représente le nombre de cas ou le taux d\'incidence par aire géographique.<br><i>Cliquez sur la carte pour filtrer les données par aire. Il est possible de sélectionner plusieurs aires. Pour réinitialiser les filtres, cliquez sur les aires une par une ou cliquez sur le bouton "<span class="ft">↻</span>".<br>Cliquez sur les onglets pour naviguer entre les différents niveaux divisionels.<br>Vous pouvez vous rendre directement sur une aire spécifique en utilisant les listes de sélection "Aller...". (progressivement du niveau le plus élevé au niveau le plus bas).<br>Vous pouvez également parcourir la carte en utilisant les boutons de zoom ainsi que la souris.</i><br>Autres Boutons :<br> - "<span class="ft">⬙</span>" permet d\'ajuster l\'échelle de couleurs au jeu de données actuel (si le mode \'auto\' n\'est pas déjà activé),<br> - "<span class="ft">⚙</span>" permet d\'accéder à plus d\'options pour paramétrer la carte,<br> - "<span class="ft">◰</span>" permet d\'agrandir/réduire la carte.',
 
 	intro_disease: 'Ce graphique en lignes indique les pathologies représentées.<br><i>Cliquez sur les barres pour sélectionner la pathologie désirée.<br>L\'axe horizontal représente le nombre de signalements ie. +1 par Région et par Semaine où au moins 1 cas de la pathologie a été signalé.</i>',
 
-	intro_case_bar: 'Ces histogrammes représentent les nombres de cas et de décès par semaine épidémiologique (epi-week) et par classe d\'age (+/- de 5 ans).<br><i>Cliquez sur les barres pour filtrer les données d\'une période spécifique. Vous pouvez sélectionner plusieurs epi-weeks. Pour réinitialiser les filtres, cliquez sur les epi-weeks une par une ou cliquez sur le bouton "<span class="ft">↻</span>".</i>',
+	intro_container_ser_lin: 'Le Serie/Line',
+
+	//intro_case_bar: 'Ces histogrammes représentent les nombres de cas et de décès par semaine épidémiologique (epi-week) et par classe d\'age (+/- de 5 ans).<br><i>Cliquez sur les barres pour filtrer les données d\'une période spécifique. Vous pouvez sélectionner plusieurs epi-weeks. Pour réinitialiser les filtres, cliquez sur les epi-weeks une par une ou cliquez sur le bouton "<span class="ft">↻</span>".</i>',
+	intro_case_ser: 'Le Serie',
+
+	intro_casedeath_ser_range: "<div style='font: 14px sans-serif;'><h4><b>Epiweek Range Chart</b></h4><p>This chart can be used to select a range of epiweeks as desired. All data in the dashboard is then filtered to these weeks. Selected epiweeks are coloured, while those that are not selected are grey.</p><p>Selecting a range of epiweeks can be done in two ways:</p><ol><li style='margin-bottom: 5px;'>Manually, by clicking and dragging the range handles with the mouse</li><li style='margin-bottom: 5px;'>By clicking one of the buttons for a specific time range (e.g. 'Last full epimonth')</li></ol><p>Note that epiweeks start on a Monday.</p></div>",
 
 	intro_case_lin: 'Ces graphiques représentent les nombres de cas et de décès par semaine épidémiologique (epi-week) et par année.<br><i>Ces graphiques ne permettent pas de filtrer les données.</i>',
+	//intro_case_lin: "<div style='font: 14px sans-serif;'><h4><b>Epiweek Chart by Year</b></h4><p>These charts display case and death numbers by epiweek for each year. They cannot be used to filter the dataset. However, to only display data for selected years it is possible to filter the 'Year' pie chart.</p></div>",
 
-	intro_fyo: 'Ce diagramme circulaire représente le nombre de cas par classe d\'age (+ ou - de 5 ans).<br><i>Cliquez sur les sections du diagramme pour filtrer par classe d\'age. Pour réinitialiser les filtres, cliquez à nouveau sur les sections ou cliquez sur le bouton "<span class="ft">↻</span>".</i>',
+	//intro_fyo: 'Ce diagramme circulaire représente le nombre de cas par classe d\'age (+ ou - de 5 ans).<br><i>Cliquez sur les sections du diagramme pour filtrer par classe d\'age. Pour réinitialiser les filtres, cliquez à nouveau sur les sections ou cliquez sur le bouton "<span class="ft">↻</span>".</i>',
+	intro_fyo: "<div style='font: 14px sans-serif;'><h4><b>Age Group Pie Chart</b></h4><p>This chart displays case numbers by age group (Under 5 years old, Over 5 years old).</p><p>Clicking on each section filters to that specific age group.</p></div>",
 	
-	intro_year: 'Ce diagramme circulaire représente le nombre de cas par année.<br><i>Cliquez sur les sections du diagramme pour filtrer par année. Vous pouvez filtrer plusieurs années. Pour réinitialiser les filtres, cliquez à nouveau sur les sections ou cliquez sur le bouton "<span class="ft">↻</span>".</i>',
+	//intro_year: 'Ce diagramme circulaire représente le nombre de cas par année.<br><i>Cliquez sur les sections du diagramme pour filtrer par année. Vous pouvez filtrer plusieurs années. Pour réinitialiser les filtres, cliquez à nouveau sur les sections ou cliquez sur le bouton "<span class="ft">↻</span>".</i>',
+	intro_year: "<div style='font: 14px sans-serif;'><h4><b>Years Pie Chart</b></h4><p>This chart displays case numbers by year.</p><p>Clicking on each section filters to a specific year. It is possible to select multiple years.</p></div>",
 
-	intro_table: 'Ce tableau présente les entrées sélectionnées.<br><i>Cliquez sur le bouton "Copier vers le presse-papier" pour copier tout le contenu du tableau (afin d\'en exporter le contenu vers Excel par exemple).</i>',
+	//intro_table: 'Ce tableau présente les entrées sélectionnées.<br><i>Cliquez sur le bouton "Copier vers le presse-papier" pour copier tout le contenu du tableau (afin d\'en exporter le contenu vers Excel par exemple).</i>',
+	intro_table: "<div style='font: 14px sans-serif;'><h4><b>Data Table</b></h4><p>This table displays all records from the dataset that are in the current selection (i.e. accounting for all filters applied).</p><p>Clicking the 'Copy to clipboard' button copies the content of the whole table (in order to export to Excel for example).</p></div>",
 
 };
 
@@ -265,10 +307,14 @@ g.module_lang.text.eng = {
 	chart_case_lin_imr_title: 'Incidence & Mortality Rates',   //HEIDI added this
 	chart_case_ser_comp_title: 'Cases & Deaths - Completeness',
 	chart_case_lin_comp_title: 'Cases & Deaths - Completeness',
+
 	chart_case_labelx: 'Epi-Week',
 	chart_case_labely: 'Cases',
 	chart_death_labelx: 'Epi-Week',
 	chart_death_labely: 'Deaths',
+	chart_ir_labely: 'Incidence Rate',					//HEIDI added
+	chart_mr_labely: 'Mortality Rate',					//HEIDI added				
+	chart_comp_labely: 'Cases Reported',				
 	chart_year_title: 'Years',
 	chart_fyo_title: 'Age Groups',
 	chart_fyo_labelu: 'Under 5',
@@ -284,7 +330,7 @@ g.module_lang.text.eng = {
 	
 	filtext: 'Current filter:',
 	
-	map_title: '',		//HEIDI removed
+	map_title: '',		
 	map_legendNA: '0',
 	map_legendEmpty: 'No records',
 	map_hover: 'Hover to display',
@@ -305,6 +351,7 @@ g.module_lang.text.eng = {
 	map_viewby_text: 'View by: ',		//HEIDI added this
 	map_quickzoom_text: 'Quick zoom: ',	//HEIDI added this
 	jumpto: 'No Zoom',
+
 	map_admN1: {
 		title: 'Chiefdom'
 	},

@@ -135,7 +135,7 @@ function toTitleCase(str){
  * @todo Should be broken down in smaller pieces.
  */
 module_datacheck.dataprocessing = function(){
-	console.log("in module_datacheck.dataprocessing");
+	//console.log("in module_datacheck.dataprocessing");
 	// Test Value 
 	/**
 	 Defines datacheck tests on values.<br>
@@ -569,7 +569,8 @@ epiwk: function(rec,key,none){
 		addToCompletenessRecord = function(temp_loc) {
 			var temp_key = rec[g.medical_headerlist.epiwk] + temp_loc;	//add epiweek to beginning of string
 			var temp_loc2 = temp_loc.substring(2, temp_loc.length);			//remove ',' at beginning of string
-			//console.log("in completenessCheck 4: ", temp_key)
+			console.log(g.geometry_subnum);
+			console.log("addToCompletenessRecord : ", temp_key, g.geometry_subnum[temp_loc2]);
 
 		 	if(!(g.medical_completeness[temp_key])){			//if its not already in g.medical_completeness
 				g.medical_completeness[temp_key] = {			//then add it in 
@@ -578,8 +579,11 @@ epiwk: function(rec,key,none){
 					value: 1/ g.geometry_subnum[temp_loc2]
 				};
 			}else{												//if its already in g.medical_completeness
+				console.log("  before: ", g.medical_completeness[temp_key].value);
 				g.medical_completeness[temp_key].value += 1/ g.geometry_subnum[temp_loc2];	//then add in the value
 			}
+			console.log("  after: ", g.medical_completeness[temp_key].value);
+
 		}
 
 
@@ -587,7 +591,11 @@ epiwk: function(rec,key,none){
 
 		if (g.new_layout) {		
 			var top_layer = module_multiadm.getTopLayer();				//create single geometry name in format admN1, admN2 etc.
-			temp_loc += ', ' + rec[g.medical_headerlist[top_layer]].trim().split('_').join(' '); 
+			if(g.module_datacheck.definition_value[top_layer].setup == 'normalize'){		
+				temp_loc += ', ' + toTitleCase(rec[g.medical_headerlist[top_layer]].trim().split('_').join(' '));
+			}else{
+				temp_loc += ', ' + rec[g.medical_headerlist[top_layer]].trim().split('_').join(' ');
+			}
 			var lyr = top_layer;
 			while (module_multiadm.hasChildren(lyr)) {
 				var children = module_multiadm.getChildren(lyr);
@@ -614,7 +622,11 @@ epiwk: function(rec,key,none){
 				} else {
 					var child = children[0];
 				};
-				temp_loc += ', ' + rec[g.medical_headerlist[child]].trim().split('_').join(' '); 
+				if(g.module_datacheck.definition_value[lyr].setup == 'normalize'){		
+					temp_loc += ', ' + toTitleCase(rec[g.medical_headerlist[child]].trim().split('_').join(' '));
+				}else{
+					temp_loc += ', ' + rec[g.medical_headerlist[child]].trim().split('_').join(' ');
+				}
 				lyr = child;
 			}
 
@@ -651,15 +663,26 @@ epiwk: function(rec,key,none){
 				var lyrs = [top_layer];   //add up completenessCheck for all parent layers
 
 				for (var i=0; i<=lyrs.length-1; i++) {
+					//console.log("is parent?", module_multiadm.isParent(lyrs[i]));
+					if(g.module_datacheck.definition_value[lyrs[i]].setup == 'normalize'){		
+						temp_loc += ', ' + toTitleCase(rec[g.medical_headerlist[lyrs[i]]].trim().split('_').join(' '));
+					}else{
+						temp_loc += ', ' + rec[g.medical_headerlist[lyrs[i]]].trim().split('_').join(' ');
+					}
 					if (module_multiadm.isParent(lyrs[i])) {		//if has child
-						temp_loc += ', ' + rec[g.medical_headerlist[lyrs[i]]].trim().split('_').join(' '); 
+						//temp_loc += ', ' + rec[g.medical_headerlist[lyrs[i]]].trim().split('_').join(' '); 
 						var children = module_multiadm.getChildren(lyrs[i]);
 
 						for (var j=0; j<=children.length-1; j++) {
 							//console.log(children[j]);
 							
 							if (module_multiadm.isParent(children[j])) {
-								temp_loc += ', ' + rec[g.medical_headerlist[children[j]]].trim().split('_').join(' '); 
+								if(g.module_datacheck.definition_value[children[j]].setup == 'normalize'){		
+									temp_loc += ', ' + toTitleCase(rec[g.medical_headerlist[children[j]]].trim().split('_').join(' '));
+								}else{
+									temp_loc += ', ' + rec[g.medical_headerlist[children[j]]].trim().split('_').join(' ');
+								}
+
 							} else {
 								if (g[children[j]]) {			//list of locations to include
 									//console.log("hospital list: ", g[children[j]]);

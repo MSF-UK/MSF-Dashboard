@@ -788,14 +788,16 @@ module_multiadm.mapunit_interaction = function() {
 					dc.redrawAll(); //HEIDI ADDED TO TEST
 	          	}
 
-	          	for (var btn_set of g.dev_defined.incompatible_buttons) {
-	          		//console.log(btn_set);
-	          		$('#map-'+btn_set.geo+'-btn').attr('disabled', false);  //default is not to disable button
-	          		if (btn_set.unit==unit) {
-	          			$('#map-'+btn_set.geo+'-btn').attr('disabled', true);
-	          			break;
-	          		};
-	          	};
+	          	if (g.dev_defined.incompatible_buttons) {
+		          	for (var btn_set of g.dev_defined.incompatible_buttons) {
+		          		//console.log(btn_set);
+		          		$('#map-'+btn_set.geo+'-btn').attr('disabled', false);  //default is not to disable button
+		          		if (btn_set.unit==unit) {
+		          			$('#map-'+btn_set.geo+'-btn').attr('disabled', true);
+		          			break;
+		          		};
+		          	};
+		        };
 
 	          	module_colorscale.changeMapColors();
 				module_colorscale.lockcolor('Manual');

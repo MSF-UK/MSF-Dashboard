@@ -16,6 +16,9 @@
  * @requires lang/module-lang.js
  * @requires lang/main-core.js
  **/
+ /**
+ * An additional comment
+ */
 var module_interface = {};
 /*------------------------------------------------------------------------------------
 	Components:

@@ -9,10 +9,10 @@
  * @since 0.0
  * @module main_loadfiles
  * @requires index.html
- * @requires user/user-defined.js
- * @requires lang/lang.js
+ * @requires dev/dev-defined.js
+ * @requires lang/module-lang.js
  * @requires js/module-datacheck.js
- * @requires js/main-core.js
+ * @requires module:main-core.js
  * @todo This implementation should be revised in the next versions.
  **/
 
@@ -28,7 +28,7 @@
  Also loads {@link module:module_datacheck} and {@link module:module-lang} and embeds some related displays (quick datacheck summary {@link module:module_datacheck~display}, errors log {@link module:module_datacheck~showlog} and related interactions {@link module:module_datacheck~interaction} for the datacheck module and language switch buttons {@link module:module_lang~display} for the lang module).
  * @function
  * @requires queue_medical
- * @requires module:datacheck
+ * @requires module:module_datacheck
  * @requires module:lang
  * @requires module:main_core
  * @alias module:main_loadfiles~generate_display

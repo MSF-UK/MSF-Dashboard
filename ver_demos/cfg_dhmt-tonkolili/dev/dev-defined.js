@@ -481,14 +481,15 @@ g.viz_definition = {
                                         //namespace: 'none'},
 
                 group_builder: 'series_age',
-                group_parameter: {  column: ['case','fyo']},    
+                group_parameter: { column: ['case','fyo']},    
 
                 //sync_to: ['casedeath_ser_range'],  
                 //sync_to: ['death_ser'], 
 
                 display_axis:   {x:'',
-                                 y:g.module_lang.text[g.module_lang.current].chart_case_labely,
-                                 y_imr: 'Incidence Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js
+                                 y: g.module_lang.text[g.module_lang.current].chart_case_labely,
+                                 y_imr: g.module_lang.text[g.module_lang.current].chart_imr_labely},    
+
                 //display_colors: [4,2,1],     
                 //display_colors: [999, 0,1],           //HEIDI - temporary fix   
                 color_group: 'age_classes',    
@@ -521,7 +522,7 @@ g.viz_definition = {
 
                 display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_death_labelx,
                                  y:g.module_lang.text[g.module_lang.current].chart_death_labely,
-                                 y_imr: 'Mortality Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js
+                                 y_imr: g.module_lang.text[g.module_lang.current].chart_imr_labely},
                 //display_colors: [4,2,1],      
                 //display_colors: [999, 0,1],           //HEIDI - temporary fix  
                 color_group: 'age_classes', 
@@ -532,8 +533,8 @@ g.viz_definition = {
                 buttons_list: ['help'],               
             },   
 
-    casedeath_ser_range: { domain_builder: 'date_extent',        // *** NOTE - NEEDS TO BE DEFINED BEFORE CASE_SER OR OTHER CHARTS THAT DEPEND ON IT       
-                domain_parameter: 'heidi_custom_time',       //HEIDI - test   //HEIDI - not used???
+    casedeath_ser_range: { domain_builder: 'date_extent',          
+                domain_parameter: 'heidi_custom_time',      
 
                 instance_builder: 'bar',
 
@@ -546,7 +547,7 @@ g.viz_definition = {
 
                 //group_builder: 'auto',
                 //group_parameter: {  column: ['case']},    
-                group_builder: 'series_all',                    //HEIDI - should be   group_builder: 'series_all', 
+                group_builder: 'auto',                    
                 group_parameter: {  column: ['case','fyo']},    //HEIDI - should be    group_parameter: {  column: ['case']}, 
 
                 sync_to: ['case_ser', 'death_ser'],   
@@ -592,9 +593,11 @@ g.viz_definition = {
                 sync_to: ['death_lin'],
 
                 display_axis:   {x:'',
-                                 y:g.module_lang.text[g.module_lang.current].chart_case_labely,
-                                 y_imr: 'Incidence Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js},
-                //display_colors: [4,2,1],            
+                                 y: g.module_lang.text[g.module_lang.current].chart_case_labely,
+                                 y_imr: g.module_lang.text[g.module_lang.current].chart_imr_labely},       
+                //display_colors: [4,2,1],  
+                color_group: 'age_classes',
+                display_colors: [4,5],          
                 display_intro_position: 'top',                  
                 display_intro_container: 'container_casedeath_lin',
                 buttons_list: ['help'],
@@ -617,8 +620,10 @@ g.viz_definition = {
 
                 display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_death_labelx,
                                  y:g.module_lang.text[g.module_lang.current].chart_death_labely,
-                                 y_imr: 'Mortality Rate (/10,000)'},        //HEIDI - need to put this in module-lang.js},
+                                 y_imr: g.module_lang.text[g.module_lang.current].chart_imr_labely},        
                 //display_colors: [4,2,1],            
+                color_group: 'age_classes',
+                display_colors: [4,5],
                 display_intro_position: 'none',
                 buttons_list: ['help'],
             },    
@@ -657,6 +662,9 @@ g.viz_definition = {
 
                 group_builder: 'auto',
                 group_parameter: {  column: ['case']},
+
+                color_group: 'age_classes',
+                display_colors: [4,5],
 
                 display_intro_position: 'left',           
                 //display_idcontainer: 'chart-year',

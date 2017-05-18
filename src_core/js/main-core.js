@@ -778,7 +778,8 @@ function generateDashboard(){
                 return group;
             },
             series_all: function(dimkey,keylistgroup){
-                group = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[g.medical_headerlist[keylistgroup[0]]]});
+                var group = {};
+                group.a = g.viz_definition[dimkey].dimension.group().reduceSum(function(d){return d[g.medical_headerlist[keylistgroup[0]]]});
                 return group;
             },
             series_yr: function(dimkey, keylistgroup) {
@@ -2455,6 +2456,8 @@ function generateDashboard(){
                 function getYLabel() {    
                     if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
                         var yLabel = g.viz_definition[key1].display_axis.y_imr;                                
+                    } else if (g.module_colorscale.mapunitcurrent=='Completeness') {
+                        var yLabel = g.viz_definition[key1].display_axis.y_comp;
                     } else {
                         var yLabel = g.viz_definition[key1].display_axis.y;
                     }
