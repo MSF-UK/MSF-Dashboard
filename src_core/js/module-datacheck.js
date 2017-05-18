@@ -569,8 +569,8 @@ epiwk: function(rec,key,none){
 		addToCompletenessRecord = function(temp_loc) {
 			var temp_key = rec[g.medical_headerlist.epiwk] + temp_loc;	//add epiweek to beginning of string
 			var temp_loc2 = temp_loc.substring(2, temp_loc.length);			//remove ',' at beginning of string
-			console.log(g.geometry_subnum);
-			console.log("addToCompletenessRecord : ", temp_key, g.geometry_subnum[temp_loc2]);
+			//console.log(g.geometry_subnum);
+			//console.log("addToCompletenessRecord : ", temp_key, g.geometry_subnum[temp_loc2]);
 
 		 	if(!(g.medical_completeness[temp_key])){			//if its not already in g.medical_completeness
 				g.medical_completeness[temp_key] = {			//then add it in 
@@ -579,10 +579,10 @@ epiwk: function(rec,key,none){
 					value: 1/ g.geometry_subnum[temp_loc2]
 				};
 			}else{												//if its already in g.medical_completeness
-				console.log("  before: ", g.medical_completeness[temp_key].value);
+				//console.log("  before: ", g.medical_completeness[temp_key].value);
 				g.medical_completeness[temp_key].value += 1/ g.geometry_subnum[temp_loc2];	//then add in the value
 			}
-			console.log("  after: ", g.medical_completeness[temp_key].value);
+			//console.log("  after: ", g.medical_completeness[temp_key].value);
 
 		}
 
