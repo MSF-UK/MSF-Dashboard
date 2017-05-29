@@ -7,10 +7,10 @@
 
 <html>
     <head>
-        <title>MSF Dashboard v1.1.0pre-alpha</title>
+        <title>MSF Dashboard v1.1</title>
         <meta charset="UTF-8">
         <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
-        <meta name="viewport" content="width=device-width, initial-scale=0.2, maximum-scale=1.0, user-scalable=no" /> 
+        <meta name="viewport" content="width=device-width, initial-scale=0.2, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" /> 
 
         <script>
             // Libraries
@@ -18,7 +18,25 @@
             // Dashboard config and language files
             var ver_folder = '';
             // Dashboard library
-            var prg_folder = '../../src_core/';                
+            var prg_folder = '../../src_core/';      
+
+            // Set zoom level depending on screen height
+            var win = nw.Window.get();
+            nw.Screen.Init();
+            var sc = nw.Screen.screens;
+            get_zoomLevel = function(height) {
+                var zoom = 0;
+                if ((height >= 900) && (height < 1080)) {zoom = -0.4;
+                } else if ((height >= 720) && (height < 900)) { zoom = -1.9;
+                } else if ((height >= 600) && (height < 720)) { zoom = -2.2; 
+                } else if ((height >= 400) && (height < 600)) { zoom = -3.5;
+                } else if (height < 400) { zoom = -4;
+                };
+                return zoom;
+            }
+            win.zoomLevel = get_zoomLevel(sc[0].bounds.height);
+
+            console.log("screen height, width: ", sc[0].bounds.height, sc[0].bounds.width, ",  adjusted zoom level: ", win.zoomLevel); 
         </script>
         <script src="../../src_core/js/main-getlibs.js"></script>
     </head>
@@ -62,9 +80,9 @@
  
                 <div id="container_ser_lin" class="col-md-9" style="height: 600px;">
                     <div id="container_ser_lin_btns"></div>
-                    <div id="container_ser">
+                    <div id="container_ser_outer">
 
-                        <div class="col-md-12" id="container_casedeath_ser">
+                        <div class="col-md-12" id="container_ser">
                             <div class="row">                        
                                 <div class="col-md-12">
                                     <div id="buttons-case_ser"></div>
@@ -81,17 +99,17 @@
 
                         <div class="row">
                             <div class="col-md-12" id="container_rangechart">
-                                <p><span id="filters_qf-casedeath_ser_range"></span></p> 
-                                <div id="buttons-casedeath_ser_range"></div>
-                                <div id="chart-casedeath_ser_range" class="viz"></div>
-                                <div id="buttons_qf-casedeath_ser_range"></div>
+                                <p><span id="filters_qf-ser_range"></span></p> 
+                                <div id="buttons-ser_range"></div>
+                                <div id="chart-ser_range" class="viz"></div>
+                                <div id="buttons_qf-ser_range"></div>
                             </div>
                         </div>   
 
                     </div>
 
-                    <div id="container_lin">
-                        <div class="col-md-12" id="container_casedeath_lin">
+                    <div id="container_lin_outer">
+                        <div class="col-md-12" id="container_lin">
                             <div class="row">                        
                                 <div class="col-md-12">
                                     <div id="buttons-case_lin"></div>
