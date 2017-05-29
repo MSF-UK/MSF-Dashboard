@@ -1,23 +1,42 @@
  <!--
 	MSF Dashboard - index.html
-    (c) 2015-2016, MSF-Dashboard contributors for MSF
+    (c) 2015-2017, MSF-Dashboard contributors for MSF
     List of contributors: https://github.com/MSF-UK/MSF-Dashboard/graphs/contributors
     Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
 -->
 
 <html>
     <head>
-        <title>MSF Dashboard v1.0.0</title>
+        <title>MSF Dashboard v1.1</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+        <meta name="viewport" content="width=device-width, initial-scale=0.2, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" /> 
 
         <script>
-            // Librairies
+            // Libraries
             var lib_folder = '../src_core/lib/';
             // Dashboard config and language files
             var ver_folder = '';
-            // Dashboard librairy
-            var prg_folder = '../src_core/';                
+            // Dashboard library
+            var prg_folder = '../src_core/';         
+
+            // Set zoom level depending on screen height
+            var win = nw.Window.get();
+            nw.Screen.Init();
+            var sc = nw.Screen.screens;
+            get_zoomLevel = function(height) {
+                var zoom = 0;
+                if ((height >= 900) && (height < 1080)) {zoom = -0.4;
+                } else if ((height >= 720) && (height < 900)) { zoom = -1.9;
+                } else if ((height >= 600) && (height < 720)) { zoom = -2.2; 
+                } else if ((height >= 400) && (height < 600)) { zoom = -3.5;
+                } else if (height < 400) { zoom = -4;
+                };
+                return zoom;
+            }
+            win.zoomLevel = get_zoomLevel(sc[0].bounds.height);
+
+            console.log("screen height, width: ", sc[0].bounds.height, sc[0].bounds.width, ",  adjusted zoom level: ", win.zoomLevel);  
         </script>
         <script src="../src_core/js/main-getlibs.js"></script>
     </head>
@@ -30,56 +49,70 @@
         <div class="container-fluid">
 
             <!-- Header -->
-            <div id="header" class="row">
-                <h2 id="main_title"></h2>
-                <div class="col-md-12">  
-                    <p id="main_description"></p>
-                </div>                 
+            <div id="header" class="row"> 
+                <div class="col-md-9">  
+                    <p id="main_title"></p>
+                </div>
+                <div class="col-md-3">  
+                    <p id="main_description_new"></p>
+                </div>                
             </div>
+         
 
+		    <!-- Maps -->
             <div class="row">
-
-		<!-- Maps -->
-                <div class="col-md-12">
+                <div class="col-md-9">
                     <div id="chart-multiadm" class = "row"></div>
                 </div>
-            </div>
-
-        <!-- Other Graphs -->                                                                              
-            <div class="row">
-                <div class="col-md-2">
-                    <div id="buttons-disease"></div>
+            
+            <!-- Other Graphs --> 
+                <div class="col-md-3" id="disease_div">
+                    <div id="buttons-disease" class="viz"></div>
                     <div id="chart-disease" class="viz">
-                        <p style="height: 60px;"><span id="chart_disease_title"></span> <span class="filter"> </span></p>
+                        <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_disease_title"></span></p>
                     </div>
                 </div>  
-                <div id="containter_bar-lin" class="col-md-10">
-                    <div id="containter_bar-lin_tabs"></div>
-                    <div id="containter_bar">
-                        <div class="col-md-12" id="container_casedeath_bar">
+            </div>
+
+                                                                                        
+            <div class="row">
+ 
+                <div id="container_ser_lin" class="col-md-9" style="height: 600px;">
+                    <div id="container_ser_lin_btns"></div>
+                    <div id="container_ser_outer">
+
+                        <div class="col-md-12" id="container_ser">
                             <div class="row">                        
                                 <div class="col-md-12">
-                                    <div id="buttons-case_bar"></div>
-                                    <div id="chart-case_bar" class="viz">
-                                        <p style="height: 30px;"><span id="chart_case_bar_title"></span> <span class="filter"> </span></p>
-                                    </div>                         
+                                    <div id="buttons-case_ser"></div>
+                                    <div id="chart-case_ser" class="viz"></div>                         
                                 </div>
                             </div>
+
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div id="chart-death_bar" class="viz"></div>
+                                    <div id="chart-death_ser" class="viz"></div>
                                 </div>
                             </div>                                                    
-                        </div>  
+                        </div> 
+
+                        <div class="row">
+                            <div class="col-md-12" id="container_rangechart">
+                                <p><span id="filters_qf-ser_range"></span></p> 
+                                <div id="buttons-ser_range"></div>
+                                <div id="chart-ser_range" class="viz"></div>
+                                <div id="buttons_qf-ser_range"></div>
+                            </div>
+                        </div>   
+
                     </div>
-                    <div id="containter_lin">
-                        <div class="col-md-9" id="container_casedeath_lin">
+
+                    <div id="container_lin_outer">
+                        <div class="col-md-12" id="container_lin">
                             <div class="row">                        
                                 <div class="col-md-12">
                                     <div id="buttons-case_lin"></div>
-                                    <div id="chart-case_lin" class="viz">
-                                        <p style="height: 30px;"><span id="chart_case_lin_title"></span></p>
-                                    </div>                         
+                                    <div id="chart-case_lin" class="viz"></div>                         
                                 </div>
                             </div>
                             <div class="row">
@@ -88,25 +121,28 @@
                                 </div>
                             </div>                                                    
                         </div>
-                        <div class="col-md-3">
-                            <div id="buttons-year"></div>
-                            <div id="chart-year" class="viz">
-                                <p style="height: 45px;"><span id="chart_year_title"></span> <span class="filter"> </span></p>
-                            </div>
-                        </div>    
                     </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+                    <div id="buttons-year"></div>
+                    <div id="chart-year" class="viz">
+                        <p style="margin-top: 10px; margin-bottom: 5px;"><span id="chart_year_title"></span></p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Datatable -->
+            <div class="row">
+                <div class="col-md-12" id="container_table">
+                    <p><a id="more-table"></a></p>
+                    <div id="container-table" hidden="true"></div>
                 </div>
             </div>
 
-        <!-- Datatable -->
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="row">
-                        <p><a id="more-table"></a></p>
-                        <div id="container-table" hidden="true"></div>
-                    </div>
-                </div>
-            </div>
         
         <!-- Menu -->
         <div class="row">
