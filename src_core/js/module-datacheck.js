@@ -26,7 +26,7 @@
  * @requires index.html
  * @requires lang/module-lang.js
  * @requires js/main-loadfiles.js
- * @todo The distinction between the two function (data check and processing) could be made in futur versions.
+ * @todo The distinction between the two function (data check and processing) could be made in future versions.
  **/
  
 var module_datacheck = {};
@@ -135,7 +135,6 @@ function toTitleCase(str){
  * @todo Should be broken down in smaller pieces.
  */
 module_datacheck.dataprocessing = function(){
-	//console.log("in module_datacheck.dataprocessing");
 	// Test Value 
 	/**
 	 Defines datacheck tests on values.<br>
@@ -226,26 +225,20 @@ epiwk: function(rec,key,none){
 			var cond_1 = !(valuelist.indexOf(value) == -1);
 			return cond_1;
 		},
-		ingeometry: function(rec,key,option){			//rec=single medical record, e.g. key='admN1', e.g. option='none'
-			  
-			var keylist = g.geometry_keylist;			//keylist = list of adms e.g. admN1, admN2, admN3
-			var count = g.geometry_levellist[key];		//count = geometry level number e.g. 0, 1, 2
-			//console.log("ingeometry: ", key, count);
-
-			
+		ingeometry: function(rec,key,option){			  
+			var keylist = g.geometry_keylist;			
+			var count = g.geometry_levellist[key];		
 
             if(option == 'normalize'){      
                 var loc_current = toTitleCase(rec[g.medical_headerlist[key]].trim().split('_').join(' '));
             }else{
                 var loc_current = rec[g.medical_headerlist[key]].trim().split('_').join(' ');
             }
-            //console.log(key, " loc_current 1: ", loc_current);
 
 			if (g.new_layout) {	
 
                 var pos = g.viz_layer_pos[key];
                 var depth = g.viz_layer_pos[key].split('.').length-1;
-				//console.log(key, g.viz_layer_pos[key], "depth = ", depth);
 				while(depth > 0){			//add names of higher levels into full g.medical_loclists name
                     depth--;
                     pos = pos.substring(0, pos.lastIndexOf("."));
@@ -255,14 +248,12 @@ epiwk: function(rec,key,none){
                     		name = lyr;
                     	}
                     } 
-                    //console.log("name: ", name, rec[name]);
                     if(option == 'normalize'){      
                         loc_current = toTitleCase(rec[g.medical_headerlist[name]].trim().split('_').join(' '))+', '+loc_current;
                     }else{
                         loc_current = rec[g.medical_headerlist[name]].trim().split('_').join(' ')+', '+loc_current;
                     }
                 }
-                //console.log(key, " loc_current: ", loc_current);
                 
                 var cond_1 = !(g.geometry_loclists[key].indexOf(loc_current) == -1);  	//true = loc_current is in list of geojson adm names
 				if (!(cond_1)) {
@@ -270,14 +261,10 @@ epiwk: function(rec,key,none){
 					var shared_attr_lists = module_datacheck.getSharedAttributes();
 					for (var i=0; i<=shared_attr_lists.length-1; i++) {
 						shared_attr = shared_attr_lists[i];
-						//console.log("shared_attr: ", shared_attr);
 						if (shared_attr.indexOf(key) != -1) {				//if not in list but shares its attributes
-							//console.log(key, " in ", shared_attr);
 							shared_attr.forEach(function(sh_key) {			//for each shared attribute
-								//console.log(sh_key, key, shared_attr);
 								if ((sh_key!=key) && (g.geometry_loclists[sh_key].indexOf(loc_current) != -1)) {	//check if loc_current is in that list; if it is then don't consider it empty geometry
 									cond_1a = true;
-									//cond_1 = true;
 								};
 							});
 						};
@@ -286,7 +273,6 @@ epiwk: function(rec,key,none){
 
 				var cond_2 = g.medical_loclists[key].indexOf(loc_current) == -1;		//true = loc_current is not in medical locations list (because list not yet populated)
 				if (cond_1 && cond_2) {		//checking if loc_current is in geojson and not yet in medical locations list
-					//console.log(key, ": ", loc_current);
 					g.medical_loclists[key].push(loc_current);
 					g.medical_loclists.all.push(loc_current);
 				};
@@ -304,79 +290,13 @@ epiwk: function(rec,key,none){
 	            var cond_1 = !(g.geometry_loclists[key].indexOf(loc_current) == -1);  	//true = loc_current is in list of geojson adm names
 				var cond_2 = g.medical_loclists[key].indexOf(loc_current) == -1;		//true = loc_current is not in medical locations list (because list not yet populated)
 				if(cond_1 && cond_2){		//checking if loc_current is in geojson and not yet in medical locations list
-					//console.log(loc_current, " in ", key);
 					g.medical_loclists[key].push(loc_current);
 					g.medical_loclists.all.push(loc_current);
 				}    
 
             }
 
-            
-
-
-            /*} else {
-            	//console.log("key != hosp");
-                //var count = key2num;
-                if(option == 'normalize'){      
-                    var loc_current = toTitleCase(rec[g.medical_headerlist[key]].trim().split('_').join(' '));
-                }else{
-                    var loc_current = rec[g.medical_headerlist[key]].trim().split('_').join(' ');
-                }
-                //console.log("loc_current = ", loc_current);
-                //console.log("count = ", count);
-                while(count > 0){
-                    count--;
-                    if(option == 'normalize'){      
-                        loc_current = toTitleCase(rec[g.medical_headerlist[keylist[count]]].trim().split('_').join(' '))+', '+loc_current;
-                    }else{
-                        loc_current = rec[g.medical_headerlist[keylist[count]]].trim().split('_').join(' ')+', '+loc_current;
-                    }
-                }
-                var cond_1 = !(g.geometry_loclists[key].indexOf(loc_current) == -1);  	//true = loc_current is in list of geojson adm names
-				var cond_2 = g.medical_loclists[key].indexOf(loc_current) == -1;		//true = loc_current is not in medical locations list (because list not yet populated)
-
-				if(cond_1 && cond_2){		//checking if loc_current is in geojson and not yet in medical locations list
-					g.medical_loclists[key].push(loc_current);
-					g.medical_loclists.all.push(loc_current);
-				} 
-            }*/
-
-
-
-            //HEIDI - original code below:
-			/*if(option == 'normalize'){
-				var loc_current = toTitleCase(rec[g.medical_headerlist[key]].trim().split('_').join(' '));
-			}else{				
-				var loc_current = rec[g.medical_headerlist[key]].trim().split('_').join(' ');
-			}
-			//console.log("ingeometry: ", loc_current); 
-			while(count > 0){
-				count--;
-				if(option == 'normalize'){
-					loc_current = toTitleCase(rec[g.medical_headerlist[keylist[count]]].trim().split('_').join(' '))+', '+loc_current;
-				}else{
-					loc_current = rec[g.medical_headerlist[keylist[count]]].trim().split('_').join(' ')+', '+loc_current;
-				}
-			}*/
-			//console.log("ingeometry: ", loc_current);  //loc_current= current location name, e.g. 'Yoni' or 'Kalansagoia, Bassaia MCHP' - adds in name and comma for each admin level
-			//var cond_1 = !(g.geometry_loclists[key].indexOf(loc_current) == -1);  	//true = loc_current is in list of geojson adm names
-			//var cond_2 = g.medical_loclists[key].indexOf(loc_current) == -1;		//true = loc_current is not in medical locations list (because list not yet populated)
-			//return cond_1;
-
-			/*if (key=='hosp') {
-				console.log(loc_current, cond_1, cond_2, key, g.geometry_loclists[key]);
-			}
-			//console.log("ingeometry: ", cond_1, cond_2);
-			if(cond_1 && cond_2){		//checking if loc_current is in geojson and not yet in medical locations list
-				g.medical_loclists[key].push(loc_current);
-				g.medical_loclists.all.push(loc_current);
-			} else {
-				//console.log("Issue with: ", loc_current, " for ", key, cond_1, cond_2);
-			}*/
-			//console.log("end of ingeometry ", cond_1);
-			//return cond_1;
 			if (g.new_layout) {
-				//if (!(cond_1 || cond_1a)) {console.log("ingeometry failed: ", key, rec, g.geometry_loclists[key], loc_current, cond_1, cond_1a)};
 				return cond_1 || cond_1a;
 			} else {
 				return cond_1;
@@ -384,17 +304,11 @@ epiwk: function(rec,key,none){
 			
 		},
 		empty: function(rec,key,none){
-			//console.log(g.medical_headerlist);
-			//console.log(key, rec[g.medical_headerlist[key]], " check if empty: ", rec);
 			if(rec[g.medical_headerlist[key]] == undefined || rec[g.medical_headerlist[key]] == '_NA'){
 				var cond_1 = true;
 			}else{
 				var cond_1 = rec[g.medical_headerlist[key]] == '';
 			}
-
-			/*if ((key=='pathologie') || (key=='disease')) {
-				console.log(key, rec[g.medical_headerlist[key]], " check if empty: ", rec, cond_1);
-			}*/
 			return cond_1;
 		},
 		none: function(rec,key,none){
@@ -426,7 +340,7 @@ epiwk: function(rec,key,none){
 		duplicate: function(rec) {
 			var key = '';
 			g.module_datacheck.definition_record.forEach(function(check) {
-				key += rec[check.key] + ";";			//'key' here appends values of all attributes in definition_record into string
+				key += rec[check.key] + ";";			//'key' appends values of all attributes in definition_record into string
 			});
 			if (!uniquereclist[key]){					//check if 'key' exists as element of object
 				uniquereclist[key] = true;		
@@ -571,33 +485,27 @@ epiwk: function(rec,key,none){
 	 * @alias module:module_datacheck~completenessCheck
 	 */
 	module_datacheck.completenessCheck = function(rec) {
-		//console.log("in completenessCheck 1 ", rec);
 
 		addToCompletenessRecord = function(temp_loc) {
 			var temp_key = rec[g.medical_headerlist.epiwk] + temp_loc;	//add epiweek to beginning of string
-			var temp_loc2 = temp_loc.substring(2, temp_loc.length);			//remove ',' at beginning of string
-			//console.log(g.geometry_subnum);
-			//console.log("addToCompletenessRecord : ", temp_key, g.geometry_subnum[temp_loc2]);
+			var temp_loc2 = temp_loc.substring(2, temp_loc.length);		//remove ',' at beginning of string
 
-		 	if(!(g.medical_completeness[temp_key])){			//if its not already in g.medical_completeness
-				g.medical_completeness[temp_key] = {			//then add it in 
+		 	if(!(g.medical_completeness[temp_key])){			//if not already in g.medical_completeness
+				g.medical_completeness[temp_key] = {			//then add it 
 					admNx: temp_loc2,
 					epiwk: rec[g.medical_headerlist.epiwk],
 					value: 1/ g.geometry_subnum[temp_loc2]
 				};
-			}else{												//if its already in g.medical_completeness
-				//console.log("  before: ", g.medical_completeness[temp_key].value);
-				g.medical_completeness[temp_key].value += 1/ g.geometry_subnum[temp_loc2];	//then add in the value
+			}else{												//if already in g.medical_completeness
+				g.medical_completeness[temp_key].value += 1/ g.geometry_subnum[temp_loc2];	//then add in value
 			}
-			//console.log("  after: ", g.medical_completeness[temp_key].value);
 
 		}
-
 
 		var temp_loc = '';
 
 		if (g.new_layout) {		
-			var top_layer = module_multiadm.getTopLayer();				//create single geometry name in format admN1, admN2 etc.
+			var top_layer = module_multiadm.getTopLayer();				//create single geometry name in format 'admN1, admN2' etc
 			if(g.module_datacheck.definition_value[top_layer].setup == 'normalize'){		
 				temp_loc += ', ' + toTitleCase(rec[g.medical_headerlist[top_layer]].trim().split('_').join(' '));
 			}else{
@@ -638,8 +546,7 @@ epiwk: function(rec,key,none){
 			}
 
 		} else {
-			g.geometry_keylist.forEach(function(key,keynum) {		//create single geometry name in format admN1, admN2 etc.
-			//console.log(key, keynum);
+			g.geometry_keylist.forEach(function(key,keynum) {		//create single geometry name in format 'admN1, admN2' etc
 				if(g.module_datacheck.definition_value[key].setup == 'normalize'){		
 					temp_loc += ', ' + toTitleCase(rec[g.medical_headerlist[key]].trim().split('_').join(' '));
 				}else{
@@ -650,18 +557,13 @@ epiwk: function(rec,key,none){
 
 		var temp_key = rec[g.medical_headerlist.epiwk] + temp_loc;  //add epiweek to beginning of string
 		temp_loc = temp_loc.substring(2, temp_loc.length);			//remove ',' at beginning of string
-		//console.log("in completenessCheck 2: ", temp_key);
 
-		if(!(g.medical_completeness[temp_key])){					//if its not already in g.medical_completeness
-			//console.log("put it in g.medical_completeness: ", temp_key);
-			g.medical_completeness[temp_key] = {					//then add it in
+		if(!(g.medical_completeness[temp_key])){					//if not already in g.medical_completeness
+			g.medical_completeness[temp_key] = {					//then add it
 				admNx: temp_loc,
 				epiwk: rec[g.medical_headerlist.epiwk],
 				value: 1
 			};
-			//g.medical_completeness[temp_adm].push(medical_completeness[temp_adm][temp_key]);
-		
-			//console.log("in completenessCheck 3");
 
 			if (g.new_layout) {					//move through all parent layers to sum up completeness
 				var top_layer = module_multiadm.getTopLayer();		
@@ -670,18 +572,15 @@ epiwk: function(rec,key,none){
 				var lyrs = [top_layer];   //add up completenessCheck for all parent layers
 
 				for (var i=0; i<=lyrs.length-1; i++) {
-					//console.log("is parent?", module_multiadm.isParent(lyrs[i]));
 					if(g.module_datacheck.definition_value[lyrs[i]].setup == 'normalize'){		
 						temp_loc += ', ' + toTitleCase(rec[g.medical_headerlist[lyrs[i]]].trim().split('_').join(' '));
 					}else{
 						temp_loc += ', ' + rec[g.medical_headerlist[lyrs[i]]].trim().split('_').join(' ');
 					}
 					if (module_multiadm.isParent(lyrs[i])) {		//if has child
-						//temp_loc += ', ' + rec[g.medical_headerlist[lyrs[i]]].trim().split('_').join(' '); 
 						var children = module_multiadm.getChildren(lyrs[i]);
 
 						for (var j=0; j<=children.length-1; j++) {
-							//console.log(children[j]);
 							
 							if (module_multiadm.isParent(children[j])) {
 								if(g.module_datacheck.definition_value[children[j]].setup == 'normalize'){		
@@ -691,32 +590,25 @@ epiwk: function(rec,key,none){
 								}
 
 							} else {
+								//if (g.data_spec[children[j]]) {			//list of locations to include
 								if (g[children[j]]) {			//list of locations to include
-									//console.log("hospital list: ", g[children[j]]);
+									//if (g.data_spec[children[j]].indexOf(rec[g.medical_headerlist[children[j]]]) != -1) {
 									if (g[children[j]].indexOf(rec[g.medical_headerlist[children[j]]]) != -1) {
-
 										addToCompletenessRecord(temp_loc);
-
 									}
-
-								} else {
-									//get locations to exclude (from siblings lists)
+								} else { 						//get locations to exclude (from siblings lists)
 									var exclude_locs = [];
-									//console.log("children: ", children);
 									if (children.length>1) {
 										for (var k=0; k<=children.length-1; k++) {
 											if (children[j] != children[k]) {
-												//console.log("children[k,j] = ", children[k], children[j]);
+												//if (g.data_spec[children[k]]) {
 												if (g[children[k]]) {
-													//console.log(g[children[k]]);
+													//exclude_locs = exclude_locs.concat(g.data_spec[children[k]]);
 													exclude_locs = exclude_locs.concat(g[children[k]]);
-													//console.log(exclude_locs);
 												}
 											}
 										}
 									}
-									//console.log(exclude_locs);
-									//write up - but exclude hospitals here
 									if (exclude_locs.indexOf(rec[g.medical_headerlist[children[j]]]) == -1) {
 										addToCompletenessRecord(temp_loc);
 									}
@@ -738,21 +630,7 @@ epiwk: function(rec,key,none){
 							temp_loc += ', ' + rec[g.medical_headerlist[g.geometry_keylist[j]]].trim().split('_').join(' ');
 						}
 					}
-
 					addToCompletenessRecord(temp_loc);
-					/*var temp_key = rec[g.medical_headerlist.epiwk] + temp_loc;	//add epiweek to beginning of string
-					temp_loc = temp_loc.substring(2, temp_loc.length);			//remove ',' at beginning of string
-					//console.log("in completenessCheck 4: ", temp_key)
-
-				 	if(!(g.medical_completeness[temp_key])){			//if its not already in g.medical_completeness
-						g.medical_completeness[temp_key] = {			//then add it in 
-							admNx: temp_loc,
-							epiwk: rec[g.medical_headerlist.epiwk],
-							value: 1/ g.geometry_subnum[temp_loc]
-						};
-					}else{												//if its already in g.medical_completeness
-						g.medical_completeness[temp_key].value += 1/ g.geometry_subnum[temp_loc];	//then add in the value
-					}*/
 				}
 
 			}
@@ -761,63 +639,57 @@ epiwk: function(rec,key,none){
 
 	var empty_recs = [];
 
-	module_datacheck.getSharedAttributes = function() {    //returns list of shared attributes
-		//console.log("in getSharedAttributes ", g.medical_headerlist);
+	module_datacheck.getSharedAttributes = function() {    //returns list of shared attributes, e.g. admN2 & hosp both share PHU
 		var shared = [];
 		for (var head1 in g.medical_headerlist) {
-			//console.log("head1 = ", head1);
 			var shared_list = [];			
 			for (var head2 in g.medical_headerlist) {
-				//console.log("head2 = ", head2);
-				if ((g.medical_headerlist[head1] == g.medical_headerlist[head2]) && (head1 != head2)) {					
-					//console.log(g.medical_headerlist[head1], g.medical_headerlist[head2], temp_shared);
+				if ((g.medical_headerlist[head1] == g.medical_headerlist[head2]) && (head1 != head2)) {		
 					shared_list.push(head2); 				
 				}
 			}
-			//console.log(head1, shared_list);
 			if (shared_list.length>0) {	
 				shared_list.push(head1);
 				shared_list.sort();
-				//console.log("shared_list: ", shared_list);
 
 				if ((JSON.stringify(shared)).indexOf(JSON.stringify(shared_list)) == -1) {
-					//console.log(temp_share_list, shared_list, temp_share_list.indexOf(shared_list));
 					shared.push(shared_list);
 				};
 				
 			}		
 		}
-		//console.log("shared attributes: ", shared);
 		return shared;
 	};
-
 	var shared_attr_lists = module_datacheck.getSharedAttributes();
 
+	var combined_data=[];
+	if (g.data_spec) {
+		if (g.data_spec.combine_data) {
+			for (var i=0; i<=g.data_spec.combine_data.length-1; i++) {
+				combined_data.push(g.data_spec.combine_data[i].geo_name);
+			};
+		};
+	};
 
-	//console.log("g.medical_data = ", g.medical_data);
-	//console.log(g.medical_keylist);
 	// Data browse
 	g.medical_data.forEach(function(rec,recnum){		//for each record in medical_data
-		//console.log("in medical_data: ", recnum, rec);
-
 		var error_temp = false;
 		var empty_temp = true;
-
 		var test_duplicate = module_datacheck.testrecord.duplicate(rec);
 		module_datacheck.errorlogging(!(test_duplicate),'duplicate','',rec);
-
 
 		//For shared attributes, copy them to appropriate attribute heading
 		for (var i=0; i<=shared_attr_lists.length-1; i++) {
 			shared_attr = shared_attr_lists[i];
-			//console.log("shared_attr: ", shared_attr);
 			shared_attr.forEach(function(sh_key) {
-				//console.log(sh_key, shared_attr);
-				if (g[sh_key]) {				//if there is a list of names that are shared e.g. g.hosp 
-					//console.log(sh_key);
-					if (g[sh_key].indexOf(rec[g.medical_headerlist[sh_key]]) != -1) {
+				//console.log(g.data_spec[sh_key]);
+				//if (g.data_spec[sh_key]) {				//if there is a list of names that are shared e.g. g.hosp 
+				if (g[sh_key]) {				
+					//console.log(g.data_spec[sh_key], rec[g.medical_headerlist[sh_key]]);
+					//if (g.data_spec[sh_key].indexOf(rec[g.medical_headerlist[sh_key]]) != -1) {
+					if (g[sh_key].indexOf(rec[g.medical_headerlist[sh_key]]) != -1) {;
 						rec[sh_key] = rec[g.medical_headerlist[sh_key]];
-						//console.log(rec[g.medical_headerlist[sh_key]]);
+						//console.log(recnum, rec[sh_key]);		//should list all hospitals
 					};
 				}
 			});
@@ -825,42 +697,33 @@ epiwk: function(rec,key,none){
 
 
 		g.medical_keylist.forEach(function(key){				//for each column/attribute in data
-			//console.log("key in medical_keylist: ", key);
+
+			if (combined_data.indexOf(rec[g.medical_headerlist[key]])!=-1) {	//account for data records that should be added into a geometry with a different name
+				for (var i=0; i<=g.data_spec.combine_data.length-1; i++) {
+					if ((g.data_spec.combine_data[i].geo_name==rec[g.medical_headerlist[key]]) && (g.data_spec.combine_data[i].geo_level==key)) {
+						rec[g.medical_headerlist[key]] = g.data_spec.combine_data[i].add_into;
+					};
+				};
+			};
 
 			var is_empty = module_datacheck.testvalue.empty(rec,key,'none');
 			if (is_empty) {														//if its empty log it
-				//console.log("is empty");
 				module_datacheck.errorlogging(!(is_empty),'empty',key,rec);
 				if(g.dev_defined.ignore_empty == false){error_temp = true;}		//if ignore_empty is true then don't add it 
 			} else {
-				//console.log("not empty");
 				if (key!=='disease' || !g.module_datacheck.diseasecheck) {  
-					//console.log(g.module_datacheck.definition_value[key].test_type, rec, key);
 					var test_value = module_datacheck.testvalue[g.module_datacheck.definition_value[key].test_type](rec,key,g.module_datacheck.definition_value[key].setup);
-					//console.log("test_value: ", test_value);
 					module_datacheck.errorlogging(test_value,g.module_datacheck.definition_value[key].test_type,key,rec);
-					//console.log("done errorlogging");
 					
-					if(!test_value){
-						//console.log("Errors in record number ", recnum, ": ", key, test_value, rec);
+					if (!test_value) {
 						error_temp = true;
-						/*if(g.dev_defined.ignore_errors == true){			//HEIDI - added this global variable here
-							//console.log("fix record here num ", recnum, " here...");
-							//console.log("    fix point at: ", g.medical_headerlist[key]);
-							//console.log("    value was ", g.medical_data[recnum][g.medical_headerlist[key]]);
-							g.medical_data[recnum][g.medical_headerlist[key]] = '';
-							//console.log("    value is  ", g.medical_data[recnum][g.medical_headerlist[key]]);
-						}*/
-						//console.log("medical_data: ", g.medical_data);
-					}else{
+					} else {
 						empty_temp = false;
 					}
 				}
 
 			}
 		});
-
-		//console.log("ok 1");
 
 		if(!(module_datacheck.testvalue.empty(rec,'epiwk','none')) && module_datacheck.testvalue[g.module_datacheck.definition_value['epiwk'].test_type](rec,'epiwk',g.module_datacheck.definition_value['epiwk'].setup)){
 			if(g.medical_yearlist.indexOf(rec[g.medical_headerlist.epiwk].split('-')[0]) == -1){
@@ -871,31 +734,21 @@ epiwk: function(rec,key,none){
 			}			
 		}
 
-		//console.log("ok 2");
-
 		if(!error_temp){
-			//console.log("about to do completenessCheck");
 			module_datacheck.completenessCheck(rec);
 		}
 
-		//console.log("ok 3");
 
 		// Surveillance
 		//------------------------------------------------------------------------------------
-		// If disease array is provided empty		//HEIDI - check word disease/pathologie below - other dashboards work with 'disease'
-		//console.log("should be putting in disease list below");
+		// If disease array is provided empty
 		if(!(module_datacheck.testvalue.empty(rec,'disease','none')) && (g.medical_diseaseslist.indexOf(rec[g.medical_headerlist.disease].trim()) == -1) && g.module_datacheck.diseasecheck ){
-			//console.log("adding in disease: ", toTitleCase(rec[g.medical_headerlist.disease].trim().split('_').join(' ')));
 			g.medical_diseaseslist.push(toTitleCase(rec[g.medical_headerlist.disease].trim().split('_').join(' ')));
 		}
-
-		//console.log("ok 4");
 
 		if(empty_temp){
 			empty_recs.push(recnum);
 		}
-
-		//console.log("ok 5");
 		
 	});
 
@@ -929,8 +782,7 @@ module_datacheck.showlog = function(){
     }
     html += '<button class="col-md-6" onclick=\'ShowEmpty()\'>'+temp_text+'</button>';
     html += '<button class="col-md-6" onclick=\'CopyText("datacheck_pre")\'>'+g.module_lang.text[g.module_lang.current].datacheck_copy+'</button></div>';
-	//html += '<p><br>'+ g.module_lang.text[g.module_lang.current].datacheck_key +'</a></p>';
-
+	
     $('#datalog').html(html);
 }
 
@@ -1026,8 +878,6 @@ module_datacheck.interaction = function(){
             $('#more-datacheck').html(g.module_lang.text[g.module_lang.current].datacheck_more);
         }
     });
-
-    //$('#more-datacheck').click();
 }
 
 // 2) Display

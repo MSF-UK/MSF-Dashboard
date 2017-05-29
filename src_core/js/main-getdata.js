@@ -50,7 +50,7 @@ module_getdata.load_propagate = function(){
     var count = g.module_getdata.count;
 
     if(count[1] >= getdata.datasources[getdata.datatypes[count[0]]].length && (count[0] >= getdata.datatypes.length - 1)){
-        console.log('main-getdata.js ~l70: Your last source has been read.');
+        console.log('main-getdata.js: Your last source has been read.');
         generate_display();
 
     }else{
@@ -78,7 +78,7 @@ module_getdata.load_propagate = function(){
               }
           }
       }
-      console.log('main-getdata.js ~l70: Current: ' + current_datatype + ' - ' + current_dataname);
+      console.log('main-getdata.js: Current: ' + current_datatype + ' - ' + current_dataname);
       var current_datasource = getdata[current_datatype][current_dataname];
       switch(current_datasource.method){
             case 'd3':
@@ -249,43 +249,34 @@ module_getdata.process_geometry = function(){
      * @alias module:g.geometry_subnum
      */
     g.geometry_subnum = {};
-    g.geometry_keylist.forEach(function(key,keynum){   //work through [admN1, admN2, hosp]
-        //console.log("calculate geometry_subnums: ", key, keynum);
+    g.geometry_keylist.forEach(function(key,keynum){ 
         g.geometry_levellist[key] = keynum;     
         g.geometry_loclists[key] = [];
-        g.geometry_data[key].features.forEach(function(f){  //for each feature in the geometry file
+        g.geometry_data[key].features.forEach(function(f){  
             g.geometry_loclists[key].push(f.properties.name.trim());    //add it into the geometry_loclists
             g.geometry_loclists.all.push(f.properties.name.trim());
-
-            
+          
+            // Compute number of Sub-Areas in Area
             if (g.new_layout) {
-                // Compute number of Sub-Area in Area
-                //if (keynum == g.geometry_keylist.length - 1) {        //if it is lowest geometry - i.e. if it has no children
-                if (!(module_multiadm.hasChildren(key))) {              //if it is lowest geometry - i.e. if it has no children
-                //if (keynum==1) {
-                    //console.log("has no children layers: ", key, keynum, g.geometry_keylist.length, g.geometry_keylist);
-                    g.geometry_subnum[f.properties.name.trim()] = 1 ;   //full geometry name = 1 subarea/itself (e.g. temp_loc=admN1,admN2,admN3)
-
+                
+                if (!(module_multiadm.hasChildren(key))) {       //if it is lowest geometry - i.e. if it has no children
+                    g.geometry_subnum[f.properties.name.trim()] = 1 ;   //has 1 subarea/itself
                     var temp_key = module_multiadm.getParent(key);
                     var temp_loc = '';
-                    //var depth2 = 
                     while (temp_key != '') {
                         temp_loc += ', ' + f.properties.name.trim().split(', ')[g.geometry_levellist[temp_key]].split('_').join(' ');  //add parent name to beginning
                         g.geometry_subnum[temp_loc.substring(2, temp_loc.length)]++;    //add to g.geometry_subnum
                         temp_key = module_multiadm.getParent(temp_key);                 //get next parent up
                     }
-                    //temp_loc = temp_loc.substring(2, temp_loc.length);
-                    //g.geometry_subnum[temp_loc]++;
 
                 } else {      //if it is not lowest geometry
-                    //console.log("has children layers: ", key, keynum, g.geometry_keylist.length, g.geometry_keylist);
-                    if (!(g.geometry_subnum[f.properties.name.trim()])) {        //HEIDI - TRY THIS OUT, I THINK ITS CORRECT TO KEEP IN IF
+                    if (!(g.geometry_subnum[f.properties.name.trim()])) {       
                         g.geometry_subnum[f.properties.name.trim()] = 0 ;
                     }
                 }
 
-            } else {    //not g.new_layout
-                // Compute number of Sub-Area in Area
+            } else {    
+
                 if (keynum == g.geometry_keylist.length - 1) {        //if it is lowest geometry
                     g.geometry_subnum[f.properties.name.trim()] = 1 ;       //full geometry name = 1 subarea/itself (e.g. temp_loc=admN1,admN2,admN3)
                     var temp_loc = '';
@@ -296,10 +287,8 @@ module_getdata.process_geometry = function(){
                         temp_loc = temp_loc.substring(2, temp_loc.length);
                         g.geometry_subnum[temp_loc]++;
                     }
-                    //console.log(temp_loc);
 
                 } else {      //if it is not lowest geometry
-                    //console.log("has children layers: ", key, keynum, g.geometry_keylist.length, g.geometry_keylist);
                     g.geometry_subnum[f.properties.name.trim()] = 0 ;
                 }
 
@@ -336,7 +325,7 @@ module_getdata.process_population = function(){
      * @type {Object.<Array.<String>>}
      * @alias module:g.population_databyloc
      */
-    g.module_population.population_databyloc = {};   //HEIDI - normally here is only 1 value per location, need to change this
+    g.module_population.population_databyloc = {};      //Object to account for new population data format of multiple years of pop defined
 
     /**
      * Stores keys of each administrative level extracted from the {@link module:g.module_getdata.population}.
@@ -348,17 +337,14 @@ module_getdata.process_population = function(){
      */
     g.module_population.population_keylist = Object.keys(g.module_getdata.population);
     if (g.module_population.pop_new_format) {                               //Note: hardcoding of admNx here
-        //console.log("PREPPING NEW POPULATION DATA FORMAT");
+        //Accounting for new population data format 
         g.module_population.population_keylist.forEach(function(key){
             g.module_population.population_loclists[key] = [];
             g.module_population.population_databyloc[key] = {};
             g.population_data[key].forEach(function(f){
-                //console.log("f = ", f);
                 g.module_population.population_loclists[key].push(f[g.module_population.pop_headerlist.admNx.trim()]);
-                //console.log("f[g.population_headerlist.admNx.trim()] = ", f[g.population_headerlist.admNx.trim()]);
                 temp={};
                 for (pop_yr in g.module_population.pop_headerlist.pop) {
-                    //console.log(g.module_population.pop_headerlist.pop, pop_yr, g.module_population.pop_headerlist.pop[pop_yr], parseInt(f[pop_yr]));
                     temp[pop_yr] = parseInt(f[pop_yr]);
                 };
                 g.module_population.population_databyloc[key][f[g.module_population.pop_headerlist.admNx.trim()]] = temp;
@@ -369,8 +355,6 @@ module_getdata.process_population = function(){
             g.module_population.population_loclists[key] = [];
             g.module_population.population_databyloc[key] = {};
             g.population_data[key].forEach(function(f){
-                //g.module_population.population_loclists[key].push(f[g.module_population.pop_headerlist.admNx.trim()]);
-                //g.module_population.population_databyloc[key][f[g.module_population.pop_headerlist.admNx.trim()]] = parseInt(f[g.module_population.pop_headerlist.pop]);
                 g.module_population.population_loclists[key].push(f[g.population_headerlist.admNx.trim()]);
                 g.module_population.population_databyloc[key][f[g.population_headerlist.admNx.trim()]] = parseInt(f[g.population_headerlist.pop]);
             
@@ -516,7 +500,7 @@ module_getdata.load_medical_xls = function() {
         return sum;
     }
     g.medical_data = medical_data;
-    console.log("g.medical_data = ", g.medical_data); 
+    //console.log("g.medical_data = ", g.medical_data); 
     module_getdata.afterload_medical_d3(medical_data);
 
 };
@@ -665,9 +649,7 @@ module_getdata.afterload_medical_d3 = function(data) {
 
   // Load Optional Module: module-datacheck.js
   module_datacheck.dataprocessing();
-  //console.log("done dataprocessing");
   module_getdata.load_propagate();
-  //console.log("done load_propagate");
 };
 
 // KoBo

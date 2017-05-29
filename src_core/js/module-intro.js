@@ -88,39 +88,32 @@ module_intro.setup = function() {
     if (g.new_layout) {
         var keynum = 0;
         for (i=0; i<= g.module_intro.intro_order.length-1; i++) {
-            //console.log(i, g.module_intro.intro_order[i]);
 
             if (i==0) {
                 var steps = [{
                     element: g.module_intro.intro_order[0],
                     intro: g.module_lang.text[g.module_lang.current].intro_intro,
-                    //position: 'bottom'
                   }];
             } else if (g.module_intro.intro_order[i]=='menu') {
                 steps.push({
                     element: g.module_intro.intro_order[i],
                     intro: g.module_lang.text[g.module_lang.current]['intro_'+g.module_intro.intro_order[i]],
-                    //position: 'right'
                 });
                 keynum++;
-                //console.log(i, "=1", g.module_intro.intro_order[i]);
             } else {
-                // now 2 techniques for declaring intro elements:
+                // Two techniques for declaring intro elements:
                 //  1. defined within g.viz_definition in dev-defined.js as .display_intro_container, display_intro_position, text defined in module-lang.js
                 //  2. defined by g.module_intro.intro_order where element not found as a chart, so is assumed to be a container; position defined by g.module_intro.intro_position; text defined in module-lang.js
 
                 var def = false;
                 //1. if there is chart with this name
                 for (var chart_name in g.viz_definition) {
-                    //console.log(chart_name, g.viz_definition[chart_name]);
                     if (chart_name==g.module_intro.intro_order[i]) {
-                        //console.log("intro for chart: ", chart_name, g.viz_definition[chart_name], " = ", g.module_intro.intro_order[i]);
                         if (g.viz_definition[chart_name].display_intro_container) {
                             var element = '#' + g.viz_definition[chart_name].display_intro_container;
                         } else {
                             var element = '#chart-'+ chart_name;
                         }
-                        //console.log("element = ", element);
                         var intro = g.module_lang.text[g.module_lang.current]['intro_'+chart_name];
                         var position = g.viz_definition[chart_name].display_intro_position;
                         def = true;
@@ -130,8 +123,6 @@ module_intro.setup = function() {
 
                 //2. if there is a container with this name then select that
                 if (def==false) {
-                    //console.log("intro for container: ", g.module_intro.intro_order[i]);
-                    //console.log(g.module_intro.intro_position[g.module_intro.intro_order[i]]);
                     var element = '#'+ g.module_intro.intro_order[i];
                     var intro = g.module_lang.text[g.module_lang.current]['intro_'+g.module_intro.intro_order[i]];
                     for (j=0; j<=g.module_intro.intro_position.length-1; j++) {
@@ -148,17 +139,13 @@ module_intro.setup = function() {
                 }     
                 
                 keynum++;
-                //console.log(g.module_intro.intro_order[i], keynum);
                 g.module_intro.step[g.module_intro.intro_order[i]] = keynum;
-                //console.log(key, keynum);
                 steps.push({
                         element: element,
                         intro: intro,
                         position: position,
                 });
-                //console.log("in g.module_intro.step: ", element, steps);
-                //console.log("in g.module_intro.step: ", element, keynum, position);
-                //console.log(i, g.module_intro.intro_order[i]);
+
             }  
 
         } 
@@ -173,9 +160,7 @@ module_intro.setup = function() {
               }];
         var keynum = 0;
     	g.viz_keylist.forEach(function(key){
-            //console.log(keynum, key, g.viz_definition[key].display_intro_position);
             if(!(g.viz_definition[key].display_intro == 'none')){
-                //console.log(keynum, key, g.viz_definition[key].display_intro, " != none");
                 if(g.viz_definition[key].display_idcontainer){
                     var element = '#' + g.viz_definition[key].display_idcontainer;
                 }else{
@@ -183,19 +168,14 @@ module_intro.setup = function() {
                 }
                 keynum++;
                 g.module_intro.step[key] = keynum;
-                //console.log(key, keynum);
                 steps.push({
                         element: element,
                         intro: g.module_lang.text[g.module_lang.current]['intro_'+key],
                         position: g.viz_definition[key].display_intro
                 });
-                //console.log("in g.module_intro.step: ", element, steps);
-                //console.log("in g.module_intro.step: ", element, g.viz_definition[key].display_intro);
             }
     	});
     };
-    
-    //console.log("steps: ", steps);
     
 	g.module_intro.definition.setOptions({
 			steps: steps 
@@ -204,10 +184,8 @@ module_intro.setup = function() {
     if (g.new_layout) {        
         g.module_intro.definition.onbeforechange(function(element){
             for (i=0; i<=g.module_intro.intro_beforechange.length-1; i++) {
-                //console.log(i, g.module_intro.intro_beforechange[i]);
                 if (element.id==g.module_intro.intro_beforechange[i].element) {
                     $(g.module_intro.intro_beforechange[i].click).click();
-                    //console.log(g.module_intro.intro_beforechange[i].element, g.module_intro.intro_beforechange[i].click);
                 }
             }
         });

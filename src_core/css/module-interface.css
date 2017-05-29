@@ -222,7 +222,7 @@
 }
 
 #menu_autoplay_new {
-    top: 180px;
+    top: 200px;
 }
 
 #menu_count{
@@ -239,7 +239,7 @@
 #menu_count_new {
     text-align: center;
     position: fixed;
-    top: 300px;
+    top: 320px;
     left: 2.5%;
     width: 7.5%;
     font-size:1.1em;
@@ -247,7 +247,7 @@
 }
 
 #menu_reset_new, #menu_reset_new.off{
-    top: 400px;
+    top: 500px;
     background-color: #cccccc;  /*#3160b2; */
     border: none;
     color: black;
@@ -267,7 +267,7 @@
 #menu_playtext{
     text-align: center;
     position: fixed;
-    top: 230px;
+    top: 250px;
     left: 2.5%;
     width: 7.5%;
     font-size:1.1em;
@@ -303,7 +303,7 @@
 }
 
 #menu_viewFilters {
-    top: 440px;
+    top: 540px;
 }
 
 .filters_btn {
@@ -342,7 +342,7 @@
 #filters_info{
     text-align: left;
     position: fixed;
-    top: 490px;
+    top: 580px;
     left: 1.0%;
     width: 12%;
     font-size:0.9em;

@@ -104,7 +104,12 @@ function generate_display() {
 
 	$('#loaddashboard').on('click',function(){
 		$('#modal').modal('hide');
-		main_loadfiles_readvar();
+		if (typeof main_loadfiles_readvar === "function") { 
+			main_loadfiles_readvar();			//re-loads variables that require g.module_lang.current - in case user changes language from default
+		};
+		if (typeof main_loadfiles_readcharts === "function") { 
+		    main_loadfiles_readcharts();		//re-loads variables that may require g.module_lang.current - in case user changes language from default
+		};
 		generateDashboard();
 	});
 

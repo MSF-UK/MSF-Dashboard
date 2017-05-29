@@ -128,9 +128,7 @@ g.module_colorscale.colors = {
 	Diverging: ['#DDDDDD','#1a9641','#a6d96a','#ffffbf','#fdae61','#d7191c'],
 	Qualitative: ['#DDDDDD','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33'], 
 	ReversedDiverging: ['#DDDDDD','#d7191c','#fdae61','#ffffbf','#a6d96a','#1a9641'],
-	Composite: ['#333333', '#17becf', '#bcbd22', '#428bca', '#f69318','#9467bd', '#1b9e77', '#66a61e'],   //HEIDI - should be in here!!! this is outputted in modal dialog
-	//Composite: ['#333333', '#17becf', '#bcbd22', '#1f78b4','#ff7f00','#cab2d6','#33a02c','#fb9a99','#fdbf6f','#6a3d9a','#a6cee3','#e31a1c','#b2df8a']
-	//Composite: ['#333333', '#17becf', '#bcbd22','#1b9e77','#d95f02','#7570b3','#e7298a','#66a61e','#e6ab02','#a6761d','#666666']
+	Composite: g.module_colorscale.userdefined_colors
 };
 
 /**
@@ -209,41 +207,34 @@ g.module_colorscale.scaletypecurrent = 'Jenks';
  * @alias module:module_colorscale.display
  */
 module_colorscale.display = function() {
-	//console.log("module_colorscale.display being run");
 
 	// Title
 	var html = '<div><p><b>'+g.module_lang.text[g.module_lang.current].colorscale_title+'</b></p>';
 
+	// Map units for old layout
 	if (!(g.new_layout)) {
-		//if(g.medical_datatype == 'surveillance'){html += '<div class="col-md-4">';}
 		html += '<div class="col-md-4">';
-		// Unit
 		html += '<p><table style="font-size:1em;">';
-
-			g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
-				if(unitnum == 0){
-					var text = g.module_lang.text[g.module_lang.current].colorscale_unitintro;
-				}else{
-					var text = '';
-				}
-				if(unit == g.module_colorscale.mapunitcurrent){
-					html += '<tr><td>'+text+' </td><td><input type="radio" name="group1" id="'+unit+'" value='+unitnum+' checked> '+unit+'</td></tr>';
-				}else{
-					html += '<tr><td>'+text+'</td><td><input type="radio" name="group1" id="'+unit+'" value='+unitnum+'> '+unit+'</td></tr>';
-				}
-			});
-			
+		g.module_colorscale.mapunitlist.forEach(function(unit,unitnum) {
+			if(unitnum == 0){
+				var text = g.module_lang.text[g.module_lang.current].colorscale_unitintro;
+			}else{
+				var text = '';
+			}
+			if(unit == g.module_colorscale.mapunitcurrent){
+				html += '<tr><td>'+text+' </td><td><input type="radio" name="group1" id="'+unit+'" value='+unitnum+' checked> '+unit+'</td></tr>';
+			}else{
+				html += '<tr><td>'+text+'</td><td><input type="radio" name="group1" id="'+unit+'" value='+unitnum+'> '+unit+'</td></tr>';
+			}
+		});		
 		html +=	'</table></p>';
-		//if(g.medical_datatype == 'surveillance'){html += '</div><div class="col-md-4">';}
 		html += '</div>';
-	}
-	
+	}	
 	
 	html += '<div class="col-md-4">';
 
 	// Colorscale mode
 	html += '<p><table style="font-size:1em;">';
-
 	g.module_colorscale.modelist.forEach(function(mode,modenum) {
 		if(modenum == 0){
 			var text = g.module_lang.text[g.module_lang.current].colorscale_modeintro;
@@ -260,8 +251,6 @@ module_colorscale.display = function() {
 	});
 
 	html +=	'</table></p>';
-
-	//if(g.medical_datatype == 'surveillance'){html += '</div><div class="col-md-4">';}
 	html += '</div><div class="col-md-4">'
 
 	// Colors and intervals
@@ -280,10 +269,7 @@ module_colorscale.display = function() {
 		if (f!==g.module_colorscale.scaletypecurrent) {html +='<option value="'+f+'">'+f+'</option>';};
 	});
 	html +='</p></select>';
-
-	//if(g.medical_datatype == 'surveillance'){html += '</div>';}
 	html += '</div>';
-
 	html += '</div></div>';
 
 	return html;
@@ -335,7 +321,6 @@ module_colorscale.changeMapColors = function() {
 
     // Duplicate from main-core.js
     function colorAccessor(d){
-        //console.log('from module-colorscale');
     	var col = g.module_colorscale.valuescurrent.length - 1;
         if(d || (!(d == undefined) && g.module_colorscale.mapunitcurrent == 'Completeness')){
             while ((d <= g.module_colorscale.valuescurrent[col]) && (col > 1)){
@@ -357,7 +342,6 @@ module_colorscale.changeMapColors = function() {
             .colorAccessor(colorAccessor); 
 	    g.viz_definition.multiadm.legend[adm].addTo(g.viz_definition.multiadm.maps[adm]);
     })
-    //console.log("ABOUT TO REDRAW ALL from module_colorscale.interaction...");
 	dc.redrawAll();	
 }
 
@@ -365,53 +349,14 @@ module_colorscale.interaction = function(){
 
 	// Reacts on color tone change
     $("#selectform1").on('change',function(){
-
 		g.module_colorscale.colorscurrent = $('#selectform1').val();
-
 		module_colorscale.changeMapColors();
-		//console.log("color scale type, selectform1, changed to (in module-colorscale): ", g.module_colorscale.colorscurrent);
-		/*if (g.viz_definition.multiadm.display_colors) {
-            var color_list = [];
-            g.viz_definition.multiadm.display_colors.forEach(function(num) {
-                color_list.push(g.module_colorscale.colors[g.module_colorscale.colorscurrent][num]);
-            });
-            var color_domain = [0,color_list.length - 1];
-        }
-
-        // Duplicate from main-core.js
-	    function colorAccessor(d){
-            //console.log('from module-colorscale');
-	    	var col = g.module_colorscale.valuescurrent.length - 1;
-	        if(d || (!(d == undefined) && g.module_colorscale.mapunitcurrent == 'Completeness')){
-	            while ((d <= g.module_colorscale.valuescurrent[col]) && (col > 1)){
-	                col--;
-	            }
-	        }else{
-	            col = 0;
-	        }
-	        return col;
-	    }
-
-	    // Updates the map
-		$('.legend').remove();
-	    g.geometry_keylist.forEach(function(adm) {
-	    	g.viz_definition.multiadm.charts[adm]
-	    		.colors(color_list)
-	    		//.valueAccessor(valueAccessor)
-                .colorDomain(color_domain)
-                .colorAccessor(colorAccessor); 
-		    g.viz_definition.multiadm.legend[adm].addTo(g.viz_definition.multiadm.maps[adm]);
-	    })
-	    //console.log("ABOUT TO REDRAW ALL from module_colorscale.interaction...");
-		dc.redrawAll();	*/
 	});
 
     // Reacts on scale type change
 	$("#selectform2").on('change',function(){
-		g.module_colorscale.scaletypecurrent = $('#selectform2').val();
-
-		// Updates the map
-		module_colorscale.lockcolor(g.module_colorscale.modecurrent);	
+		g.module_colorscale.scaletypecurrent = $('#selectform2').val();	
+		module_colorscale.lockcolor(g.module_colorscale.modecurrent);	//updates the map
 	});
 
 	// Reacts on automation mode change
@@ -426,85 +371,76 @@ module_colorscale.interaction = function(){
 				    $(g.module_colorscale.lockcolor_id).removeClass('buttonlocked'); 
 				}
 			}
-			//console.log(['mode',g.module_colorscale.modecurrent]);
-
-			// Shouldn't we update the map?
+			// Should map be updated here?
 			// module_colorscale.lockcolor(g.module_colorscale.modecurrent);
 		});
 	});
 
 	// Reacts on mapunit change
+	//Note: multiple hard-coded chart names in the function - e.g. case_ser, case_lin, disease, fyo, 
 	g.module_colorscale.mapunitlist.forEach(function(unit){
-		$('#'+unit).on('change',function(){
-			if($('#'+unit).is(':checked')) {
+		$('#'+unit).on('change',function() {
+			if ($('#'+unit).is(':checked')) {
 				g.module_colorscale.mapunitcurrent = g.module_colorscale.mapunitlist[$('#'+unit).val()];
-				//console.log("SELECTED MAP PARAMETER: ", g.module_colorscale.mapunitcurrent);
 				// Saves last disease displayed when 'Completeness' is selected
-				if(g.module_colorscale.mapunitcurrent == 'Completeness'){
+				if (g.module_colorscale.mapunitcurrent == 'Completeness') {
 					$('#selectform1').val('ReversedDiverging');	
 					g.module_colorscale.colorscurrent = 'ReversedDiverging';
-					if(typeof g.viz_definition.disease.chart.filter() == 'string'){
+					if (typeof g.viz_definition.disease.chart.filter() == 'string') {
 			            var temp_disease = g.medical_currentdisease.substring(0,g.medical_currentdisease.length);
 						g.medical_pastdisease = temp_disease;
 						g.viz_definition.disease.chart.filterAll();
 						g.medical_currentdisease = g.medical_pastdisease; 
 					}
 
-					$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_title+'</b>');		//HEIDI added
-					$('#chart_case_lin_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_title+'</b>');		//HEIDI added
+					$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_title+'</b>');		//hard-coded chart name
+					$('#chart_case_lin_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_title+'</b>');		//hard-coded chart name
 
 	                $('#chart-disease').addClass("noclick");
 	                $('#chart-fyo').addClass("noclick");
 
-				}else if(g.module_colorscale.mapunitcurrent == 'Cases' || g.module_colorscale.mapunitcurrent == 'Deaths'){
-					console.log("SELECTED Cases OR Deaths: ", g.module_colorscale.mapunitcurrent);
+				} else if (g.module_colorscale.mapunitcurrent == 'Cases' || g.module_colorscale.mapunitcurrent == 'Deaths') {
 					$('#selectform1').val('Classic');	
 					g.module_colorscale.colorscurrent = 'Classic';
-					//console.log("g.viz_definition.disease = ", g.viz_definition.disease);
-					//console.log("g.viz_definition.disease.chart.filter() = ", g.viz_definition.disease.chart.filter());
-					//console.log("g.medical_currentdisease = ", g.medical_currentdisease);
-					if(g.viz_definition.disease && g.viz_definition.disease.chart.filter() == undefined && g.medical_currentdisease){
+					if (g.viz_definition.disease && g.viz_definition.disease.chart.filter() == undefined && g.medical_currentdisease) {
 			            g.viz_definition.disease.chart.filter(g.medical_currentdisease);
-			            //console.log("IN IF for Cases or Deaths: ", g.medical_currentdisease);
 					}
 
-					$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_title+'</b>');		//HEIDI added
-					$('#chart_case_lin_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_title+'</b>');		//HEIDI added
+					$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_title+'</b>');		//hard-coded chart name
+					$('#chart_case_lin_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_title+'</b>');		//hard-coded chart name
 
 					$('#chart-disease').removeClass("noclick");
 					$('#chart-fyo').removeClass("noclick");
 
-				}else if(g.module_colorscale.mapunitcurrent == 'IncidenceProp' || g.module_colorscale.mapunitcurrent == 'MortalityProp'){
-					//console.log("SELECTED Incidence or Mortality: ", g.module_colorscale.mapunitcurrent);
+				} else if (g.module_colorscale.mapunitcurrent == 'IncidenceProp' || g.module_colorscale.mapunitcurrent == 'MortalityProp') {
 					$('#selectform1').val('Classic');	
 					g.module_colorscale.colorscurrent = 'Classic';
-		            if(g.viz_definition.disease && g.viz_definition.disease.chart.filter() == undefined && g.medical_currentdisease){
+		            if (g.viz_definition.disease && g.viz_definition.disease.chart.filter() == undefined && g.medical_currentdisease) {
 			            g.viz_definition.disease.chart.filter(g.medical_currentdisease);
 					}
 					
 					if (g.module_lang.text[g.module_lang.current].chart_case_ser_imr_title) {
-						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_imr_title+'</b>');		//HEIDI added
+						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_imr_title+'</b>');		//hard-coded chart name
 					} else {
-						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_title+'</b>');
+						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_ser_title+'</b>');			//hard-coded chart name
 					}
 
 					if (g.module_lang.text[g.module_lang.current].chart_case_lin_imr_title) {
-						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_imr_title+'</b>');		//HEIDI added
+						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_imr_title+'</b>');		//hard-coded chart name
 					} else {
-						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_title+'</b>');
+						$('#chart_case_ser_title').html('<b>'+g.module_lang.text[g.module_lang.current].chart_case_lin_title+'</b>');			//hard-coded chart name
 					}
 					
-					$('#chart-disease').removeClass("noclick");
-					$('#chart-fyo').removeClass("noclick");
-					dc.redrawAll(); //HEIDI ADDED TO TEST
+					$('#chart-disease').removeClass("noclick");		//hard-coded chart name
+					$('#chart-fyo').removeClass("noclick");			//hard-coded chart name
+					dc.redrawAll(); 
 	          	}
 
 				$("#selectform1").change();
 
 				// Updates the map
 				module_colorscale.lockcolor('Manual');
-				//console.log(['mapunit',g.module_colorscale.mapunitcurrent]);
-				$('#map-unit').html(g.module_lang.text[g.module_lang.current].map_unit[g.module_colorscale.mapunitcurrent]);
+				$('#map-unit').html(g.module_lang.text[g.module_lang.current].map_unit_title[g.module_colorscale.mapunitcurrent]);
 			}
 		});
 	});
@@ -549,12 +485,10 @@ module_colorscale.interaction = function(){
  * @todo Limit dependency to module_multiadm.
  */
 module_colorscale.lockcolor = function(source){
-	//console.log("in module_colorscale.lockcolor: ", source)
+
 	if(source == g.module_colorscale.modecurrent || source == 'Manual'){
-		//console.log("in lockcolor: ", source);
 		var admlevel_current = g.module_multiadm.tabcurrent.split('-')[1];
 		if (g.module_colorscale.mapunitcurrent == 'Casses') {
-			//console.log("lockcolor, in if Casses");
 			if(g.medical_datatype == 'surveillance'){
 				var admobjects_current = g.viz_definition.multiadm.group[admlevel_current].top(Infinity);
 			}else{
@@ -563,34 +497,23 @@ module_colorscale.lockcolor = function(source){
 			var admvalues_current = Object.keys(admobjects_current).map(function (key,keynum,keylist) {
 				return admobjects_current[keynum].value.Values;
 			});
-		}else if(g.module_colorscale.mapunitcurrent == 'Completeness'){
-			//console.log("lockcolor, in Completeness");
-			//console.log("lockcolor, in else if");
+		} else if (g.module_colorscale.mapunitcurrent == 'Completeness') {
 			var admvalues_current = [100,80,60,40,20,0];
-		}else{ //} if(g.module_colorscale.mapunitcurrent == 'Incidence'){
-			//console.log("in module_colorscale.lockcolor else");
-			//console.log(admlevel_current);
-			//console.log(Object.keys(g.viz_currentvalues[admlevel_current]));  //HEIDI - need to populate this somewhere with hospital names
+		} else { 
 			var admvalues_current = Object.keys(g.viz_currentvalues[admlevel_current]).map(function (key,keynum,keylist) {
-				//console.log("keynum: ", keynum, "  key: ", key, "  keylist: ", keylist);
 				if(keynum == keylist.length - 1){
 					var temp = g.viz_currentvalues[admlevel_current][key];
-					//console.log("keynum: ", keynum, "  key: ", key, "  keylist: ", keylist, "  temp: ", temp);
 				}else{
 					var temp = module_colorscale.nice_limits(g.viz_currentvalues[admlevel_current][key]);
-					//console.log("keynum: ", keynum, "  key: ", key, "  keylist: ", keylist, "  temp: ", temp);
 				}
-				//console.log("temp: ", temp);
 				return temp;
 			});
 			
 			var admvalues_current = admvalues_current.filter(function(element) {
-			  //return !(isNaN(element)); // Filter div by 0
 			  return isFinite(element);  //Checks whether is a number or +/- Infinity
 			});
 		}
 
-		//console.log("admvalues_current: ", admvalues_current);
 		var serie = new geostats();
 		serie.setSerie(admvalues_current);
 		function sortNumber(a,b) {
@@ -600,7 +523,6 @@ module_colorscale.lockcolor = function(source){
 		if(g.module_colorscale.mapunitcurrent !== 'Completeness'){
 			unique_values.sort(sortNumber);
 		}
-		//console.log("unique_values: ", unique_values);
 		var nbClass = Math.min(5,unique_values.length - 1);
 
 		if(unique_values.length - 1 > 4){
@@ -643,7 +565,6 @@ module_colorscale.lockcolor = function(source){
 		}else{
 			var scalesvalues_current = [];
 		}
-		//console.log("scalesvalues_current = ", scalesvalues_current);
 
 		// Pushes values (without duplicates)
 		g.module_colorscale.valuescurrent = ['NA'];
@@ -654,14 +575,11 @@ module_colorscale.lockcolor = function(source){
 				temp_check[val] = true;
 			}
 		})
-		//	scalesvalues_current.pop();
+
 		$('.legend').remove();
-	    //g.geometry_keylist.forEach(function(adm) {
-			g.viz_definition.multiadm.charts[admlevel_current].redraw();
-		    g.viz_definition.multiadm.legend[admlevel_current].addTo(g.viz_definition.multiadm.maps[admlevel_current]);
-	    //})
-	//console.log("g.module_colorscale.valuescurrent: ", g.module_colorscale.valuescurrent);
-	//console.log("************ end of lockcolor for: ", source);
+		g.viz_definition.multiadm.charts[admlevel_current].redraw();
+	    g.viz_definition.multiadm.legend[admlevel_current].addTo(g.viz_definition.multiadm.maps[admlevel_current]);
+
 	}
 }
 

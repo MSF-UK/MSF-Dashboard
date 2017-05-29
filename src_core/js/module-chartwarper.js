@@ -5,15 +5,13 @@
     Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
 ------------------------------------------------------------------------------------*/
 /**
- * This file gives the necessary instructions to setup a 'chartwarper' (puts charts containers under tabs).
+ * This file gives the necessary instructions to setup a 'chartwarper' (puts charts containers behind buttons or under tabs). It requires g.new_layout.
  * <br>
  * 'index.html' must be adapted accordingly.
  * @since 0.7
  * @module module:module_chartwarper
  * @requires index.html
  * @requires dev/dev-defined.js
- * @todo Put 'tabcontainer_id' and 'chartcontainers_list' in dev-defined.js.
- * @todo Checks if 'tabcontainer_id' or 'chartcontainers_list' is empty.
  **/
  var module_chartwarper = {};
 /*------------------------------------------------------------------------------------
@@ -39,33 +37,7 @@ if(!g.module_chartwarper){
 // 1) Display
 //------------------------------------------------------------------------------------
 /**
- * Stores the id of the tabs container.
- * <br> Defined in {@link module:module_datatable.setup}.
- * @type {String} 
- * @alias module:module_chartwarper.tabcontainer_id
- */
-g.module_chartwarper.tabcontainer_id = 'containter_bar-lin_tabs';			//default value for previous layout
-if (g.module_chartwarper.container_btns_id) {
-	g.module_chartwarper.tabcontainer_id = g.module_chartwarper.container_btns_id;	//HEIDI - can be overwritten in dev_defined.js
-}
-
-/**
- * Stores the names of the charts/containers to warp behind tabs.
- * <br> Defined in {@link module:module_datatable.setup}.
- * @type {Array} 
- * @alias module:module_chartwarper.chartcontainers_list
- */
-g.module_chartwarper.chartcontainers_list = ['containter_bar','containter_lin'];  	//default value for previous layout
-if (g.module_chartwarper.container_chartlist) {
-	g.module_chartwarper.chartcontainers_list = g.module_chartwarper.container_chartlist;	//HEIDI - can be overwritten in dev_defined.js
-} 
-//g.module_chartwarper.chartcontainers_list = ['containter_ser','containter_lin'];   //HEIDI - added 'containter_ser', removed 'containter_bar'
-//g.module_chartwarper.chartcontainers_list = g.dev_defined.chartcontainers_list;
-
-
-
-/**
- * Defines the tabs layout.
+ * Defines the buttons/tabs layout.
  * <br>
  * Requires:
  * <ul>
@@ -73,69 +45,34 @@ if (g.module_chartwarper.container_chartlist) {
  *  <li>{@link module:module_lang.current}</li>
  * </ul>
  * <br> Triggered by the end of {@link module:main_core~generateDashboard}.
- * @param {String} tabcontainer_id Typically: {@link g.module_chartwarper.tabcontainer_id}
- * @param {Array} chartcontainers_list Typically: {@link g.module_chartwarper.chartcontainers_list}
+ * @param {String} container_id Typically: {@link g.module_chartwarper.container_btns_id}
+ * @param {Array} containers_list Typically: {@link g.module_chartwarper.container_chartlist}
  * @method
  * @type {Function}
  * @alias module:module_chartwarper.display
  */
 module_chartwarper.display = function(container_id, containers_list) {
 
-	//console.log("display chartwarper: ", tabcontainer_id, chartcontainers_list)
+	var html = '<div>';
+	html += '<big><b><span id="chart_case_ser_title">'+g.module_lang.text[g.module_lang.current]['chart_case_ser_title']+'</span></b></big>';
+	    		
+	containers_list.forEach(function(key,keynum){
+		if (keynum == 0) {
+			var btn_status ='new_active-cw';
+		} else {
+			var btn_status ='new_inactive-cw';
+		}
+		html +=  '<div id="'+key.container+'-btn" class="'+btn_status+' new_btn-cw">';					
+		html +=  g.module_lang.text[g.module_lang.current]['chartwarper_btn_'+key.container];	//button title							
+		html +=  '</div>';
+	});
+	html += '</div>';
 
-	if (g.new_layout) {
-		var html = '<div>';
-		html += '<big><b><span id="chart_case_ser_title">'+g.module_lang.text[g.module_lang.current]['chart_case_ser_title']+'</span></b></big>';    //HEIDI - ***need to alternate with '<span id="chart_case_lin_title"></span>'
-		//console.log("chartcontainers_list: ", chartcontainers_list);
-		containers_list.forEach(function(key,keynum){
-			//console.log(key, keynum);
-			if (keynum == 0) {
-				var btn_status ='new_active-cw';
-			} else {
-				var btn_status ='new_inactive-cw';
-			}
-			html +=  '<div id="'+key.container+'-btn" class="'+btn_status+' new_btn-cw">';
-			
-			// Tab title
-			//if (g.new_layout) {
-				html +=  g.module_lang.text[g.module_lang.current]['chartwarper_btn_'+key.container];
-			/*} else {
-				html +=  g.module_lang.text[g.module_lang.current]['chartwarper_btn_'+key.container];
-			}*/
-							
-			html +=  '</div>';
-		});
-		html += '</div>';
-
-	} else {
-
-		var html = '<div>';
-		containers_list.forEach(function(key,keynum){
-			//console.log("create chart container for: ", key, keynum);
-			if (keynum == 0) {
-				var tab_status ='active-cw';
-			} else {
-				var tab_status ='inactive-cw';
-			}
-			html +=  '<div id="'+key+'-tab" class="'+tab_status+' tab-cw">';
-			
-			// Tab title
-			/*if (g.new_layout) {
-				html +=  '<b><big>'+g.module_lang.text[g.module_lang.current]['chartwarper_tab_'+key]+'</big></b>';
-			} else {*/
-				html +=  g.module_lang.text[g.module_lang.current]['chartwarper_tab_'+key];
-			//}
-							
-			html +=  '</div>';
-		});
-		html += '</div>';
-	}
-	//console.log(tabcontainer_id, html);
 	$('#' + container_id).html(html);
 }
 
 /**
- * Defines the tab interactions (show/hide containers).
+ * Defines the buttons/tab interactions (show/hide containers).
  * <br>
  * Returns:
  * <ul>
@@ -150,132 +87,65 @@ module_chartwarper.display = function(container_id, containers_list) {
  */
 module_chartwarper.interaction = function(chartcontainers_list) {
 	
-	// Tabs Interactions
+	// Buttons/tabs Interactions
 	//------------------------------------------------------------------------------------
 
 	// Initialisations tabs (maps draw order)
-	if (g.new_layout) {
-		chartcontainers_list.forEach(function(key,keynum){
-			$('#'+key.container).addClass('chart_container-cw');
-			if (keynum == 0) {
-				$('#'+key.container).css('display', 'inline');
-			} else {
-				$('#'+key.container).css('display', 'none');
-			}
-		});
-	} else {
-		chartcontainers_list.forEach(function(key,keynum){
-			$('#'+key).addClass('chart_container-cw');
-			if (keynum == 0) {
-				$('#'+key).css('display', 'inline');
-			} else {
-				$('#'+key).css('display', 'none');
-			}
-		});
-	}
+	chartcontainers_list.forEach(function(key,keynum){
+		$('#'+key.container).addClass('chart_container-cw');
+		if (keynum == 0) {
+			$('#'+key.container).css('display', 'inline');
+		} else {
+			$('#'+key.container).css('display', 'none');
+		}
+	});
 
-	// Initialisations jumpto dropdown lists common variables
+	// Initialisations zoom/jumpto dropdown lists common variables
 	/**
 	 * Stores the current tab name.
      * <br> Defined in {@link module:module_chartwarper.interaction}.
 	 * @type {String} 
 	 * @alias module:module_chartwarper.tabcurrent
 	 */
-	if (g.new_layout) {
-		g.module_chartwarper.btncurrent = chartcontainers_list[0].container;
-		g.module_chartwarper.btncurrentnum = 0;
-	} else {
-		g.module_chartwarper.tabcurrent = chartcontainers_list[0];
-		g.module_chartwarper.tabcurrentnum = 0;
-	}
-	//g.module_chartwarper.tabcurrent = chartcontainers_list[0];
+
+	g.module_chartwarper.btncurrent = chartcontainers_list[0].container;
+	g.module_chartwarper.btncurrentnum = 0;
+
 
 	/**
-	 * Stores the current tab number.
+	 * Stores the current button/tab number.
      * <br> Defined in {@link module:module_chartwarper.interaction}.
 	 * @type {Integer} 
 	 * @alias module:module_chartwarper.tabcurrentnum
 	 */
-	//g.module_chartwarper.tabcurrentnum = 0; - HEIDI moved this above
 
 	// Tabs 'onclick' events
 
-	if (g.new_layout) {
+	chartcontainers_list.forEach(function(key1,key1num){
+	
+		$('#'+key1.container+'-btn').on('click',function(){ 
+      
+		    if (!(g.module_chartwarper.btncurrent == key1.container)) {
+		    	var filter_html = $('#' + key1.container +'_filter').html();
 
-		chartcontainers_list.forEach(function(key1,key1num){
-		
-			$('#'+key1.container+'-btn').on('click',function(){ 
-				//console.log("key1 on btn: ", key1.container, '#'+key1.container+'-btn', key1);
-	      
-			    if (!(g.module_chartwarper.btncurrent == key1.container)) {
-			    	var filter_html = $('#' + key1.container +'_filter').html();
+		    	// Temporarily store previous btn keys
+		    	var key0 = g.module_chartwarper.btncurrent;
+		    	var key0num = g.module_chartwarper.btncurrentnum;
 
-			    	// Temporarily store previous tab keys
-			    	var key0 = g.module_chartwarper.btncurrent;
-			    	var key0num = g.module_chartwarper.btncurrentnum;
+		        // Swich current displayed chart container in global variable
+		        g.module_chartwarper.btncurrent = key1.container;
+				g.module_chartwarper.btncurrentnum = key1num;
+			
+				$('#'+key0+'-btn').removeClass('new_active-cw');
+		        $('#'+key0+'-btn').addClass('new_inactive-cw');
+		        $('#'+key0).css('display', 'none');		
+		        $('#'+key1.container+'-btn').removeClass('new_inactive-cw');
+		        $('#'+key1.container+'-btn').addClass('new_active-cw');
+		        $('#'+key1.container).css('display', 'inline');	
 
-			        // Swich current displayed chart container in global variable
-			        g.module_chartwarper.btncurrent = key1.container;
-					g.module_chartwarper.btncurrentnum = key1num;
+		        $('#'+g.module_chartwarper.container_allcharts_id).css('height', chartcontainers_list[key1num].height);	
+		    };          
+		})   	
+	});	
 
-					
-					$('#'+key0+'-btn').removeClass('new_active-cw');
-			        $('#'+key0+'-btn').addClass('new_inactive-cw');
-			        $('#'+key0).css('display', 'none');		
-			        $('#'+key1.container+'-btn').removeClass('new_inactive-cw');
-			        $('#'+key1.container+'-btn').addClass('new_active-cw');
-			        $('#'+key1.container).css('display', 'inline');	
-
-			        //console.log(g.module_chartwarper.container_allcharts_id, chartcontainers_list[key1num].height);
-			        $('#'+g.module_chartwarper.container_allcharts_id).css('height', chartcontainers_list[key1num].height);	
-			    };          
-			})   	
-		});	
-
-
-
-
-	} else {
-		chartcontainers_list.forEach(function(key1,key1num){
-		
-			$('#'+key1+'-tab').on('click',function(){ 
-				console.log("key1 on tab: ", key1);
-	      
-			    if (!(g.module_chartwarper.tabcurrent == key1)) {
-			    	var filter_html = $('#' + key1 +'_filter').html();
-
-			    	// Temporarily store previous tab keys
-			    	var key0 = g.module_chartwarper.tabcurrent;
-			    	var key0num = g.module_chartwarper.tabcurrentnum;
-
-			        // Swich current displayed chart container in global variable
-			        g.module_chartwarper.tabcurrent = key1;
-					g.module_chartwarper.tabcurrentnum = key1num;
-
-					if (g.new_layout) {
-						$('#'+key0+'-tab').removeClass('new_active-cw');
-				        $('#'+key0+'-tab').addClass('new_inactive-cw');
-				        $('#'+key0).css('display', 'none');		
-				        $('#'+key1+'-tab').removeClass('new_inactive-cw');
-				        $('#'+key1+'-tab').addClass('new_active-cw');
-				        $('#'+key1).css('display', 'inline');	
-
-				        console.log(g.module_chartwarper.container_allcharts_id);
-				        if (key1=="container_ser") { 
-				        	$('#'+g.module_chartwarper.container_allcharts_id).css('height', '600px');
-				        } else if (key1=="container_lin") {
-				        	$('#'+g.module_chartwarper.container_allcharts_id).css('height', '400px');
-				        }
-					} else {
-				        $('#'+key0+'-tab').removeClass('active-cw');
-				        $('#'+key0+'-tab').addClass('inactive-cw');
-				        $('#'+key0).css('display', 'none');		
-				        $('#'+key1+'-tab').removeClass('inactive-cw');
-				        $('#'+key1+'-tab').addClass('active-cw');
-				        $('#'+key1).css('display', 'inline');	
-				    }	
-			    };          
-			})   	
-		});	
-	};
 }

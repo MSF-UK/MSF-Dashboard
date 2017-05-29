@@ -104,7 +104,7 @@ module_interface.display = function(){
         titlesscreate(key);
         buttonscreate(key,g.viz_definition[key].buttons_list);
         buttoninteraction(key,g.viz_definition[key].buttons_list);
-        if (g.viz_definition[key].hasOwnProperty("buttons_filt_range")) {
+        if (g.viz_definition[key].hasOwnProperty("buttons_filt_range")) {       
             buttons_quickfilt_create(key, g.viz_definition[key].buttons_filt_range);
             buttons_quickfilt_interaction(key, g.viz_definition[key].buttons_filt_range);
 
@@ -115,7 +115,7 @@ module_interface.display = function(){
     menuinteractions();
 
     /**
-     * Adds titles and space to display current filters to the charts.
+     * Adds titles and optional filters to the charts.
      * <br>
      * Requires:
      * <ul>
@@ -129,23 +129,27 @@ module_interface.display = function(){
      * @alias module:module_interface~titlesscreate
      */
     function titlesscreate(key){   
-        if (g.viz_definition[key].display_filter) {
-            //console.log("key: ", key, "  title: ", '#chart_'+key+'_title');
-            if (g.new_layout) {
-                $('#chart_'+key+'_title').html('<big><b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b></big>');
-            } else {
+
+        if (g.new_layout) {
+            if (g.viz_definition[key].display_title) {             
+                $('#chart_'+key+'_title').html('<big><b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b></big>');          
+                if (key=='multiadm') {
+                    for (map in g.viz_definition[key].maps) {
+                        g.module_interface.current_filters['map_'+map] = [];
+                    }
+                } else {
+                    g.module_interface.current_filters[key] = [];
+                }           
+            } 
+
+        } else {
+            if (g.viz_definition[key].display_filter) {
                 $('#chart_'+key+'_title').html('<b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b><br>' + g.module_lang.text[g.module_lang.current].filtext + ' ' );
-            }
-            
-            if ((g.new_layout) && (key=='multiadm')) {
-                for (map in g.viz_definition[key].maps) {
-                    g.module_interface.current_filters['map_'+map] = [];
-                }
-            } else {
                 g.module_interface.current_filters[key] = [];
-            }           
-        } else {            
-            $('#chart_'+key+'_title').html('<b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b><br>');
+            } else {
+                $('#chart_'+key+'_title').html('<b>' + g.module_lang.text[g.module_lang.current]['chart_'+key+'_title'] + '</b><br>');
+            }
+
         }
 
     }
@@ -161,8 +165,6 @@ module_interface.display = function(){
      */
     function buttonscreate(key,buttons){
         var html = '';
-        //console.log('key: ', key);
-        //console.log('buttons: ', buttons);
         buttons.forEach(function(button){
             switch(button){
                 case 'reset': 
@@ -248,13 +250,10 @@ module_interface.display = function(){
                     break;
                 case 'help':
                     $('#'+button+'-'+key1).click(function(){
-                        console.log("Clicked on ", button, key1, g.module_intro.step[key1]);
-                        //g.module_intro.definition.goToStepNumber(g.module_intro.step[key1]).start(); 
                         g.module_intro.definition.goToStep(g.module_intro.step[key1]).start();  
-                        //console.log("Finished ", button, key1, g.module_intro.step[key1]);
                     }); 
                     break;
-                case 'parameters': // to be implemented
+                case 'parameters': 
                     $('#'+button+'-'+key1).click(function(){
                         window.scrollTo(0, 0);
                         $('body').addClass('stop-scrolling');
@@ -271,7 +270,6 @@ module_interface.display = function(){
                             $('.modal-dialog').css('margin-left','10%'); 
                         }
                         
-
                         var html = '<div class="row">';
 
                                       
@@ -293,7 +291,7 @@ module_interface.display = function(){
                         });
                     });
                     break;
-                case 'expand': // to be implemented
+                case 'expand': 
                     $('#'+button+'-'+key1).click(function(){
                         g.geometry_keylist.forEach(function(key) {
                             if ($('#map-' + key).height() <= 500) {
@@ -316,7 +314,7 @@ module_interface.display = function(){
                         });
                     });
                     break;
-                case 'lockcolor': // to be implemented
+                case 'lockcolor': 
                     g.module_colorscale.lockcolor_id = '#'+button+'-'+key1;
                     $('#'+button+'-'+key1).addClass('buttonlocked'); 
 
@@ -340,19 +338,13 @@ module_interface.display = function(){
     }
 
     function buttons_quickfilt_create(key, buttons) {
-        //var html = '<b>Quick Filter buttons: </b>';
+
         var html = '';
-        //console.log(key, buttons);
         var last_epiTime = g.module_epitime.epitime_all[g.module_epitime.epitime_all.length-1];
 
         buttons.forEach(function(btn){
-            //console.log(btn);
             
             switch(btn.btn_type){
-                /*case 'epiyear': 
-                    var button_param = button_cat[1][0];
-                    var button_text = button_cat[1][1];
-                    break;*/
                 case 'lastXepiyears': 
                     if (btn.btn_param ==0) {        //if require current month only
                         var endYr = last_epiTime.epiyear; 
@@ -360,192 +352,82 @@ module_interface.display = function(){
                     } else {
                         var endYr = last_epiTime.epiyear-1;
                         var startYr = endYr - btn.btn_param + 1;
-                    };                                        
-                    var dateRange = module_epitime.filterDates(btn.btn_type,  startYr, endYr, '', '', '', '', ''); 
+                    };                                           
+                    var dateRange = module_epitime.get_epiRange(btn.btn_type,  startYr, endYr, '', '', '', '', ''); 
                     btn.btn_startDate = dateRange[0];
                     btn.btn_endDate = dateRange[1];
                     break;
-                /*case 'epimonth':
-                    var button_text = button_cat[1][1];
-                    break;*/
                 case 'lastXepimonths':
                     var endYr = last_epiTime.epiyear;     
-                    if (btn.btn_param ==0) {        //if require current month only
+                    if (btn.btn_param ==0) {                    //if require current month only
                         var endMonth = last_epiTime.epimonth;
                         var startYr = endYr;
                         var startMonth = endMonth;
                     } else if (btn.btn_param <= endMonth) {     //if number of months required still within current year
-                        var endMonth = last_epiTime.epimonth-1;     //HEIDI - what if had been January? or had been in final week of month???
+                        var endMonth = last_epiTime.epimonth-1;    
                         var startYr = endYr;
                         var startMonth = endMonth - btn.btn_param;
-                    } else {                    //if number of months required overlaps previous years
-                        var endMonth = last_epiTime.epimonth-1;     //HEIDI - what if had been January?   or had been in final week of month???
-                        //console.log("end date: ", endYr, endMonth);
-                        if ((btn.btn_param % 12) > endMonth) {      //if number of months required overlaps additional year despite < 12 months
+                    } else {                                    //if number of months required overlaps previous years
+                        var endMonth = last_epiTime.epimonth-1;    
+                        if ((btn.btn_param % 12) > endMonth) {  //if number of months required overlaps additional year despite < 12 months
                             var startYr = endYr - Math.floor(btn.btn_param/12) - 1;
                             var startMonth = endMonth - (((btn.btn_param % 12)-1)-12);
-                            //console.log("start date: ", startYr, startMonth);
                         } else {
                             var startYr = endYr - Math.floor(btn.btn_param/12);
                             var startMonth = endMonth - ((btn.btn_param % 12)-1);
-                            //console.log("start date: ", startYr, startMonth);
                         };
-                        //console.log("start date: ", startYr, startMonth);
                     };
-                    var dateRange = module_epitime.filterDates(btn.btn_type,  startYr, endYr, startMonth, endMonth, '', '', '');  //HEIDI - do we need this here? can't we just assign to .epidate?
+                    var dateRange = module_epitime.get_epiRange(btn.btn_type,  startYr, endYr, startMonth, endMonth, '', '', '');
                     btn.btn_startDate = dateRange[0];
                     btn.btn_endDate = dateRange[1];
                     break;
-                /*case 'epiweek': 
-                    var button_text = button_cat[1][1];
-                    break;*/
                 case 'lastXepiweeks':
                     var endYr = last_epiTime.epiyear;
                     var endWeek = last_epiTime.epiweek;
                     if (btn.btn_param <= g.module_epitime.epitime_all.length) {
                         var start_epiTime = g.module_epitime.epitime_all[g.module_epitime.epitime_all.length-btn.btn_param];
                     } else {                        
-                        var start_epiTime = g.module_epitime.epitime_all[0];            //if button goes back further than first date, set to first date
+                        var start_epiTime = g.module_epitime.epitime_all[0];   //if button goes back further than first date, set to first date
                         
                     }
                     var startWeek = start_epiTime.epiweek;
                     var startYr = start_epiTime.epiyear;  
-                    var dateRange = module_epitime.filterDates(btn.btn_type,  startYr, endYr,'', '', startWeek, endWeek, '');  //HEIDI - do we need this here? can't we just assign to .epidate?
+                    var dateRange = module_epitime.get_epiRange(btn.btn_type,  startYr, endYr,'', '', startWeek, endWeek, '');
                     btn.btn_startDate = dateRange[0];
                     btn.btn_endDate = dateRange[1];
                     break;
             };
-            //console.log(btn);
-            //html = '<button title= quick filter" class="btn btn-primary btn-sm button '+button+'" id="'+button+'-'+key+'">'+icon+'</button>';
-            //html = '<button title="Quick filter to 2015" id="btnFiltRange2015" class="button_qf" onclick="btn_filtRange(6, 2015);">2015</button>';
-            //html += '<button title="Quick filter button" id="btn_qf-"' + button_cat + '_' + button_text[0] + ' class="button_qf">' + button_text[0] + '</button>';
-            html += '<button title="Quick filter button" id="btn_qf-' + btn.btn_type + btn.btn_param + '" class="button_qf">' + btn.btn_text + '</button>';  //HEIDI - need line above not this one
+            html += '<button title="Quick filter button" id="btn_qf-' + btn.btn_type + btn.btn_param + '" class="button_qf">' + btn.btn_text + '</button>'; 
         });
         $('#buttons_qf-'+key).html(html);
     };
 
-    /*module_interface.display().buttons_quickfilt_off = function(key, button_cats) {
-        button_cats.forEach(function(button_cat){
-            button_cat.forEach(function(button){
-                if ($('#btn_qf-'+button).hasClass('on')) {$('#btn_qf-'+button).removeClass('on')};
-            });
-        });
-    };*/
-
 
     function buttons_quickfilt_interaction(key1, buttons) {
-        //console.log(buttons);
-        //var last_epidate = module_epitime.getLastEpiweek();
+
         var last_epiTime = g.module_epitime.epitime_all[g.module_epitime.epitime_all.length-1];
-        //console.log("last epiTime: ", last_epiTime);
+
         buttons.forEach(function(btn){
-            //console.log(btn);
-            switch(btn.btn_type){   //"btn_qf-"' + btn.btn_type
 
-                case 'lastXepiweeks': 
-                     $('#btn_qf-'+ btn.btn_type + btn.btn_param).click(function(){
-                        //console.log("clicked on: ", btn.btn_text, btn);
-                        $('.button_qf').removeClass('on');
-                        $('#btn_qf-' + btn.btn_type + btn.btn_param).addClass('on');
+            $('#btn_qf-'+ btn.btn_type + btn.btn_param).click(function(){
+                $('.button_qf').removeClass('on');
+                $('#btn_qf-' + btn.btn_type + btn.btn_param).addClass('on');
 
-                        //var dateRange = module_epitime.filterDates(btn.btn_type,  startYr, endYr, startMonth, endMonth, '', '', '');  
-                        //console.log("dateRange: ", dateRange[0], dateRange[1]);
-                        var prevDateRange =  g.viz_definition[key1].chart.filter();
-                        var btnDateRange = [btn.btn_startDate, btn.btn_endDate];
-                        //console.log("prev dateRange: ", prevDateRange);
-                        //console.log("new dateRange: ", dateRange[0], dateRange[1]);
-                        
-                        //HEIDI - if new dates different to previous dates!!!!  then dc.redrawAll();
-                        //if (prevDateRange!=null) {
-                        var noDateChange = false;   //assume new range selected
-                        if (prevDateRange!=null) {  //if previously a range was selected, check whether it has now changed
-                            noDateChange = ((prevDateRange[0]==btnDateRange[0]) && (prevDateRange[1]==btnDateRange[1]));
-                        }
-                        //console.log("noDateChange: ", noDateChange);
-                        
-                        //if ((prevDateRange==null) || (!(noDateChange))) {
-                        if (!(noDateChange)) {      //if range selection has changed
-                            //console.log("for chart = ", key1);
-                            //console.log("now filtering to ", dateRange[0], dateRange[1]);
-                            g.viz_definition[key1].chart.filterAll();
-                            g.viz_definition[key1].chart.filter(dc.filters.RangedFilter(btnDateRange[0], btnDateRange[1])); 
-                            dc.redrawAll();
-                            //console.log("filtered to ", g.viz_definition[key1].chart.filter());
-                        }
-                        //}
-                        
-                    });
-                    break;
+                var prevDateRange =  g.viz_definition[key1].chart.filter();
+                var btnDateRange = [btn.btn_startDate, btn.btn_endDate];
+                
+                var noDateChange = false;   //assume new range selected
+                if (prevDateRange!=null) {  //if previously a range was selected, check whether it has now changed
+                    noDateChange = ((prevDateRange[0]==btnDateRange[0]) && (prevDateRange[1]==btnDateRange[1]));
+                }
 
-                case 'lastXepimonths': 
-                     $('#btn_qf-'+ btn.btn_type + btn.btn_param).click(function(){
-                        //console.log("clicked on: ", btn.btn_text, btn);
-                        $('.button_qf').removeClass('on');
-                        $('#btn_qf-' + btn.btn_type + btn.btn_param).addClass('on');
-                       
-                        //var dateRange = module_epitime.filterDates(btn.btn_type,  startYr, endYr, startMonth, endMonth, '', '', '');  
-                        //console.log("dateRange: ", dateRange[0], dateRange[1]);
-                        var prevDateRange =  g.viz_definition[key1].chart.filter();
-                        var btnDateRange = [btn.btn_startDate, btn.btn_endDate];
-                        //console.log("prev dateRange: ", prevDateRange);
-                        //console.log("new dateRange: ", dateRange[0], dateRange[1]);
-                        
-                        //HEIDI - if new dates different to previous dates!!!!  then dc.redrawAll();
-                        var noDateChange = false;
-                        if (prevDateRange!=null) {
-                            noDateChange = ((prevDateRange[0]==btnDateRange[0]) && (prevDateRange[1]==btnDateRange[1]));
-                        }
-                        //console.log("noDateChange: ", noDateChange);
-                        
-                        if (!(noDateChange)) {
-                            //console.log("now filtering");
-                            g.viz_definition[key1].chart.filterAll();
-                            g.viz_definition[key1].chart.filter(dc.filters.RangedFilter(btnDateRange[0], btnDateRange[1])); 
-                            dc.redrawAll();
-                        } 
-
-                    });
-                    break;
-
-                case 'lastXepiyears':
-                    $('#btn_qf-'+ btn.btn_type + btn.btn_param).click(function(){
-                        //console.log("clicked on: ", btn.btn_text, btn);
-                        $('.button_qf').removeClass('on');
-                        $('#btn_qf-' + btn.btn_type + btn.btn_param).addClass('on');
-            
-                        /*if (btn.btn_param ==0) {        //if require current year only
-                            var endYr = last_epiTime.epiyear; 
-                            var startYr = endYr;
-                        } else {
-                            var endYr = last_epiTime.epiyear-1;
-                            var startYr = endYr - btn.btn_param + 1;
-                        }*/
-
-                        //var dateRange = module_epitime.filterDates(btn.btn_type,  startYr, endYr, startMonth, endMonth, '', '', '');  
-                        //console.log("dateRange: ", dateRange[0], dateRange[1]);
-                        var prevDateRange =  g.viz_definition[key1].chart.filter();
-                        var btnDateRange = [btn.btn_startDate, btn.btn_endDate];
-                        //console.log("prev dateRange: ", prevDateRange);
-                        //console.log("new dateRange: ", dateRange[0], dateRange[1]);
-                        
-                        //HEIDI - if new dates different to previous dates!!!!  then dc.redrawAll();
-                        var noDateChange = false;
-                        if (prevDateRange!=null) {
-                            noDateChange = ((prevDateRange[0]==btnDateRange[0]) && (prevDateRange[1]==btnDateRange[1]));
-                        }
-                        //console.log("noDateChange: ", noDateChange);
-                        
-                        if (!(noDateChange)) {
-                            //console.log("now filtering");
-                            g.viz_definition[key1].chart.filterAll();
-                            g.viz_definition[key1].chart.filter(dc.filters.RangedFilter(btnDateRange[0], btnDateRange[1])); 
-                            dc.redrawAll();
-                        }
-                        
-                    });
-                    break; 
-                default: console.log("clicked on default, button = ", btn);
-            };            
+                if (!(noDateChange)) {      //if range selection has changed
+                    g.viz_definition[key1].chart.filterAll();
+                    g.viz_definition[key1].chart.filter(dc.filters.RangedFilter(btnDateRange[0], btnDateRange[1])); 
+                    dc.redrawAll();
+                }         
+            });
+  
         });
 
         for (i = 0; i < buttons.length-1; i++) {
@@ -576,19 +458,14 @@ module_interface.display = function(){
 
         if (g.new_layout) {
             // Menu title
-            //var html = '<div id="menu_title" style="font-size:1.2em; text-align:center;"><b>'+g.module_lang.text[g.module_lang.current].interface_menutitle+'</b></div>';
             
             var html = '<a id="menu_viewFilters" class="button_menu filters_btn btn btn-primary btn-sm" href="javascript:module_interface.viewFilters();">'+g.module_lang.text[g.module_lang.current].interface_menuviewfilt+'</a>';
-            //'<a id="menu_filtsum" style="font-size:1.2em; text-align:center;"><b>'+g.module_lang.text[g.module_lang.current].interface_menufiltsum+'</b></a>';
             html += '<div id="filters_info"></div>';
 
             // Record count
             if (g.medical_datatype == 'outbreak') {
                 html += '<div id="menu_count_new"><span id="count-info"><b><span class="filter-count headline"></span></b></span><br>'+g.module_lang.text[g.module_lang.current].interface_menucount[0]+'<br><b>'+g.medical_data.length+'</b><br>'+g.module_lang.text[g.module_lang.current].interface_menucount[1]+'</div>';
             } else {
-                //html += '<div id="menu_count"><span id="case-info"><b>'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+'</b> <span class="filter-count headline"></span></span><br><span id="death-info"><b>'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+'</b> <span class="filter-count headline"></span></span><br></div>';
-                //html += '<div id="menu_count"><br><span id="case-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+' <b><span class="filter-count headline"></span></span></b><br><span id="death-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+' <b><span class="filter-count headline"></span></span></b><br></div>';
-                //html += '<div id="menu_count">'+g.module_lang.text[g.module_lang.current].interface_menucount[2]+'<br><span id="case-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+' <b><span class="filter-count headline"></span></span></b><br><span id="death-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+' <b><span class="filter-count headline"></span></span></b><br></div>';
                 html += '<div id="menu_count_new"><p style="margin-bottom: 12px;"><b>'+g.module_lang.text[g.module_lang.current].interface_menucount[2]+'</b></p><span id="case-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+' <b><span class="filter-count headline"></span></span></b><br><span id="death-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+' <b><span class="filter-count headline"></span></span></b><br></div>';
             }
 
@@ -603,7 +480,6 @@ module_interface.display = function(){
             html += '<button id="menu_help_new" class="button_menu menu_btn btn btn-primary btn-sm">'+g.module_lang.text[g.module_lang.current].interface_menuhelp+'</button>';
 
             // Reload button
-            //html += '<a id="menu_reload" class="button_menu menu_btn btn btn-primary btn-sm" href="javascript:history.go(0)">'+g.module_lang.text[g.module_lang.current].interface_menureload+'</a>';
             html += '<a id="menu_reload_new" class="button_menu menu_btn btn btn-primary btn-sm off" href="javascript:module_interface.menu_reload()">'+g.module_lang.text[g.module_lang.current].interface_menureload+'</a>';
 
         } else {
@@ -620,7 +496,7 @@ module_interface.display = function(){
             // Help button
             html += '<button id="menu_help" class="menu_button btn btn-primary btn-sm">'+g.module_lang.text[g.module_lang.current].interface_menuhelp+'</button>';
 
-            // Quick access to epiweeks button - only if no range_chart  //HEIDI - didn't we make fast access to this in g.?
+            // Quick access to epiweeks button - only if no range_chart 
             var range_chart_displayed = false;
             g.viz_keylist.forEach(function(key1) {
                 if (g.viz_definition[key1].range_chart) {range_chart_displayed=true;}
@@ -642,10 +518,6 @@ module_interface.display = function(){
             }else{
                 html += '<div id="menu_count">'+g.module_lang.text[g.module_lang.current].interface_menucount[2]+'<br><span id="case-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[3]+' <b><span class="filter-count headline"></span></span></b><br><span id="death-info">'+g.module_lang.text[g.module_lang.current].interface_menucount[4]+' <b><span class="filter-count headline"></span></span></b><br></div>';
             }
-
-            /*<span style="font-size:2em;">Chiffres clés :
-                    <span id="casetotal">Cas : <span class="filter-count headline"></span></span>
-                    <span id="deathtotal"> | Décès : <span class="filter-count headline"></span></span></span>*/
         }
 
         $('#menu').html(html);
@@ -705,106 +577,53 @@ module_interface.display = function(){
          */
         g.module_interface.autoplaytimer = 0;
 
-        $('#menu_autoplay').on('click',function(){
+        autoplay = function() {
+            if (g.module_interface.autoplayon) {
+                module_interface.menu_pausePlay();
+                dc.redrawAll();
+            } else {
+                g.viz_definition[g.viz_timeline].chart.filterAll();
+                if(g.viz_timeshare){
+                    g.viz_timeshare.forEach(function(key) {
+                        g.viz_definition[key].chart.filterAll();  
+                    });
+                } 
 
-                if (g.module_interface.autoplayon) {
-                    //console.log(" menu_pausePlay called here");
-                    module_interface.menu_pausePlay();
-                    dc.redrawAll();
+                dc.redrawAll();
+                module_colorscale.lockcolor('Auto'); 
+                g.module_interface.autoplayon = true;
+
+                if (g.new_layout) {
+                    $('#menu_autoplay_new').removeClass("play");
+                    $('#menu_autoplay_new').addClass("pause");
                 } else {
-                    g.viz_definition[g.viz_timeline].chart.filterAll();
-                    if(g.viz_timeshare){
-                        g.viz_timeshare.forEach(function(key) {
-                            g.viz_definition[key].chart.filterAll();  
-                        });
-                    } 
+                    $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.pause);
+                }
+                
+                $('#chart-'+ g.viz_timeline).addClass("noclick");
+                if(g.viz_timeshare){
+                    g.viz_timeshare.forEach(function(key) {
+                        $('#chart-'+ key).addClass("noclick");
+                    });
+                }
+                g.module_interface.autoplaytime = 0;
 
-                    dc.redrawAll();
-                    module_colorscale.lockcolor('Auto'); 
-                    g.module_interface.autoplayon = true;
-                    //console.log("button should say: ", g.module_lang.text[g.module_lang.current].interface_menuautoplay.pause);
-                    if (g.new_layout) {
-                        $('#menu_autoplay_new').removeClass("play");
-                        $('#menu_autoplay_new').addClass("pause");
-                    } else {
-                        $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.pause);
-                    }
-                    
-                    $('#chart-'+ g.viz_timeline).addClass("noclick");
-                    if(g.viz_timeshare){
-                        g.viz_timeshare.forEach(function(key) {
-                            $('#chart-'+ key).addClass("noclick");
-                        });
-                    }
-                    g.module_interface.autoplaytime = 0;
-                    //console.log("g.module_interface.autoplaytimer (before)= ",  g.module_interface.autoplaytimer);
+                if (g.viz_rangechart) {
+                    module_interface.menu_autoRangePlay();
+                } else {
+                    g.module_interface.autoplaytimer = setInterval(function(){module_interface.menu_autoPlay()}, 2000); 
+                }
+                
+            };
+        }
 
-                    //var d = new Date();
-                    //console.log("calling menu_autoRangePlay(): ", d.getSeconds());
-                    if (g.viz_rangechart) {
-                        console.log("THERE IS A RANGECHART");
-                        module_interface.menu_autoRangePlay();
-                    } else {
-                        console.log("THERE IS NOOOO RANGECHART");
-                        g.module_interface.autoplaytimer = setInterval(function(){module_interface.menu_autoPlay()}, 2000);     //HEIDI - ERROR here
-                    }
-                    
-                    //console.log("g.module_interface.autoplaytimer (after)= ",  g.module_interface.autoplaytimer);
-                };
-
-            //console.log("************************* End click command *************************");
+        $('#menu_autoplay').on('click',function(){
+            autoplay();
         });
 
         $('#menu_autoplay_new').on('click',function(){
-
-                if (g.module_interface.autoplayon) {
-                    //console.log(" menu_pausePlay called here");
-                    module_interface.menu_pausePlay();
-                    dc.redrawAll();
-                } else {
-                    g.viz_definition[g.viz_timeline].chart.filterAll();
-                    if(g.viz_timeshare){
-                        g.viz_timeshare.forEach(function(key) {
-                            g.viz_definition[key].chart.filterAll();  
-                        });
-                    } 
-
-                    dc.redrawAll();
-                    module_colorscale.lockcolor('Auto'); 
-                    g.module_interface.autoplayon = true;
-                    //console.log("button should say: ", g.module_lang.text[g.module_lang.current].interface_menuautoplay.pause);
-                    if (g.new_layout) {
-                        $('#menu_autoplay_new').removeClass("play");
-                        $('#menu_autoplay_new').addClass("pause");
-                    } else {
-                        $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.pause);
-                    }
-                    
-                    $('#chart-'+ g.viz_timeline).addClass("noclick");
-                    if(g.viz_timeshare){
-                        g.viz_timeshare.forEach(function(key) {
-                            $('#chart-'+ key).addClass("noclick");
-                        });
-                    }
-                    g.module_interface.autoplaytime = 0;
-                    //console.log("g.module_interface.autoplaytimer (before)= ",  g.module_interface.autoplaytimer);
-
-                    //var d = new Date();
-                    //console.log("calling menu_autoRangePlay(): ", d.getSeconds());
-                    if (g.viz_rangechart) {
-                        console.log("THERE IS A RANGECHART");
-                        module_interface.menu_autoRangePlay();
-                    } else {
-                        console.log("THERE IS NOOOO RANGECHART");
-                        g.module_interface.autoplaytimer = setInterval(function(){module_interface.menu_autoPlay()}, 2000);     //HEIDI - ERROR here
-                    }
-                    
-                    //console.log("g.module_interface.autoplaytimer (after)= ",  g.module_interface.autoplaytimer);
-                };
-
-            //console.log("************************* End click command *************************");
+            autoplay();
         });
-
 
         $('#menu_help').click(function(){
             g.module_intro.definition.start();
@@ -841,39 +660,29 @@ module_interface.display = function(){
 
 
 module_interface.updateFiltersInfo = function() {
-    //console.log("in updateFiltersInfo");
     if ($(".filters_btn").hasClass("on")) {
         filters_html = '<b>'+g.module_lang.text[g.module_lang.current].interface_menufiltsum+': </b><br/>';
         no_filts = true;
 
-        //for (i=0; i<=g.module_interface.current_filters.length-1; i++) {
         for (var filt in g.module_interface.current_filters) {
-            //console.log("current_filters: ", filt, g.module_interface.current_filters[filt]);
             if (g.module_interface.current_filters[filt]) {
                 if ((typeof(g.module_interface.current_filters[filt]))=='string') {
-                    //console.log("type string: ", typeof(g.module_interface.current_filters[filt]));
                     var filt_list = g.module_interface.current_filters[filt];
                 } else if ((typeof(g.module_interface.current_filters[filt]))=='object') {
-                    //console.log("type array: ", g.module_interface.current_filters[filt].isArray);
                     var filt_arr = g.module_interface.current_filters[filt];
-                    //console.log("type object, ", filt_arr);
                     if (filt_arr.length > 0) {
                         var filt_list = [];
-                        //for (j=0; j<=filt_arr.length-1; j++) {
                         for (j in filt_arr) {
                             filt_list.push(" " + filt_arr[j]);
                         };
                     } else {
                         var filt_list = "";
                     }
-                    //console.log("final filt_list = ", filt_list);
                 } else {
-                    //console.log("none of these types!!!!!!!!!!!! ", typeof(g.module_interface.current_filters[filt]));
                     var filt_list = "";
                 };
-                //var filt_list = g.module_interface.current_filters[filt];
             } else { 
-                var filt_list = "";// [];
+                var filt_list = "";
             };
 
             if (filt_list.length>0) {
@@ -895,22 +704,14 @@ module_interface.updateFiltersInfo = function() {
 }
 
 module_interface.viewFilters = function() {
-    //console.log("CLICKED VIEW FILTERS TEST");
-    //var loader = document.getElementById("filters_info");
     if ($(".filters_btn").hasClass("on")) {
         $(".filters_btn").removeClass("on");
         $(".filters_btn").addClass("off");
         $("#filters_info").removeClass("on");
-        //console.log("removed class on");
-        //loader.className = "";
-        //console.log("loader.className: ", loader.className);
     } else {
         $(".filters_btn").addClass("on");
         $(".filters_btn").removeClass("off");
         $("#filters_info").addClass("on");
-        //console.log("addedclass on");
-        //loader.className = "on";
-        //console.log("loader.className: ", loader.className);
     };
     module_interface.updateFiltersInfo();
 }
@@ -943,7 +744,6 @@ module_interface.viewFilters = function() {
  * @alias module:module_interface.menu_reset
  */
 module_interface.menu_reset = function() {
-    //$('#menu_reset').addClass('on');
     $('#menu_reset').removeClass('off');
     $('#menu_reset_new').removeClass('off');
     var temp_mode = g.module_colorscale.modecurrent;
@@ -965,7 +765,6 @@ module_interface.menu_reset = function() {
     }
     module_colorscale.lockcolor('Auto');
     dc.redrawAll();
-    //$('#menu_reset').removeClass('on');
     $('#menu_reset').addClass('off');
     $('#menu_reset_new').addClass('off');
 }
@@ -995,48 +794,7 @@ module_interface.menu_reload = function() {
  * @method
  * @alias module:module_interface.menu_autoPlay
  */
- //HEIDI - ORIGINAL FUNCTION BY BRUNO BELOW:
-/*module_interface.menu_autoPlay = function(){
-    //console.log("menu_autoPlay g.module_interface.autoplaytime = ", g.module_interface.autoplaytime);  //starts at 0
-    //console.log("menu_autoPlay g.viz_definition[g.viz_timeline].domain.length - 1 = ", g.viz_definition[g.viz_timeline].domain.length - 1);
 
-    if(g.module_interface.autoplaytime == g.viz_definition[g.viz_timeline].domain.length - 1){
-        //console.log("in if 1");
-        g.module_interface.autoplaytime += 1;
-        module_interface.menu_pausePlay();
-        dc.redrawAll();
-    }    
-
-    if(g.module_interface.autoplaytime < g.viz_definition[g.viz_timeline].domain.length - 1 && g.module_interface.autoplaytime>0){
-        //console.log("in if 2a");
-        g.viz_definition[g.viz_timeline].chart.filter([g.viz_definition[g.viz_timeline].domain[g.module_interface.autoplaytime-1]]);
-        g.viz_definition[g.viz_timeline].chart.filter([g.viz_definition[g.viz_timeline].domain[g.module_interface.autoplaytime]]);
-
-        if(g.viz_timeshare){
-            //console.log("in if 2b");
-            g.viz_timeshare.forEach(function(key) {
-                g.viz_definition[key].chart.filter([g.viz_definition[key].domain[g.module_interface.autoplaytime-1]]);
-                g.viz_definition[key].chart.filter([g.viz_definition[key].domain[g.module_interface.autoplaytime]]);
-            });
-        }
-        dc.redrawAll();
-        g.module_interface.autoplaytime += 1;
-    }
-
-    if(g.module_interface.autoplaytime == 0){
-        //console.log("in if 3a");
-        g.viz_definition[g.viz_timeline].chart.filter([g.viz_definition[g.viz_timeline].domain[g.module_interface.autoplaytime]]);
-
-        if(g.viz_timeshare){
-            //console.log("in if 3b");
-            g.viz_timeshare.forEach(function(key) {
-                g.viz_definition[key].chart.filter([g.viz_definition[g.viz_timeline].domain[g.module_interface.autoplaytime]]);
-            });
-        }
-        dc.redrawAll();                                
-        g.module_interface.autoplaytime += 1;
-    }    
-} */
 
 module_interface.menu_autoPlay = function(){
 
@@ -1077,18 +835,14 @@ module_interface.menu_autoPlay = function(){
 
 
 
-function rangePlayUpdate() {  //uses setTimeout() instead of setInterval() 
+function rangePlayUpdate() {  //uses setTimeout() not setInterval() 
  
     var allEpiweeks = g.module_epitime.all_epiweeks;
-    //d = new Date();
     currentEpiweekPos++;
     g.module_interface.autoplaytimer = currentEpiweekPos;
     g.module_interface.autoplayweek = g.module_epitime.all_epiweeks[currentEpiweekPos];
 
-    //$('#filters_qf-'+g.viz_rangechart).html("Currently playing epiweek: " + g.module_epitime.all_epiweeks[currentEpiweekPos]); 
-
     if (currentEpiweekPos > allEpiweeks.length-1) {    //if we reach the final year
-        //console.log("in final year, current play = ", currentEpiweekPos, " > ", allEpiweeks.length-1);
         if (autoRewind) {               //if we loop (autoRewind) then go back to beginning
             currentEpiweekPos = 0;
         }
@@ -1096,7 +850,6 @@ function rangePlayUpdate() {  //uses setTimeout() instead of setInterval()
             clearTimeout(g.module_interface.autoplaytimer);
             g.module_interface.autoplaytimer = undefined;
             currentEpiweekPos = -1;
-            //console.log("IN menu_autoRangePlay, current play = ", currentEpiweekPos, " = ", g.module_interface.autoplaytimer);
             module_interface.menu_pausePlay();
             dc.redrawAll();
             if (g.new_layout) {
@@ -1105,40 +858,26 @@ function rangePlayUpdate() {  //uses setTimeout() instead of setInterval()
             } else {
                 $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.play);
             }
-            //$('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.play);
-
             return;
         }
     }    
 
     var startWeek = parseInt(allEpiweeks[currentEpiweekPos].substr(5,2));
     var startYr = parseInt(allEpiweeks[currentEpiweekPos].substr(0,4));
-    var dateRange = module_epitime.filterDates("lastXepiweeks",  startYr, startYr,'', '', startWeek, startWeek, '');  //HEIDI - do we need this here? can't we just assign to .epidate?
-    //console.log("IN menu_autoRangePlay, now filtering to ", dateRange[0], dateRange[1]);
-
+    var dateRange = module_epitime.get_epiRange("lastXepiweeks",  startYr, startYr,'', '', startWeek, startWeek, ''); 
+    
     if (currentEpiweekPos == allEpiweeks.length) {   //if autoplay has completed
-        //console.log("autoPlay completed run through here");
         module_interface.menu_pausePlay();
-        dc.redrawAll(); //should this be before incrementing autoplaytime?
+        dc.redrawAll(); 
     } else if (currentEpiweekPos < allEpiweeks.length && currentEpiweekPos>=0){  //if autoplay is on but not on final value of x-axis
         $('#filters_qf-'+g.viz_rangechart).html('<b><big>' + g.module_lang.text[g.module_lang.current].epiweek_playing + '</big></b>' + g.module_epitime.all_epiweeks[currentEpiweekPos]); 
         $('#epiweek-play').html('<b>' + g.module_epitime.all_epiweeks[currentEpiweekPos] + '</b>'); 
         g.viz_timeshare.forEach(function(key) {
             g.viz_definition[key].chart.filterAll();
             g.viz_definition[key].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1])); 
-            //console.log("key: ", key);
         })
-        //g.viz_definition['multiadm'].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1]));  
         dc.redrawAll();
     }
-
-    /*if(currentEpiweekPos == 0){   //if autoplay is on first round
-        g.viz_timeshare.forEach(function(key) {
-            g.viz_definition[key].chart.filterAll();
-            g.viz_definition[key].chart.filter(dc.filters.RangedFilter(dateRange[0], dateRange[1])); 
-        });
-        dc.redrawAll();                
-    } */                        
 
    g.module_interface.autoplaytimer = setTimeout(rangePlayUpdate, delay);
 }
@@ -1174,11 +913,9 @@ module_interface.menu_autoRangePlay = function(){
             path.attr('d', line);
 
         } else {
-        //if (g.viz_rangechart) {
             g.viz_timeshare.forEach(function(key) {
                 $('#'+key+'-extra-line').remove();
             });
-        //}
         }
 
         });
@@ -1205,10 +942,8 @@ module_interface.menu_autoRangePlay = function(){
  * @type {Function}
  * @method
  * @alias module:module_interface.menu_pausePlay
- * @todo Rename 'Stop'?
  */
 module_interface.menu_pausePlay = function(){
-    //console.log("now in menu_pausePlay");
     g.module_interface.autoplayon = false;
     if (g.new_layout) {
         $('#menu_autoplay_new').removeClass("pause");
@@ -1216,7 +951,6 @@ module_interface.menu_pausePlay = function(){
     } else {
         $('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.play);
     }
-    //$('#menu_autoplay').html(g.module_lang.text[g.module_lang.current].interface_menuautoplay.play);
     $('#epiweek-play').html('');
 
     $('#chart-'+ g.viz_timeline).removeClass("noclick");
@@ -1226,17 +960,14 @@ module_interface.menu_pausePlay = function(){
         g.viz_timeshare.forEach(function(key) {
             $('#chart-'+ key).removeClass("noclick");    
             g.viz_definition[key].chart.filterAll();
-            //console.log("filtered all for ", key);  
         });
     } 
 
-    //clearInterval(g.module_interface.autoplaytimer);
     clearTimeout(g.module_interface.autoplaytimer);
 
     if (g.viz_rangechart) {
         g.viz_timeshare.forEach(function(key) {
             $('#'+key+'-extra-line').remove();
-            //console.log("REMOVING " + '#'+key+'-extra-line NOW');
         });
     }
 }
