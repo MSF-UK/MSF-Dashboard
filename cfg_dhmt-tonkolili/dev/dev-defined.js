@@ -383,10 +383,14 @@ g.hosp = ["Masanga Leprosy Hospital", "Lion Heart Medical Centre", "Magburaka Go
  * @alias module:g.dev_defined.combine_data
  */
 g.data_spec.combine_data = [{
-    geo_level: 'admN2',
-    geo_name: 'Magburaka Under Five Clinic',
-    add_into: 'Magburaka MCHP'
-}];
+                                geo_level: 'admN2',
+                                geo_name: 'Magburaka Under Five Clinic',
+                                add_into: 'Magburaka MCHP'
+                            },{
+                                geo_level: 'admN2',
+                                geo_name: 'Magboki Road Mile 91 CHP',
+                                add_into: 'Esthers/Magboki Road Mile 91 CHP'
+                            }];
 
 /**
  Defines the relationship between each map layer using a tree-structured numbering system. Top layers are defined as integers, while child layers are defined by their parental 'branch' followed by their own unique integer. Distinction between levels are made by '.'. If multiple layers have the same parent, then they are siblings.
