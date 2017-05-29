@@ -1,0 +1,587 @@
+var PHU_matches = [
+ {
+   "PHU": "Magburaka Government Hospital",
+   "PHU_prev": "Magburaka Govt. Hosp",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Masanga Leprosy Hospital",
+   "PHU_prev": "Masanga Hosp",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Magburaka MCHP",
+   "PHU_prev": "MCHP UFC Magburaka",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Mabai (Kholifa Rowalla) MCHP",
+   "PHU_prev": "MCHP Mabai",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Masanga MCHP",
+   "PHU_prev": "MCHP UFC Masanga",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Mayossoh MCHP",
+   "PHU_prev": "MCHP Mayossoh",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Masoko MCHP",
+   "PHU_prev": "MCHP Masoko",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Maborie MCHP",
+   "PHU_prev": "MCHP Maborie",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Malone MCHP",
+   "PHU_prev": "MCHP Malone",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Mabom CHC",
+   "PHU_prev": "CHP Mabom",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Magbass CHP",
+   "PHU_prev": "MCHP Magbass",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Mamuntha MCHP",
+   "PHU_prev": "MCHP Mamuntha",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Mabontor CHP",
+   "PHU_prev": "CHC Mabontor",
+   "chiefdom": "Kafe Simira"
+ },
+ {
+   "PHU": "Masumbrie MCHP",
+   "PHU_prev": "CHP Masumbri",
+   "chiefdom": "Kafe Simira"
+ },
+ {
+   "PHU": "Makonthanday MCHP",
+   "PHU_prev": "MCHP Makonthandae",
+   "chiefdom": "Kafe Simira"
+ },
+ {
+   "PHU": "Mayassoh MCHP",
+   "PHU_prev": "MCHP Mayassoh",
+   "chiefdom": "Kafe Simira"
+ },
+ {
+   "PHU": "Bumbuna CHC",
+   "PHU_prev": "CHC Bumbuna",
+   "chiefdom": "Kalansogoia"
+ },
+ {
+   "PHU": "Kathombo CHP",
+   "PHU_prev": "MCHP Kathombo",
+   "chiefdom": "Kalansogoia"
+ },
+ {
+   "PHU": "Kemedugu MCHP",
+   "PHU_prev": "MCHP Kemedugu",
+   "chiefdom": "Kalansogoia"
+ },
+ {
+   "PHU": "Bassaia MCHP",
+   "PHU_prev": "MCHP Bassaia",
+   "chiefdom": "Kalansogoia"
+ },
+ {
+   "PHU": "Kamasaypana MCHP",
+   "PHU_prev": "MCHP Kamasaypana",
+   "chiefdom": "Kalansogoia"
+ },
+ {
+   "PHU": "New Ferengbeya MCHP",
+   "PHU_prev": "New Ferengbeya",
+   "chiefdom": "Kalansogoia"
+ },
+ {
+   "PHU": "Bendugu (Sambaya Bendugu) CHC",
+   "PHU_prev": "CHC Bendugu",
+   "chiefdom": "Sambaya Bendugu"
+ },
+ {
+   "PHU": "Kholifaga MCHP",
+   "PHU_prev": "MCHP Kholifaga",
+   "chiefdom": "Sambaya Bendugu"
+ },
+ {
+   "PHU": "Ninkikoro MCHP",
+   "PHU_prev": "MCHP Ninkikoro",
+   "chiefdom": "Sambaya Bendugu"
+ },
+ {
+   "PHU": "Dankawalia MCHP",
+   "PHU_prev": "MCHP Dankawalia",
+   "chiefdom": "Sambaya Bendugu"
+ },
+ {
+   "PHU": "Kunya CHP",
+   "PHU_prev": "MCHP Kunya",
+   "chiefdom": "Sambaya Bendugu"
+ },
+ {
+   "PHU": "Matotoka CHC",
+   "PHU_prev": "CHC Matotoka",
+   "chiefdom": "Tane"
+ },
+ {
+   "PHU": "Mathonkara MCHP",
+   "PHU_prev": "MCHP Mathonkara",
+   "chiefdom": "Tane"
+ },
+ {
+   "PHU": "Makrugbeh CHP",
+   "PHU_prev": "MCHP Makrugbeh",
+   "chiefdom": "Tane"
+ },
+ {
+   "PHU": "Mathufulie MCHP",
+   "PHU_prev": "MCHP Mathufullie",
+   "chiefdom": "Tane"
+ },
+ {
+   "PHU": "Rosengbeh MCHP",
+   "PHU_prev": "MCHP Rosengbeh",
+   "chiefdom": "Tane"
+ },
+ {
+   "PHU": "Mangaybana CHP",
+   "PHU_prev": "MCHP Mangaybana",
+   "chiefdom": "Tane"
+ },
+ {
+   "PHU": "Masankoro MCHP",
+   "PHU_prev": "MCHP Masankoro",
+   "chiefdom": "Tane"
+ },
+ {
+   "PHU": "Makona MCHP",
+   "PHU_prev": "MCHP Makona",
+   "chiefdom": "Tane"
+ },
+ {
+   "PHU": "Makali (Kunike Barina) CHC",
+   "PHU_prev": "CHC Makali",
+   "chiefdom": "Kunike Barina"
+ },
+ {
+   "PHU": "Massaba MCHP",
+   "PHU_prev": "MCHP Massaba",
+   "chiefdom": "Kunike Barina"
+ },
+ {
+   "PHU": "Wonkibor MCHP",
+   "PHU_prev": "MCHP Wonkibor",
+   "chiefdom": "Kunike Barina"
+ },
+ {
+   "PHU": "Makoni Line MCHP",
+   "PHU_prev": "MCHP Makoni Line",
+   "chiefdom": "Kunike Barina"
+ },
+ {
+   "PHU": "Mapamurie MCHP",
+   "PHU_prev": "MCHP Mapamuri",
+   "chiefdom": "Kunike Barina"
+ },
+ {
+   "PHU": "Masingbi CHC",
+   "PHU_prev": "CHC Masingbi",
+   "chiefdom": "Kunike "
+ },
+ {
+   "PHU": "Mafulka MCHP",
+   "PHU_prev": "MCHP Mafulka",
+   "chiefdom": "Kunike "
+ },
+ {
+   "PHU": "Mamanso Sanka CHP",
+   "PHU_prev": "CHP Mamansosanka",
+   "chiefdom": "Kunike "
+ },
+ {
+   "PHU": "Petifuline MCHP",
+   "PHU_prev": "MCHP Petifuline",
+   "chiefdom": "Kunike "
+ },
+ {
+   "PHU": "Masiaka (Kunike) MCHP",
+   "PHU_prev": "MCHP Masiaka",
+   "chiefdom": "Kunike "
+ },
+ {
+   "PHU": "Fothaneh Junction MCHP",
+   "PHU_prev": "MCHP Fothaneh Junct.",
+   "chiefdom": "Kunike "
+ },
+ {
+   "PHU": "Matholey MCHP",
+   "PHU_prev": "MCHP Matholley ",
+   "chiefdom": "Kunike "
+ },
+ {
+   "PHU": "Mabineh MCHP",
+   "PHU_prev": "MCHP Mabineh ",
+   "chiefdom": "Kunike "
+ },
+ {
+   "PHU": "Magbanabom MCHP",
+   "PHU_prev": "MCHP Magbanabom",
+   "chiefdom": "Kunike "
+ },
+ {
+   "PHU": "Fothaneh Bana MCHP",
+   "PHU_prev": "MCHP Fothaneh Bana",
+   "chiefdom": "Kunike "
+ },
+ {
+   "PHU": "Petifu Mandugu MCHP",
+   "PHU_prev": "MCHP Patifu Mandugu",
+   "chiefdom": "Kunike "
+ },
+ {
+   "PHU": "Magbanto Bana MCHP",
+   "PHU_prev": "MCHP Magbanto Bana",
+   "chiefdom": "Kunike "
+ },
+ {
+   "PHU": "Maconteh Tama MCHP",
+   "PHU_prev": "MCHP Maconteh Thama",
+   "chiefdom": "Kunike "
+ },
+ {
+   "PHU": "Lion Heart Medical Centre",
+   "PHU_prev": "Lion Heart Hospital",
+   "chiefdom": "Gbonkolenken"
+ },
+ {
+   "PHU": "Yele CHC",
+   "PHU_prev": "CHC Yele",
+   "chiefdom": "Gbonkolenken"
+ },
+ {
+   "PHU": "Mayepoh CHP",
+   "PHU_prev": "CHC Mayepoh",
+   "chiefdom": "Gbonkolenken"
+ },
+ {
+   "PHU": "Makonkorie CHP",
+   "PHU_prev": "CHP Makonkorie",
+   "chiefdom": "Gbonkolenken"
+ },
+ {
+   "PHU": "Yeben MCHP",
+   "PHU_prev": "MCHP Yeben",
+   "chiefdom": "Gbonkolenken"
+ },
+ {
+   "PHU": "Maraka MCHP",
+   "PHU_prev": "MCHP Maraka",
+   "chiefdom": "Gbonkolenken"
+ },
+ {
+   "PHU": "Mathamp MCHP",
+   "PHU_prev": "MCHP Mathamp",
+   "chiefdom": "Gbonkolenken"
+ },
+ {
+   "PHU": "Petifu Mayepoh MCHP",
+   "PHU_prev": "MCHP Petifu Mayepoh",
+   "chiefdom": "Gbonkolenken"
+ },
+ {
+   "PHU": "Mansumana CHP",
+   "PHU_prev": "MCHP Mansumana",
+   "chiefdom": "Gbonkolenken"
+ },
+ {
+   "PHU": "Mabarr Polie MCHP",
+   "PHU_prev": "MCHP Mabarr Polie",
+   "chiefdom": "Gbonkolenken"
+ },
+ {
+   "PHU": "Mafay MCHP",
+   "PHU_prev": "MCHP Mafay",
+   "chiefdom": "Gbonkolenken"
+ },
+ {
+   "PHU": "Warrima (Gbonkolenken) MCHP",
+   "PHU_prev": "MCHP Warrima",
+   "chiefdom": "Gbonkolenken"
+ },
+ {
+   "PHU": "Manowo (Gbonkolenken) CHC",
+   "PHU_prev": "CHC Manowo",
+   "chiefdom": "Gbonkolenken"
+ },
+ {
+   "PHU": "Mabang (Kholifa Mabang) CHC",
+   "PHU_prev": "CHC Mabang",
+   "chiefdom": "Kholifa Mabang"
+ },
+ {
+   "PHU": "Komrabai Station MCHP",
+   "PHU_prev": "MCHP Kumrabai Station",
+   "chiefdom": "Kholifa Mabang"
+ },
+ {
+   "PHU": "Mamanso Kafla MCHP",
+   "PHU_prev": "MCHP Mamansokafla",
+   "chiefdom": "Kholifa Mabang"
+ },
+ {
+   "PHU": "Mabai (Kholifa Mabang) MCHP",
+   "PHU_prev": "MCHP Mabai",
+   "chiefdom": "Kholifa Mabang"
+ },
+ {
+   "PHU": "Mathinkalol MCHP",
+   "PHU_prev": "MCHP Mathinkalol",
+   "chiefdom": "Kholifa Mabang"
+ },
+ {
+   "PHU": "Marunia MCHP",
+   "PHU_prev": "MCHP Marunia",
+   "chiefdom": "Kholifa Mabang"
+ },
+ {
+   "PHU": "Mara CHC",
+   "PHU_prev": "CHC  Mara.",
+   "chiefdom": "Malal Mara"
+ },
+ {
+   "PHU": "Manewa MCHP",
+   "PHU_prev": "MCHP Manewa",
+   "chiefdom": "Malal Mara"
+ },
+ {
+   "PHU": "Rochen Malal CHP",
+   "PHU_prev": "MCHP Rochen malal",
+   "chiefdom": "Malal Mara"
+ },
+ {
+   "PHU": "Makoba Bana MCHP",
+   "PHU_prev": "MCHP Macobabana",
+   "chiefdom": "Malal Mara"
+ },
+ {
+   "PHU": "Robina MCHP",
+   "PHU_prev": "MCHP Robina",
+   "chiefdom": "Malal Mara"
+ },
+ {
+   "PHU": "Kiampkakolo MCHP",
+   "PHU_prev": "MCHP Kiampkakolo",
+   "chiefdom": "Malal Mara"
+ },
+ {
+   "PHU": "Hinistas CHC",
+   "PHU_prev": "CHC Hinistas Mile 91",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Magboki Road Mile 91 CHP",
+   "PHU_prev": "MCHP Magboki Rd. 91",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Rochen Kamandao CHP",
+   "PHU_prev": "CHP Rochen kamandao",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Rorocks CHP",
+   "PHU_prev": "CHP Rorocks",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Bakeloko MCHP",
+   "PHU_prev": "CHP Bakeloko",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Mayorgbor MCHP",
+   "PHU_prev": "MCHP Mayorgbor",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Foindu (Yoni) MCHP",
+   "PHU_prev": "MCHP Foindu",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Bonkababay MCHP",
+   "PHU_prev": "MCHP Bonkababay",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Yonibana MCHP",
+   "PHU_prev": "MCHP Yonibana",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Kumrabai Yoni MCHP",
+   "PHU_prev": "MCHP KumrabaiYoni",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Magbassabana MCHP",
+   "PHU_prev": "MCHP Magbassabana ",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Magbaesa MCHP",
+   "PHU_prev": "MCHP Magbaesa",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Ronietta MCHP",
+   "PHU_prev": "MCHP Roneitta",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Bath Bana MCHP",
+   "PHU_prev": "MCHP Bathbana",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Makeni-Rokfullah MCHP",
+   "PHU_prev": "MCHP Makeni Rokfula",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Magbaft MCHP",
+   "PHU_prev": "MCHP Magbafth",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Mathoir CHC",
+   "PHU_prev": "CHC  Mathoir",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Rokimbi MCHP",
+   "PHU_prev": "MCHP Rokimbi",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Mamaka (Yoni) MCHP",
+   "PHU_prev": "MCHP Mamaka",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Makelleh MCHP",
+   "PHU_prev": "MCHP Makelleh",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Makundu MCHP",
+   "PHU_prev": "MCHP Makondu",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Petifu Fulamasa MCHP",
+   "PHU_prev": "MCHP Petifu fulamansa",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Robarie MCHP",
+   "PHU_prev": "MCHP Robarie",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Macrogba CHP",
+   "PHU_prev": "MCHP Macrogba. ",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Masengbeh CHP",
+   "PHU_prev": "CHP Masengbeh",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Mananie MCHP",
+   "PHU_prev": "MCHP Mananie",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Maseprr MCHP",
+   "PHU_prev": "MCHP Masiperr",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Matawa MCHP",
+   "PHU_prev": "MCHP Matawa",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Magbosie MCHP",
+   "PHU_prev": "MCHP Magbosie",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Ahmadiyya Muslim Hospital",
+   "PHU_prev": "",
+   "chiefdom": ""
+ },
+ {
+   "PHU": "Gbonkolenken CHP",
+   "PHU_prev": "",
+   "chiefdom": ""
+ },
+ {
+   "PHU": "Mafanta Correctional Center Clinic",
+   "PHU_prev": "",
+   "chiefdom": ""
+ },
+ {
+   "PHU": "Magboraka Correctional Center Clinic",
+   "PHU_prev": "MCHP UFC Magburaka",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Magburaka Under Five Clinic",
+   "PHU_prev": "MCHP UFC Magburaka",
+   "chiefdom": "Kholifa Rowalla"
+ },
+ {
+   "PHU": "Masaika MCHP",
+   "PHU_prev": "MCHP Masiaka",
+   "chiefdom": "Kunike"
+ },
+ {
+   "PHU": "Massingbi CHC",
+   "PHU_prev": "CHC Masingbi",
+   "chiefdom": "Kunike"
+ },
+ {
+   "PHU": "Mayogbor MCHP",
+   "PHU_prev": "MCHP Mayorgbor",
+   "chiefdom": "Yoni"
+ },
+ {
+   "PHU": "Red Cross (Kholifa Rowalla) Clinic",
+   "PHU_prev": "",
+   "chiefdom": ""
+ },
+ {
+   "PHU": "Rochen Kamandao CHP",
+   "PHU_prev": "CHP Rochen kamandao",
+   "chiefdom": "Yoni"
+ }
+]
