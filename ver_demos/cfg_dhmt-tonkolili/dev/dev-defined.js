@@ -330,7 +330,7 @@ g.module_getdata = {
                         type: 'json'}
         },
     },
-    medical:{
+     medical:{
         medical: {
             method: 'medicald3noserver',
             options: {  url: 'input/tonkolili_database_wks-201545-201605.csv',
@@ -369,18 +369,22 @@ g.medical_headerlist = {
     case: 'cas', 
     death: 'dth', 
 };
-g.data_spec = {};
-//Ideally move g.hosp to g.data_spec.hosp - has implications in module_datacheck.js and elsewhere?
-//g.data_spec.hosp = ["Masanga Leprosy Hospital", "Lion Heart Medical Centre", "Magburaka Government Hospital"];  //for a separate layer to admN2
-g.hosp = ["Masanga Leprosy Hospital", "Lion Heart Medical Centre", "Magburaka Government Hospital"];  //for a separate layer to admN2
 
+/**
+ Defines individual feature names from a single geometry file (e.g. admN2) that should be applied to a different geometry (e.g. hosp). The array should be named 'g.data_spec.name' where 'name' is the name of the new layer as defined in g.medical_headerlist (e.g. hosp).
+ * @constant
+ * @type {Array.<{String}>} 
+ * @alias module:g.data_spec.combine_data
+ */
+g.data_spec = {};
+g.data_spec.hosp = ["Masanga Leprosy Hospital", "Lion Heart Medical Centre", "Magburaka Government Hospital"];  
 
 /**
  Defines individual data records that should be added into a geometry with a different name. The admin level, or 'geo-level' must also be specified.
  This allows for multiple named records to be summed into a single geometry.
  * @constant
  * @type {Array.<{geo_level: String, geo_name: String, add_into: String}>} 
- * @alias module:g.dev_defined.combine_data
+ * @alias module:g.data_spec.combine_data
  */
 g.data_spec.combine_data = [{
                                 geo_level: 'admN2',

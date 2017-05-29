@@ -1236,8 +1236,8 @@ function generateDashboard(){
                         }
                         if (shared.length > 1) {
                             for (var i=0; i<=shared.length-1; i++) {
-                                if (g[shared[i]]) {
-                                    if (g[shared[i]].indexOf(d.key.split(', ')[1])!=-1) {
+                                if (g.data_spec[shared[i]]) {
+                                    if (g.data_spec[shared[i]].indexOf(d.key.split(', ')[1])!=-1) {
                                         temp_adm = shared[i];
                                         break;
                                     } 

@@ -590,10 +590,8 @@ epiwk: function(rec,key,none){
 								}
 
 							} else {
-								//if (g.data_spec[children[j]]) {			//list of locations to include
-								if (g[children[j]]) {			//list of locations to include
-									//if (g.data_spec[children[j]].indexOf(rec[g.medical_headerlist[children[j]]]) != -1) {
-									if (g[children[j]].indexOf(rec[g.medical_headerlist[children[j]]]) != -1) {
+								if (g.data_spec[children[j]]) {			//list of locations to include
+									if (g.data_spec[children[j]].indexOf(rec[g.medical_headerlist[children[j]]]) != -1) {
 										addToCompletenessRecord(temp_loc);
 									}
 								} else { 						//get locations to exclude (from siblings lists)
@@ -601,10 +599,8 @@ epiwk: function(rec,key,none){
 									if (children.length>1) {
 										for (var k=0; k<=children.length-1; k++) {
 											if (children[j] != children[k]) {
-												//if (g.data_spec[children[k]]) {
-												if (g[children[k]]) {
-													//exclude_locs = exclude_locs.concat(g.data_spec[children[k]]);
-													exclude_locs = exclude_locs.concat(g[children[k]]);
+												if (g.data_spec[children[k]]) {
+													exclude_locs = exclude_locs.concat(g.data_spec[children[k]]);
 												}
 											}
 										}
@@ -682,14 +678,9 @@ epiwk: function(rec,key,none){
 		for (var i=0; i<=shared_attr_lists.length-1; i++) {
 			shared_attr = shared_attr_lists[i];
 			shared_attr.forEach(function(sh_key) {
-				//console.log(g.data_spec[sh_key]);
-				//if (g.data_spec[sh_key]) {				//if there is a list of names that are shared e.g. g.hosp 
-				if (g[sh_key]) {				
-					//console.log(g.data_spec[sh_key], rec[g.medical_headerlist[sh_key]]);
-					//if (g.data_spec[sh_key].indexOf(rec[g.medical_headerlist[sh_key]]) != -1) {
-					if (g[sh_key].indexOf(rec[g.medical_headerlist[sh_key]]) != -1) {;
+				if (g.data_spec[sh_key]) {				//if there is a list of names that are shared e.g. g.hosp 			
+					if (g.data_spec[sh_key].indexOf(rec[g.medical_headerlist[sh_key]]) != -1) {
 						rec[sh_key] = rec[g.medical_headerlist[sh_key]];
-						//console.log(recnum, rec[sh_key]);		//should list all hospitals
 					};
 				}
 			});
