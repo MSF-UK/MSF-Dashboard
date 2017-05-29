@@ -3,7 +3,7 @@ MSF-Dashboard v1.1
 
 A lightweight and modular data visualization micro-website that can be offlined and adapted to various data-feeds.
 
-A new release (v1.1) is now available for [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.0.0). This includes various examples of configuration files.
+A new release (v1.1) is now ready and will be available for download shortly. <!-- [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.0.0). This includes various examples of configuration files. -->
 
 Want to contribute to MSF-Dashboard? Please read `CONTRIBUTING.md`.
 
@@ -14,11 +14,11 @@ Here are some example use cases of the MSF-Dashboard, including online demo vers
 
 |Description                                           |Links                                                 |
 |------------------------------------------------------|------------------------------------------------------|
-|**Outbreak: MSF Lubumbashi Mission** (December 2015) - offline, data parsed via tsv|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_msf-lubumbashi) / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.0.0_msf-lubumbashi)|
-|**Surveillance: MSF Katanga ERU** (updated May 2017) - offline, data parsed via excel-spreadsheets|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_eru-katanga/) / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.1_eru-katanga)|
-|**Surveillance: SRE MOH Tonkolili DHMT** (updated May 2017) - offline, data parsed via dedicated datamanager|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_dhmt-tonkolili/) / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.1_dhmt-tonkolili)|
-|**Surveillance: MSF Sud-Kivu ERU** (updated May 2017) - offline, data parsed via excel-spreadsheets|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_eru-sudkivu/) / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.1_eru-sudkivu)|
-|**Outbreak: MSF Bentiu Mission** (November 2016) - offline, data parsed via csv|[online-demo](http://msf-uk.github.io/MSF-Dashboard/ver_demos/cfg_msf-bentiu)|
+|**Outbreak: MSF Lubumbashi Mission** (December 2015) - offline, data parsed via tsv|[online-demo](http://heidieh.github.io/MSF-Dashboard/ver_demos/cfg_msf-lubumbashi) <!-- / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.0.0_msf-lubumbashi) -->|
+|**Surveillance: MSF Katanga ERU** (updated May 2017) - offline, data parsed via excel-spreadsheets|[online-demo](http://heidieh.github.io/MSF-Dashboard/ver_demos/cfg_eru-katanga/) <!-- / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.1_eru-katanga) -->|
+|**Surveillance: SRE MOH Tonkolili DHMT** (updated May 2017) - offline, data parsed via dedicated datamanager|[online-demo](http://heidieh.github.io/MSF-Dashboard/ver_demos/cfg_dhmt-tonkolili/) <!-- / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.1_dhmt-tonkolili) -->|
+|**Surveillance: MSF Sud-Kivu ERU** (updated May 2017) - offline, data parsed via excel-spreadsheets|[online-demo](http://heidieh.github.io/MSF-Dashboard/ver_demos/cfg_eru-sudkivu/)<!--  / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.1_eru-sudkivu) -->|
+|**Outbreak: MSF Bentiu Mission** (November 2016) - offline, data parsed via csv|[online-demo](http://heidieh.github.io/MSF-Dashboard/ver_demos/cfg_msf-bentiu)|
 |More to come...| |
 
 
@@ -53,7 +53,7 @@ The Dashboard relies on two types of files:
 Current documentation status:
 + A complete documentation of [dev/dev-defined.js](http://msf-uk.github.io/MSF-Dashboard/doc_getting-started/docs/dev-defined.html) for v1.0.0 is available.
 + The documentation for *index.html* (eg. [index.html](https://github.com/MSF-UK/MSF-Dashboard/blob/master/cfg_msf-bentiu/index.html)) for the layout and *lang/module_lang.js* (eg. [lang/module_lang.js](https://github.com/MSF-UK/MSF-Dashboard/blob/master/cfg_msf-bentiu/lang/module-lang.js)) for the texts and their translations, are not yet available.
-+ A complete API for MSF-Dashboard v1.1 is currently being developed. It is available for v1.0.0 here (HEIDI check)
++ Developer documentation for MSF-Dashboard v0.9.9 is available [here](https://msf-uk.github.io/MSF-Dashboard_doc/). It is currently being updated for v1.1.
 
 Please get in touch [here](https://github.com/MSF-UK/MSF-Dashboard/issues) if you have any problems or suggestions.
 
