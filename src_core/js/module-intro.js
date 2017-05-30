@@ -29,7 +29,9 @@ modules_list.intro = true;
  * @type {Object} 
  * @alias module:g.module_intro
  */
-g.module_intro = {};
+if(!g.module_intro){
+    g.module_intro = {}; 
+}
 
 /**
  * Defines and populates the intro.js instance.
@@ -65,6 +67,7 @@ module_intro.setup = function() {
      */
 	g.module_intro.definition = introJs();
 
+
     /**
      * Contains the steps details for the intro.js instance.
      * <br>
@@ -81,31 +84,112 @@ module_intro.setup = function() {
      * @alias module:module_intro.step
      */
 	g.module_intro.step = {};
-	var steps = [{
-			  	element: '#title',
-				intro: g.module_lang.text[g.module_lang.current].intro_intro,
-				position: 'bottom'
-			  }];
-	var keynum = 0;
-	g.viz_keylist.forEach(function(key){
-		if(!(g.viz_definition[key].display_intro == 'none')){
-			if(g.viz_definition[key].display_idcontainer){
-                var element = '#' + g.viz_definition[key].display_idcontainer;
-            }else{
-                var element = '#chart-'+key;
-            }
-            keynum++;
-			g.module_intro.step[key] = keynum;
-			steps.push({
-				  	element: element,
-					intro: g.module_lang.text[g.module_lang.current]['intro_'+key],
-					position: g.viz_definition[key].display_intro
-			});
-		}
-	});
 
+    if (g.new_layout) {
+        var keynum = 0;
+        for (i=0; i<= g.module_intro.intro_order.length-1; i++) {
+
+            if (i==0) {
+                var steps = [{
+                    element: g.module_intro.intro_order[0],
+                    intro: g.module_lang.text[g.module_lang.current].intro_intro,
+                  }];
+            } else if (g.module_intro.intro_order[i]=='menu') {
+                steps.push({
+                    element: g.module_intro.intro_order[i],
+                    intro: g.module_lang.text[g.module_lang.current]['intro_'+g.module_intro.intro_order[i]],
+                });
+                keynum++;
+            } else {
+                // Two techniques for declaring intro elements:
+                //  1. defined within g.viz_definition in dev-defined.js as .display_intro_container, display_intro_position, text defined in module-lang.js
+                //  2. defined by g.module_intro.intro_order where element not found as a chart, so is assumed to be a container; position defined by g.module_intro.intro_position; text defined in module-lang.js
+
+                var def = false;
+                //1. if there is chart with this name
+                for (var chart_name in g.viz_definition) {
+                    if (chart_name==g.module_intro.intro_order[i]) {
+                        if (g.viz_definition[chart_name].display_intro_container) {
+                            var element = '#' + g.viz_definition[chart_name].display_intro_container;
+                        } else {
+                            var element = '#chart-'+ chart_name;
+                        }
+                        var intro = g.module_lang.text[g.module_lang.current]['intro_'+chart_name];
+                        var position = g.viz_definition[chart_name].display_intro_position;
+                        def = true;
+                        break;
+                    }
+                };
+
+                //2. if there is a container with this name then select that
+                if (def==false) {
+                    var element = '#'+ g.module_intro.intro_order[i];
+                    var intro = g.module_lang.text[g.module_lang.current]['intro_'+g.module_intro.intro_order[i]];
+                    for (j=0; j<=g.module_intro.intro_position.length-1; j++) {
+                        if (g.module_intro.intro_position[j].container==g.module_intro.intro_order[i]) {
+                            var position = g.module_intro.intro_position[j].position;
+                            def = true;
+                            break;
+                        }
+                    }      
+                };    
+
+                if (def==false) {
+                    console.log("ERROR: Cannot find this div for intro.js Help");
+                }     
+                
+                keynum++;
+                g.module_intro.step[g.module_intro.intro_order[i]] = keynum;
+                steps.push({
+                        element: element,
+                        intro: intro,
+                        position: position,
+                });
+
+            }  
+
+        } 
+            
+    }
+
+    if (!(g.new_layout)) {
+        var steps = [{
+                //element: '#title',
+                intro: g.module_lang.text[g.module_lang.current].intro_intro,
+                //position: 'bottom'
+              }];
+        var keynum = 0;
+    	g.viz_keylist.forEach(function(key){
+            if(!(g.viz_definition[key].display_intro == 'none')){
+                if(g.viz_definition[key].display_idcontainer){
+                    var element = '#' + g.viz_definition[key].display_idcontainer;
+                }else{
+                    var element = '#chart-'+key;
+                }
+                keynum++;
+                g.module_intro.step[key] = keynum;
+                steps.push({
+                        element: element,
+                        intro: g.module_lang.text[g.module_lang.current]['intro_'+key],
+                        position: g.viz_definition[key].display_intro
+                });
+            }
+    	});
+    };
+    
 	g.module_intro.definition.setOptions({
-			steps: steps
+			steps: steps 
 		});
+
+    if (g.new_layout) {        
+        g.module_intro.definition.onbeforechange(function(element){
+            for (i=0; i<=g.module_intro.intro_beforechange.length-1; i++) {
+                if (element.id==g.module_intro.intro_beforechange[i].element) {
+                    $(g.module_intro.intro_beforechange[i].click).click();
+                }
+            }
+        });
+
+    }
 
 }

@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>MSF Data Manager v1.0 | Surveillance Tonkolili DHMT</title>
+        <title>MSF Data Manager v1.1 | Surveillance Tonkolili DHMT</title>
         <script src="./lib/jquery/jquery-2.2.0.min.js"></script>
         <script src="./lib/bootstrap/bootstrap.min.js"></script>
         <link rel="stylesheet" href="./lib/bootstrap/bootstrap.min.css" type="text/css">
@@ -15,7 +15,7 @@
         <script src="./lib/jquery-contextmenu/jquery.contextMenu.js"></script>
         <link rel="stylesheet" href="./lib/interactivetable/interactivetable.css" type="text/css">
         <script src="./lib/interactivetable/interactivetable.js"></script>
-
+        <script type="text/javascript" src="./data/PHU_matches.json"></script>
 
     </head>
     <body>
@@ -23,7 +23,7 @@
 
             <!-- Header -->
             <div class="row col-md-12">
-                <h2 id="title">MSF Data Manager v1.0 | Surveillance Tonkolili DHMT</h2>
+                <h2 id="title">MSF Data Manager v1.1 | Surveillance Tonkolili DHMT</h2>
                 <div class="col-md-12">
                     <p id="description">
                     PILOT VERSION. This version uses surveillance data. This tool is developed by the MSF UK, Manson Unit - <a href="mailto:gis.mansonunit@london.msf.org">gis.mansonunit@london.msf.org</a>.
@@ -64,16 +64,24 @@
             </div>
 
             <!-- Export Database -->
-            <div style="display: none;" class="col-md-6" id="export_row" hidden="true">
+            <!-- <div style="display: none;" class="col-md-6" id="export_row" hidden="true">
                 <div class="col-md-12">
                     <p><h4><input style="display: none;" type="button" style="width: 100%;" value="Export database to csv..." onclick="document.getElementById('db_export').click();"/> </h4><input style="display: none;" type="file" accept=".csv" nwsaveas="..\..\data-folders\04-dashboard-input\" id="db_export"/></p>
                 </div>
-            </div>
-            <div class="row col-md-12" id="export2_row" hidden="true">
-                <p><h3><u>Step 3</u>: Export an Image of the database to the Dashboard</h3></p>
+            </div> -->
+
+           <!--  <div class="row col-md-12" id="check_data" hidden="true">
+                <p><h3><u>Step 3</u>: Check for errors in data and make corrections</h3></p>
                 <div class="col-md-12">
-                    <p><h4><input type="button" style="width: 100%;" value="Export database to csv..." onclick="document.getElementById('db_export2').click();"/> </h4><input style="display: none;" type="file" accept=".csv" id="db_export2"/></p>
-                </div>
+                    <p><h4><input type="button" style="width: 100%;" value="Check data and correct errors..." onclick="dataChecks();"/> </h4></p> 
+                </div> 
+            </div> -->
+
+            <div class="row col-md-12" id="export2_row" hidden="true">
+                <p><h3><u>Step 3</u>: Export a version of the database to the Dashboard</h3></p>
+                <div class="col-md-12">
+                    <p><h4><input type="button" style="width: 100%;" value="Export database to csv..." onclick="document.getElementById('db_export2').click();"/> </h4><input style="display: none;" type="file" accept=".csv" id="db_export2"/></p> 
+                </div> 
             </div>
 
             <div class="row col-md-12" id="end_row" hidden="true">
@@ -94,5 +102,6 @@
         <!-- .js -->
         <script src="js/config.js"></script>
         <script src="js/main.js"></script>
+        <script src="js/dm_datacheck.js"></script>
     </body>
 </html>
