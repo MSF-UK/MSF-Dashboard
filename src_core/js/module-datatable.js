@@ -81,10 +81,33 @@ module_datatable.setup =function(){
      * @alias module:module_datatable.columns
      */
     g.module_datatable.columns = [];
+
+    var short_names = {};
+    g.medical_keylist.forEach(function(key,keynum){         //create list of only lowest level names (no higher adm names prefixing it)
+        if ((g.new_layout) && (key in g.medical_loclists)) {
+            short_names[key] = [];
+            for (var i=0; i<=g.medical_loclists[key].length-1; i++){
+                var loc = toTitleCase(g.medical_loclists[key][i].trim().split('_').join(' '));       //normalize names - capitalize, account for '_'
+                short_names[key].push(loc.trim().split(', ')[loc.trim().split(', ').length-1]);  
+            }
+        }
+    });
+
     g.medical_keylist.forEach(function(key,keynum){
         var column = {
             targets: keynum,
-            data: function(rec) { return rec[g.medical_headerlist[key]]; }
+            //data: function(rec) { return rec[g.medical_headerlist[key]]; }  //previous code
+            data: function(rec) { 
+                if ((g.new_layout) && (key in g.medical_loclists)) {        //only return locations in the correct column - accounts for shared columns
+                    if (short_names[key].indexOf(toTitleCase(rec[g.medical_headerlist[key]].trim().split('_').join(' ')))!=-1) {
+                        return rec[g.medical_headerlist[key]];
+                    } else {
+                        return "";
+                    }
+                } else {
+                    return rec[g.medical_headerlist[key]];
+                }
+            }
         };
         g.module_datatable.columns.push(column);
     });
@@ -222,7 +245,7 @@ module_datatable.interaction = function(){
 }
 
 /**
- * Actualises the datatable when not hidden (saves ressources to hide it).
+ * Actualises the datatable when not hidden (saves resources to hide it).
  * <br>
  * Requires:
  * <ul>
@@ -248,4 +271,3 @@ module_datatable.refreshTable = function() {
 
     }
 }
-

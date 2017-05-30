@@ -27,6 +27,14 @@
     margin-right: 8px;
     opacity: 0.7;
 }
+
+#legend_title {
+    margin-bottom: 0px;
+    font-size: 1.0em;
+    font-weight: bold;
+    color: black;
+}
+
 .info {
     padding: 4px 4px;
     background: white;
@@ -42,21 +50,30 @@
     background: rgba(255,255,255,0.8);
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     border-radius: 5px;
-    color:#ee0000;
+    /*color:#ee0000;*/
+    color: black;
     font-size:1em;
  }
 
 /* Charts styles */
-#chart-epiwk .x.axis text ,#chart-case_bar .x.axis text ,#chart-death_bar .x.axis text {
+#chart-epiwk .x.axis text ,#chart-case_bar .x.axis text ,#chart-death_bar .x.axis text, #chart-case_ser .x.axis text, #chart-death_ser .x.axis text {
     text-anchor: end !important;
     transform: rotate(-45deg);
     font-size:0.75em !important;
 }
+
+#chart-casedeath_ser_range .y.axis path {
+    stroke: none;
+}
+
 .x-axis-label {
     font-size: 12px !important;
 }
+.y-axis-label {
+    font-size: 11px !important;
+}
 .dc-chart .pie-slice {
-    fill: #656F73;
+    fill: #000000;
 }
 .dc-chart g.row text {
     fill: black;
@@ -73,3 +90,4 @@
 .noclick {
     pointer-events: none;
 }
+
