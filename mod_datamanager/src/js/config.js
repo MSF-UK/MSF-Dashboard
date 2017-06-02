@@ -1,7 +1,7 @@
 // Excel spreadsheet configuration:
 
-// New Excel format for ISDR data? (as of 02/2017)
-var newISDRFormat = true;
+// New Excel format - DHIS2 (as of 02/2017)
+var DHIS2_format = true;
 
 // Sheet parameters
 var newFirstRow = 5;          // First row with data
@@ -25,23 +25,22 @@ var tableColNum = 8;        // Number of columns containing each week
 
 // Parameters for any format:
 // Folders
-var folderHISfiles = '..\\..\\data-folders\\01-datamanager-IDSR-excel\\';
-var folderErrorLog = '..\\..\\data-folders\\01a-datamanager-IDSR-excel-error_log\\';
+var folderHISfiles = '..\\..\\data-folders\\01-datamanager-DHIS2-excel\\';
+var folderErrorLog = '..\\..\\data-folders\\01a-datamanager-DHIS2-excel-error_log\\';
 var folderDatabases = '..\\..\\data-folders\\02-datamanager-databases\\';
 var folderBackups = '..\\..\\data-folders\\03-datamanager-backup\\';
 var folderDashboard = '..\\..\\data-folders\\04-dashboard-input\\';
 
-// Dashbord index.html - Futur
+// Dashbord index.html
 var dashboardIndex = '\\dashboard\\src\\cfg_dhmt-tonkolili\\index.html';
 
 // Data check parameters
 var ignoreEmpty = true;
-//var ignoreErrors = false;
 var testType = {
     disease: 'none',
     chiefdom: 'none',
     PHU: 'none',
-    an: 'int_test',				//should this be within limits e.g. 1900-2100?
+    an: 'int_test',			
     pop: 'int_test',
     epiweek: 'epiweek_test',
     lesscas: 'int_test',
