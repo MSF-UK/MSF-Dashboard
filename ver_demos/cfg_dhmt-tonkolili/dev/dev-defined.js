@@ -219,7 +219,8 @@ g.module_colorscale.mapunitlist = ['Cases', 'Deaths','IncidenceProp','MortalityP
  * @type {Array.<String>}
  * @alias module:module_colorscale.userdefined_colors
  */
-g.module_colorscale.userdefined_colors = ['#333333', '#17becf', '#bcbd22', '#428bca', '#f69318','#9467bd', '#1b9e77', '#66a61e'];
+g.module_colorscale.userdefined_colors = ['#333333', '#17becf', '#bcbd22', '#428bca', '#f69318','#9467bd', '#1b9e77', '#bd1d02', '#66a61e'];
+//grey, turquoise, lime green, blue, orange, purple, green, red, green
 
 
 /**
@@ -330,7 +331,7 @@ g.module_getdata = {
                         type: 'json'}
         },
     },
-     medical:{
+    medical:{
         medical: {
             method: 'medicald3noserver',
             options: {  url: 'input/tonkolili_database_wks-201545-201605.csv',
@@ -752,7 +753,7 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
                                      y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely},       
                     
                     userdefined_colors: true,
-                    display_colors: [3,4],          
+                    display_colors: [3,4,5,6,7],          
                     display_intro_position: 'top',                  
                     display_intro_container: 'container_lin',
                     buttons_list: ['help'],
@@ -778,7 +779,7 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
                                      y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely},        
               
                     userdefined_colors: true,
-                    display_colors: [3,4],
+                    display_colors: [3,4,5,6,7],
 
                     display_intro_position: 'none',
                     buttons_list: ['help'],
@@ -820,7 +821,7 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
 
                     display_title: true,
                     userdefined_colors: true,
-                    display_colors: [3,4],
+                    display_colors: [3,4,5,6,7],
 
                     display_intro_position: 'left',     
                     
