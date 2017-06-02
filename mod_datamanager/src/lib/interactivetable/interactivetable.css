@@ -49,8 +49,11 @@
     background-color: yellow;
 }
 .updating {
-    background-color: #ffa500;
+    background-color: #ffa500;    /*orange*/
+}
+.replacing {
+    background-color: #ffa500;    /*orange*/
 }
 .validated {
-    background-color: #b3de69;
+    background-color: #b3de69;    /*green*/
 }
