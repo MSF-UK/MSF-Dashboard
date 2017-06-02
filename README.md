@@ -3,7 +3,7 @@ MSF-Dashboard v1.1
 
 A lightweight and modular data visualization micro-website that can be offlined and adapted to various data-feeds.
 
-A new release (v1.1) is now ready and will be available for download shortly. <!-- [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.0.0). This includes various examples of configuration files. -->
+A new release (v1.1) is now ready and is available for [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.1). This includes various examples of configuration files.
 
 Want to contribute to MSF-Dashboard? Please read `CONTRIBUTING.md`.
 
@@ -14,11 +14,11 @@ Here are some example use cases of the MSF-Dashboard, including online demo vers
 
 |Description                                           |Links                                                 |
 |------------------------------------------------------|------------------------------------------------------|
-|**Outbreak: MSF Lubumbashi Mission** (December 2015) - offline, data parsed via tsv|[online-demo](http://heidieh.github.io/MSF-Dashboard/ver_demos/cfg_msf-lubumbashi) <!-- / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.0.0_msf-lubumbashi) -->|
-|**Surveillance: MSF Katanga ERU** (updated May 2017) - offline, data parsed via excel-spreadsheets|[online-demo](http://heidieh.github.io/MSF-Dashboard/ver_demos/cfg_eru-katanga/) <!-- / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.1_eru-katanga) -->|
-|**Surveillance: SRE MOH Tonkolili DHMT** (updated May 2017) - offline, data parsed via dedicated datamanager|[online-demo](http://heidieh.github.io/MSF-Dashboard/ver_demos/cfg_dhmt-tonkolili/) <!-- / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.1_dhmt-tonkolili) -->|
-|**Surveillance: MSF Sud-Kivu ERU** (updated May 2017) - offline, data parsed via excel-spreadsheets|[online-demo](http://heidieh.github.io/MSF-Dashboard/ver_demos/cfg_eru-sudkivu/)<!--  / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.1_eru-sudkivu) -->|
-|**Outbreak: MSF Bentiu Mission** (November 2016) - offline, data parsed via csv|[online-demo](http://heidieh.github.io/MSF-Dashboard/ver_demos/cfg_msf-bentiu)|
+|**Outbreak: MSF Lubumbashi Mission** (December 2015) - offline, data parsed via tsv|[online-demo](http://MSF-UK.github.io/MSF-Dashboard/ver_demos/cfg_msf-lubumbashi) / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.0.0_msf-lubumbashi)|
+|**Surveillance: MSF Katanga ERU** (updated May 2017) - offline, data parsed via excel-spreadsheets|[online-demo](http://MSF-UK.github.io/MSF-Dashboard/ver_demos/cfg_eru-katanga/) / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.1/eru-katanga_v1.1.zip)|
+|**Surveillance: SRE MOH Tonkolili DHMT** (updated May 2017) - offline, data parsed via dedicated datamanager|[online-demo](http://MSF-UK.github.io/MSF-Dashboard/ver_demos/cfg_dhmt-tonkolili/) / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.1/dhmt-tonkolili_v1.1.zip)|
+|**Surveillance: MSF Sud-Kivu ERU** (updated May 2017) - offline, data parsed via excel-spreadsheets|[online-demo](http://MSF-UK.github.io/MSF-Dashboard/ver_demos/cfg_eru-sudkivu/) / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.1/eru-sudkivu_v1.1.zip)|
+|**Outbreak: MSF Bentiu Mission** (November 2016) - offline, data parsed via csv|[online-demo](http://MSF-UK.github.io/MSF-Dashboard/ver_demos/cfg_msf-bentiu)|
 |More to come...| |
 
 
