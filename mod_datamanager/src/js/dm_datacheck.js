@@ -1,14 +1,12 @@
 
 testvalue = {		//data test types
 	int_test: function(rec,key,none){
-		//console.log("in testvalue.int_test ", rec, key, none);
 		var value = rec[key];
 		var cond_1 = value >= 0;
 		var cond_2 = parseInt(Number(value),10) == value;
 		return cond_1 && cond_2;
 	},
 	real_test: function(rec,key,none){
-		//console.log("in testvalue.real_test ", rec, key, none);
 		var value = rec[key];
 		var cond_1 = !isNaN(Number(value));
 		var cond_2 = !(value == '');
@@ -22,7 +20,6 @@ testvalue = {		//data test types
 		return cond_1 && cond_2 && cond_3;
 	},
 	epiweek_test: function(rec,key,none){
-		//console.log("in testvalue.epiweek_test ", rec, key, none);
 		var value = rec[key];
 		var year = value.split('-')[0];
 		var week = value.split('-')[1];
@@ -75,7 +72,6 @@ testvalue = {		//data test types
 		return cond_1;
 	},*/
 	empty: function(rec,key,none){
-		//console.log("check if empty: ", rec, key, rec[key]);
 		if(rec[key] == undefined || rec[key] == '_NA'){
 			var cond_1 = true;
 		}else{
@@ -84,17 +80,14 @@ testvalue = {		//data test types
 		return cond_1;
 	},
 	none: function(rec,key,none){
-		//console.log("in testvalue.none ", rec, key, none);
 		return true;
 	}
 };
 
 
 function checkRecord(rec, sheetName, col, row) {
-	console.log("in dm_datacheck.js checkRecord: ", rec, sheetName, col, row);
-
-	//SHOULD WE BE CHECKING FOR DUPLCATES? 
-	//SHOULD WE BE CHECKING GEOMETRIES/ADM LAYERS (chiefdom, PHU), DISEASE LIST, YEAR (an)?
+	//console.log("in dm_datacheck.js checkRecord: ", rec, sheetName, col, row);
+	// todo: Check for duplicates, check geometries/adm layers (chiefdom, PHU), DISEASE LIST, YEAR (an)
 
 	var col_fix = -6;		//if only the weekly columns are checked
 	var new_col_fix = -2;
@@ -113,10 +106,10 @@ function checkRecord(rec, sheetName, col, row) {
 				default: type_req = 'NA';
 			};
 
-			if (result==false) {									//THIS SHOULD GO IN MAIN.JS so here is ONLY datachecks
+			if (result==false) {									
 				console.log("***** ERROR HERE: ", key, rec);
 				error_id++
-				if (newISDRFormat) {
+				if (DHIS2_format) {
 					error_log_temp = [error_id, sheetName, numbersToLetters(col-7+new_col_fix), row, rec[key], type_req];	//col-4 is first column in the record
 				} else {
 					error_log_temp = [error_id, sheetName, numbersToLetters(col-8+col_fix), row, rec[key], type_req];	//col-8 is first column in the record
@@ -127,7 +120,7 @@ function checkRecord(rec, sheetName, col, row) {
 
 		};
 
-		if (newISDRFormat) {
+		if (DHIS2_format) {
 			new_col_fix++;
 		} else {
 			col_fix++;  	//NOTE: IF PROGRAM FAILS HERE THEN YOU LOSE THE DATA FOR THIS WEEK
