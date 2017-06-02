@@ -2,6 +2,10 @@ var X = XLSX;
 var fs = require('fs');
 var path = require('path');
 
+console.log(folderHISfiles);
+console.log(folderDatabases);
+console.log(folderDashboard);
+
 // Default folders
 $( "#ds_add" ).attr( "nwworkingdir", folderHISfiles);
 $( "#db_old" ).attr( "nwworkingdir", folderDatabases);

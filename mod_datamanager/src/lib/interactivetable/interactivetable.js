@@ -10,29 +10,38 @@ var current_id;
 var clickcount = 0;
 
 function updatingCell(target,status) {
+	 //console.log("in updatingCell ", target+'-'+current_epiwk, "   status = ", status);
+	 //console.log("    classList = ", document.getElementById(target+'-'+current_epiwk).classList);
 	 switch(status) {
-	    case "X":
+	    case "X":   	//table cell already contains data
 	    	document.getElementById(target+'-'+current_epiwk).classList.remove("clicked");
     		document.getElementById(target+'-'+current_epiwk).classList.remove("updating");
     		document.getElementById(target+'-'+current_epiwk).innerHTML = "X";
 			document.getElementById(target+'-'+current_epiwk).classList.add("validated");
+			document.getElementById(target+'-'+current_epiwk).classList.remove("replacing");  
 	        break;
-	    case ".":
+	    case ".":   	//table cell empty
 		    document.getElementById(target+'-'+current_epiwk).classList.remove("clicked");
 	    	document.getElementById(target+'-'+current_epiwk).classList.remove("updating");
     		document.getElementById(target+'-'+current_epiwk).innerHTML = ".";
 	        break;
-	    case "...":
+	    case "...":   	//table cell updating
 	    	document.getElementById(target+'-'+current_epiwk).classList.remove("clicked");
 		    document.getElementById(target+'-'+current_epiwk).classList.remove("validated");
 			document.getElementById(target+'-'+current_epiwk).classList.add("updating");
+	        break;
+	    case "X-X":    	//table cell being replaced (i.e. delete original data)
+	    	document.getElementById(target+'-'+current_epiwk).classList.remove("clicked");
+	    	document.getElementById(target+'-'+current_epiwk).classList.remove("validated");
+    		document.getElementById(target+'-'+current_epiwk).classList.remove("updating");     
+			document.getElementById(target+'-'+current_epiwk).classList.add("replacing");
 	        break;
 	}
 }
 
 function updateInteractiveTableContent(database,target){
 	database.recordsum.forEach(function(e){
-		console.log(target+e.epiweek);
+		console.log("current table content: ", target+e.epiweek);
         document.getElementById(target+'-'+e.epiweek).innerHTML = "X";
         document.getElementById(target+'-'+e.epiweek).classList.add("validated");
 
@@ -57,15 +66,14 @@ function initialiseyearsInteractiveTable(database) {
 }
 
 function showInteractiveTable(database,target){
-
-	console.log('current_yearMin: ' + current_yearMin);
-	console.log('current_yearMax: ' + current_yearMax);
+	//console.log('current_yearMin: ' + current_yearMin);
+	//console.log('current_yearMax: ' + current_yearMax);
 	createInteractiveTable(current_yearMin,current_yearMax,target);
     createInteractionTable(target);
 }
 
 function addRow(dif) {
-	console.log(dif);
+	//console.log(dif);
 	switch(dif) {
 	    case "min":
 	    	current_yearMin--;
@@ -74,7 +82,7 @@ function addRow(dif) {
 	    	current_yearMax++;
 	        break;
 	}
-	console.log(dif);
+	//console.log(dif);
 	showInteractiveTable(current_database,"table");
 	updateInteractiveTableContent(current_database,"table");
 }
@@ -130,27 +138,31 @@ function createInteractionTable(target){
 	var definition = {
         selector: ".menu", 
         events: {
-        	show: function(opt){
-        		console.log('show');
-        		var idtemp = opt.$trigger.context.id;
+        	show: function(opt){			//show menu options when user clicks on individual table cell
+        		var idtemp = opt.$trigger.context.id;     //table cell id, e.g. table-2016-48
+        		console.log("show ", idtemp);
 	            if(document.getElementById(idtemp).innerHTML == "X"){
 					document.getElementById(idtemp).classList.remove("validated");
 				}	
 	            document.getElementById(idtemp).classList.add("clicked");
-	            
+	            //console.log("    classList = ", document.getElementById(idtemp).classList); 
         	},
-        	hide: function(opt){
-        		console.log('hide');
-        		var idtemp = opt.$trigger.context.id;
+        	hide: function(opt){			//hide menu options when user clicks away from individual table cell
+        		var idtemp = opt.$trigger.context.id;		//table cell id, e.g. table-2016-48
+        		console.log("hide ", idtemp);
 	            document.getElementById(idtemp).classList.remove("clicked");
-	            if(document.getElementById(idtemp).innerHTML == "X"){
+	            /*if(document.getElementById(idtemp).innerHTML == "X"){
+					document.getElementById(idtemp).classList.add("validated");
+				}*/
+				if((document.getElementById(idtemp).innerHTML == "X") && !(document.getElementById(idtemp).classList.contains("replacing"))){
 					document.getElementById(idtemp).classList.add("validated");
 				}
+				//console.log("    classList = ", document.getElementById(idtemp).classList); 
         	}
         },
         trigger: 'left',
         callback: function(key, opt) {
-      		console.log(key);
+      		//console.log(" callback key = ", key);
             var m = "clicked: " + key;
             var idtemp = opt.$trigger.context.id;
             current_id = idtemp;
@@ -159,24 +171,22 @@ function createInteractionTable(target){
             current_row = idtemp.split('-')[1];
             current_col = idtemp.split('-')[2];
             current_epiwk = yrwkToEpiwk(parseInt(current_row),parseInt(current_col));
-            console.log(status);
-            console.log(current_epiwk);
+            //console.log(status);
+            //console.log(current_epiwk);
 
             //document.getElementById(target+'-'+current_epiwk).classList.add("clicked");
 
             switch(key) {
 			    case "add":
-			    	if (status == ".") {
+			    	if (status == ".") {  	
 			    		updatingCell("table","...");
 			    		document.getElementById('ds_add').click();
 			    	};
 			        break;
 			    case "update":
 			    	if (status == "X") {
-			    		updatingCell("table","...");
-			    		deleteDataset(current_epiwk);
-			    		updatingCell("table","...");
-			    		document.getElementById('ds_add').click();			    		
+			    		updatingCell("table","X-X");
+			    		document.getElementById('ds_add').click();		  		
 			    	};
 			        break;
 			    case "delete":
@@ -185,11 +195,11 @@ function createInteractionTable(target){
 			    		deleteDataset(current_epiwk);
 			    	};
 			        break;
-			    case "replace":
+			    /*case "replace":
 			    	if (status == "X") {
 			    		console.log('not implemented yet');
 			    	};
-			        break;
+			        break;*/
 			    default:
 			    	//document.getElementById(target+'-'+current_epiwk).classList.remove("clicked");
 			    	break;
@@ -197,9 +207,9 @@ function createInteractionTable(target){
 
         },
         items: {
-            "add": {name: "Add IDSR data", icon: "add"},
-            "update": {name: "Update IDSR data", icon: "edit"},
-            "delete": {name: "Delete IDSR data", icon: "delete"},
+            "add": {name: "Add DHIS2 data", icon: "add"},
+            "update": {name: "Update DHIS2 data", icon: "edit"},
+            "delete": {name: "Delete DHIS2 data", icon: "delete"},
             //sep1: "---------",
             //"replace": {name: "Add external pop. data", icon: "paste"}
             /*<input type="radio">
