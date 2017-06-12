@@ -190,60 +190,62 @@ function his_to_json_new_format(workbook,xlsname) {
         var lastCol = lettersToNumbers(newFirstCol) + (newColsPerDisease * newNumDiseases) - 1;
 
         for (var r = firstRow; r <= lastRow;r++) {      //loop through each row
-            var tempPHU = workbook.Sheets[sheetName]['A' + r].v;
-            var tempChiefdom = "";
-            for (var i=0; i<=PHU_matches.length-1; i++) {
-                if (PHU_matches[i].PHU==tempPHU) {
-                    tempChiefdom = PHU_matches[i].chiefdom;
-                    break;
-                }
-            }
-
-            tempRef = 0;
-            for (var c = firstCol; c <= lastCol+1; c++) {       //loop through each column
-                tempRef++;
-                if (tempRef > 4) {                              //only act from after 1st column
-
-                    temp = [];
-                    var tempDisease = workbook.Sheets[sheetName][numbersToLetters(c-1) + (newFirstRow-1)]["v"];
-                    tempDisease = tempDisease.replace(/EIDSR case/g, "").replace(/EIDSR death/g, "").replace(/EIDSR/g, "").replace(/Under 5 years/g, "").replace(/5 years and older/g, "").trim();
-                    
-                    for (var i = 4; i >= 1; i--) {              //work through 4 columns backwards from -4 to -1
-                         val = (typeof workbook.Sheets[sheetName][numbersToLetters(c-i) + r] !== 'undefined') ? workbook.Sheets[sheetName][numbersToLetters(c-i) + r]["v"] : undefined;
-                         temp.push(val);
-                    };
-
-                    function checkIfEmpty(cellVal) {
-                        var empty = false;
-                        if (cellVal==undefined) {
-                            empty = true;
-                        } else if (cellVal.length==0) {
-                            empty = true;
-                        }
-                        return empty;
+            if (typeof workbook.Sheets[sheetName]['A' + r] !== 'undefined') {   //if column A of row is defined (assume no data if column A is undefined)
+                var tempPHU = workbook.Sheets[sheetName]['A' + r].v;
+                var tempChiefdom = "";
+                for (var i=0; i<=PHU_matches.length-1; i++) {
+                    if (PHU_matches[i].PHU==tempPHU) {
+                        tempChiefdom = PHU_matches[i].chiefdom;
+                        break;
                     }
+                }
 
-                    test_empty = checkIfEmpty(temp[0]) && checkIfEmpty(temp[1]) && checkIfEmpty(temp[2]) && checkIfEmpty(temp[3]);    
+                tempRef = 0;
+                for (var c = firstCol; c <= lastCol+1; c++) {       //loop through each column
+                    tempRef++;
+                    if (tempRef > 4) {                              //only act from after 1st column
 
-                    if (!(test_empty)) {
-                        var temp_rec = {        
-                            disease: tempDisease,
-                            chiefdom: tempChiefdom,      
-                            PHU: tempPHU,                  
-                            an: inputYear, 
-                            epiweek: tempEpiweek,         
-                            lesscas: temp[0],       //col c-4
-                            lessdth: temp[1],       //col c-3
-                            morecas: temp[2],       //col c-2
-                            moredth: temp[3]        //col c-1
-                        }; 
-                        current_database.recordnum++;
-                        current_database.data.push(temp_rec); 
-                        checkRecord(temp_rec, sheetName, c, r);
+                        temp = [];
+                        var tempDisease = workbook.Sheets[sheetName][numbersToLetters(c-1) + (newFirstRow-1)]["v"];
+                        tempDisease = tempDisease.replace(/EIDSR case/g, "").replace(/EIDSR death/g, "").replace(/EIDSR/g, "").replace(/Under 5 years/g, "").replace(/5 years and older/g, "").trim();
+                        
+                        for (var i = 4; i >= 1; i--) {              //work through 4 columns backwards from -4 to -1
+                             val = (typeof workbook.Sheets[sheetName][numbersToLetters(c-i) + r] !== 'undefined') ? workbook.Sheets[sheetName][numbersToLetters(c-i) + r]["v"] : undefined;
+                             temp.push(val);
+                        };
+
+                        function checkIfEmpty(cellVal) {
+                            var empty = false;
+                            if (cellVal==undefined) {
+                                empty = true;
+                            } else if (cellVal.length==0) {
+                                empty = true;
+                            }
+                            return empty;
+                        }
+
+                        test_empty = checkIfEmpty(temp[0]) && checkIfEmpty(temp[1]) && checkIfEmpty(temp[2]) && checkIfEmpty(temp[3]);    
+
+                        if (!(test_empty)) {
+                            var temp_rec = {        
+                                disease: tempDisease,
+                                chiefdom: tempChiefdom,      
+                                PHU: tempPHU,                  
+                                an: inputYear, 
+                                epiweek: tempEpiweek,         
+                                lesscas: temp[0],       //col c-4
+                                lessdth: temp[1],       //col c-3
+                                morecas: temp[2],       //col c-2
+                                moredth: temp[3]        //col c-1
+                            }; 
+                            current_database.recordnum++;
+                            current_database.data.push(temp_rec); 
+                            checkRecord(temp_rec, sheetName, c, r);
+                        };
+                        tempRef=1;
                     };
-                    tempRef=1;
-                };
 
+                };
             };
         };
 
