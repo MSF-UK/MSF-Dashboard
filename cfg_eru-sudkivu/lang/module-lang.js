@@ -118,6 +118,9 @@ g.module_lang.text.fra = {
 	loadfiles_selected: ['Le fichier actuellement sélectionné contient','enregistrements.'],
 	loadfiles_load: 'Charger le Dashboard',
 
+	chart_aires_title: 'Aires de Santé',
+	chart_aires_labelx: 'Nombre de Signalements',
+	chart_aires_labely: 'Aires',
 	chart_disease_title: 'Pathologies',
 	chart_disease_labelx: 'Nombre de Signalements',
 	chart_disease_labely: 'Pathologies',
@@ -127,7 +130,6 @@ g.module_lang.text.fra = {
 	chart_case_lin_imr_title: 'Taux d\'incidence & mortalité',   
 	chart_case_ser_comp_title: 'Cas & Décès - Fréquence de transmission',
 	chart_case_lin_comp_title: 'Cas & Décès - Fréquence de transmission',
-
 	chart_case_labelx: 'Semaine Epi',
 	chart_case_labely: 'Cas',
 	chart_death_labelx: 'Semaine Epi',
@@ -141,7 +143,8 @@ g.module_lang.text.fra = {
 	chart_fyo_labelo: 'Plus de 5 ans',							
 	chart_fyo_labela: 'Tous Ages',   						
 	chart_multiadm_title: 'Emplacements',									
-	chart_ser_range_title: 'Semaine Epi',			
+	chart_ser_range_title: 'Semaine Epi',	
+	chart_nospec_label: 'Aucune spécifiée',		
 
 	epiweek_all: 'Toutes',									
 	epiweek_none: 'Aucune',									
@@ -266,6 +269,8 @@ g.module_lang.text.fra = {
 
 	intro_multiadm: '<div style="font: 14px sans-serif;"><h4><b>La Carte</b></h4><p><b> Statistiques</b><br/>La carte représente les statistiques suivantes : nombre de cas, nombre de décès, taux d\’incidence, taux de mortalité et  fréquence de transmission (i.e. la fréquence à laquelle les rapports sont faits). L\’élément statistique à visualiser peut être choisi en cliquant sur le bouton correspondant au-dessus de la carte.</p><p><b>Niveaux divisionels</b><br/>Les données peuvent être visualiser selon un niveaux divisionel seulement: le <i>Zone de Santé.</i></p><p><b>Filtrer par aire géographique</b><br/>Sélectionner une aire géographique spécifique sur la carte permet d\’afficher les données correspondantes à cette aire. Plusieurs aires géographiques peuvent être sélectionnées simultanément. Pour désélectionner une aire, cliquez une deuxième fois sur l\’aire concernée ou sur le bouton « ↻ » pour tout réinitialiser simultanément.</p><p><b>Zoomer sur une aire géographique</b><br/>Vous pouvez vous rendre directement sur une aire spécifique en utilisant la liste de sélection <i>Zoom rapide</i> (au-dessus à droite de la carte). Vous pouvez également parcourir la carte en utilisant les boutons de zoom (+/-) ainsi que la souris (clic maintenu pour bouger la carte).</p><p><b>Autres boutons:</b><ul style="padding-left: 22px; "><li style="margin-bottom: 5px; ">cliquer "<span class="ft">⬙</span>" permet d\'ajuster l\'échelle de couleurs au jeu de données actuel (si le mode <i>auto</i> n\'est pas déjà activé)</li><li style="margin-bottom: 5px; ">cliquer "<span class="ft">⚙</span>" permet d\'accéder à plus d\'options pour paramétrer la carte</li><li style="margin-bottom: 5px; ">cliquer "<span class="ft">◰</span>" permet d\'agrandir/réduire la carte</li></p></div>',
 	
+	intro_aires: "<div style='font: 14px sans-serif;'><h4><b>Graphique des Aires de Santé</b></h4><p>Ce graphique indique toutes les Aires de Santé représentées. Il indique combien de fois chaque Aire de Santé a été rapportée (i.e. +1 par pathologie et par semaine là où il y a eu au moins un nouveau cas rapporté).</p><p>Pour sélectionner les données par rapport à une Aire de Santé spécifique, cliquez sur la barre de l'Aire désirée. Désélectionnez en cliquant sur la même Aire une deuxième fois ou en sélectionnant une nouvelle Aire.</p></div>",
+
 	intro_disease: "<div style='font: 14px sans-serif;'><h4><b>Graphique des pathologies</b></h4><p>Ce graphique indique toutes les pathologies représentées. Il indique combien de fois chaque pathologies a été rapportée (i.e. +1 par région et par semaine là où il y a eu au moins un nouveau cas rapporté).</p><p>Pour sélectionner les données par rapport à une pathologie spécifique, cliquez sur la barre de la pathologie désirée. Désélectionnez en cliquant sur la même pathologie une deuxième fois ou en sélectionnant une nouvelle pathologie.</p></div>",
 
 	intro_container_ser_lin: "<div style='font: 14px sans-serif;'><h4><b>Graphiques des semaines épi</b></h4><p>Selon le bouton sélectionné au-dessus de la carte, les graphiques de cette section représenteront soit le <i>nombre de cas et de décès</i>, soit le <i>taux d’incidence et de mortalité</i>, pour une semaine épi donnée. Ils peuvent être visualisés par <i>toutes les semaines</i> ou par <i>année</i> selon le bouton sélectionné au-dessus de la carte. Survolez avec la souris un point spécifique sur le graphique et les valeurs associées apparaitront au niveau du point sélectionné. </p><p>Le graphique de sélection de semaines épi (voir ci-dessous) permet de sélectionner plusieurs semaines épi selon ces besoins.</p><p>L’aide suivante permet une description plus précise de ces graphiques.</p></div>",
@@ -292,6 +297,9 @@ g.module_lang.text.eng = {
 	loadfiles_selected: ['The file currently selected counts','records.'],
 	loadfiles_load: 'Load the Dashboard',
 
+	chart_aires_title: 'Health Units',
+	chart_aires_labelx: 'Times Reported',
+	chart_aires_labely: 'Health Units',
 	chart_disease_title: 'Diseases',
 	chart_disease_labelx: 'Times Reported',
 	chart_disease_labely: 'Diseases',
@@ -315,6 +323,7 @@ g.module_lang.text.eng = {
 	chart_fyo_labela: 'All Ages',   
 	chart_multiadm_title: 'Locations',	
 	chart_ser_range_title: 'Epiweeks',	
+	chart_nospec_label: 'None specified',
 	
 	epiweek_all: 'All',
 	epiweek_none: 'None',
@@ -439,6 +448,8 @@ g.module_lang.text.eng = {
 	intro_menu: "<div style='font: 14px sans-serif;'><h4><b>General Dashboard Options</b></h4><p>There are a number of options that can be applied to the entire dashboard. These are located down the left-hand side of the dashboard and include:</p><ul><li style='margin-bottom: 10px;'><b>Help</b><br/>Opens the Help tour.</li><li style='margin-bottom: 10px;'><b>Reload</b><br/>Reloads the entire dashboard.</li><li style='margin-bottom: 10px;'><b>Play/Pause</b><br/>Plays through all epiweeks of data for the current view. The epiweek currently displayed is written beneath the button when in <i>Play</i> mode. <i>Pause</i> can be selected at any time.</li><li style='margin-bottom: 10px;'><b>Current Map View</b><br/>These statistics display the total number of <i>Cases</i> and <i>Deaths</i> that are displayed in the current view of the map.</li><li style='margin-bottom: 10px;'><b>Reset All</b><br/>Resets all filters in the data (i.e. it '<i>de-</i>selects' all data) except for <i>Diseases</i>. It is assumed that the user normally wants to view one disease at a time.</li><li style='margin-bottom: 10px;'><b>View Current Filters</b><br/>Displays a summary of all filters currently applied in the dashboard. It is possible to toggle it on or off at any time.</li></div>",
 
 	intro_multiadm: '<div style="font: 14px sans-serif;"><h4><b>The Map</b></h4><p><b>Statistics</b><br/>The map displays one of the following statistics: Cases, Deaths, Incidence Rate, Mortality Rate, and Completeness (the frequency of reports made). The statistic displayed can be selected using the buttons above the map.</p><p><b>Divisional Level</b><br/>Data can only be viewed by <i>Chiefdom</i> in the current dashboard.</p><p><b>Filter by area</b><br/>Selecting an area on the map filters all data in the dashboard to that area. Multiple areas can be selected. To <i>de-</i>select areas, either click a selected area a second time, or click the "↻" button to de-select all areas simultaneously.</p><p><b>Zoom to an area</b><br/>You can zoom directly to a specific Chiefdom using the <i>Quick zoom</i> drop-down menu. You can also navigate the map using the zoom buttons (+/-) and by panning with your mouse.</p><p><b>Other optional buttons:</b><ul style="padding-left: 22px;"><li style="margin-bottom: 5px;">click "<span class="ft">⬙</span>" to adjust the colorscale limit values for the current dataset (if it is not already in <i>auto</i> mode)</li><li style="margin-bottom: 5px;">click "<span class="ft">⚙</span>" to access more optional map parameters (such as the colorscale type and the interval calculation mode)</li><li style="margin-bottom: 5px;">click "<span class="ft">◰</span>" to enlarge or reduce the size of the map window</li></p></div>',
+
+	intro_aires: "<div style='font: 14px sans-serif;'><h4><b>Health Units Chart</b></h4><p>This chart displays all Health Units reported in the data. It measures the number of times each Health Unit reported (i.e. +1 per disease and per week, where there was at least 1 case reported).</p><p>To filter all dashboard data to a specific Health Unit, select it by clicking on its bar. <i>De-</i>select it by either clicking it a second time, or by selecting a different Health Unit.</p></div>",
 
 	intro_disease: "<div style='font: 14px sans-serif;'><h4><b>Disease Chart</b></h4><p>This chart displays all diseases reported in the data. It measures the number of times each disease was reported (i.e. +1 per area and per week, where there was at least 1 case reported).</p><p>To filter all dashboard data to a specific disease, select it by clicking on its bar. <i>De-</i>select it by either clicking it a second time, or by selecting a different disease.</p></div>",
 

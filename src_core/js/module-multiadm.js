@@ -101,13 +101,14 @@ module_multiadm.display = function(){
 		} else {
 			html += '<div class="col-md-3" id="map-text">';
 		}
+
 		html += '<span class="map-text">'+g.module_lang.text[g.module_lang.current].map_viewby_text+'</span><br>'; 
 		g.geometry_keylist.forEach(function(key,keynum){
 			if (keynum == 0) {
 				html += '<button id="map-'+key+'-btn" class="btn_map button_mapadm on">'+g.module_lang.text[g.module_lang.current]['map_'+key].title+'</button>';
 			} else {
 				html += '<button id="map-'+key+'-btn" class="btn_map button_mapadm">'+g.module_lang.text[g.module_lang.current]['map_'+key].title+'</button>';
-			}			
+			}	
 		});
 		html += '</div>';
 
@@ -501,6 +502,7 @@ module_multiadm.interaction = function(){
 			    };
 			})
 		})
+
 	}
 
 

@@ -309,10 +309,10 @@ function generateDashboard(){
                 module_multiadm.mapunit_interaction();
                 // Maps definition
                 g.viz_definition[key].charts = {};
-                g.geometry_keylist.forEach(function(key2){
+                g.geometry_keylist.forEach(function(key2){    
                     var div_id = '#map-' + key2;
                     g.viz_definition[key].charts[key2] = dc.leafletChoroplethChart(div_id);
-                });
+                });                
             },
             row : function(key){
                 g.viz_definition[key].chart = dc.rowChart('#chart-'+key);
@@ -382,9 +382,10 @@ function generateDashboard(){
         var dimensionBuilder = {
             multiadm: function(none){
                 var mapDimension = {};
-                g.geometry_keylist.forEach(function(key2,key2num,key2list) {   
+                g.geometry_keylist.forEach(function(key2,key2num,key2list) {  
                     mapDimension[key2] = cf.dimension(function(rec){ 
                         if (g.new_layout) {
+
                             if(g.module_datacheck.definition_value[key2].setup == 'normalize'){ 
                                 var loc_current = toTitleCase(rec[g.medical_headerlist[key2]].trim().split('_').join(' '));
                             } else {   
@@ -407,8 +408,9 @@ function generateDashboard(){
                                 } else {
                                     loc_current = rec[g.medical_headerlist[name]].trim().split('_').join(' ')+', '+loc_current;
                                 }
+                                
                             }
-
+                           
                         } else {
 
                             var count = key2num;
@@ -428,7 +430,6 @@ function generateDashboard(){
 
                         }
                         return loc_current;
-                        
                     }); 
                 });
                 return mapDimension;                        //one for each adm level
@@ -446,9 +447,17 @@ function generateDashboard(){
             normalize: function(key){
                 var dimension = cf.dimension(function(rec) {
                     if(rec[g.medical_headerlist[key]]){
-                        return toTitleCase(rec[g.medical_headerlist[key]].trim().split('_').join(' '));
+                        if ((key=='admN2') && (rec[g.medical_headerlist[key]]=='_NA')) {   
+                            return g.module_lang.text[g.module_lang.current].chart_nospec_label;
+                        } else {
+                            return toTitleCase(rec[g.medical_headerlist[key]].trim().split('_').join(' '));
+                        }
                     }else{
-                        return 'NA';
+                        if ((key=='admN2') && (rec[g.medical_headerlist[key]]=='_NA')) {    
+                            return g.module_lang.text[g.module_lang.current].chart_nospec_label;
+                        } else {
+                            return 'NA';
+                        }
                     }
                 });
                 return dimension;
@@ -1254,7 +1263,6 @@ function generateDashboard(){
                         temp_adm = g.geometry_keylist[d.key.split(', ').length - 1];
                     }
 
-
                     if ((g.module_colorscale.mapunitcurrent == 'IncidenceProp') || (g.module_colorscale.mapunitcurrent == 'MortalityProp')) {
 
                         //Deals with filtering by epiweeks
@@ -1387,7 +1395,6 @@ function generateDashboard(){
                     };
                     
                     g.viz_currentvalues[temp_adm][d.key] = accessed_value;
-                
                     return accessed_value; 
                 }
 
@@ -1414,7 +1421,7 @@ function generateDashboard(){
                 g.viz_definition[key1].maps = {};
                 g.viz_definition[key1].legend ={};					
 
-                g.geometry_keylist.forEach(function(key2){      
+                g.geometry_keylist.forEach(function(key2){   
                     var div_id = '#map-' + key2;					
                     var filter_id = div_id + '-filter';
                     g.viz_definition[key1].charts[key2]
@@ -1601,6 +1608,9 @@ function generateDashboard(){
                     .height(350)
                     .dimension(g.viz_definition[key1].dimension)
                     .group(g.viz_definition[key1].group)
+                    .label(function (d) {
+                        return d.key;
+                    })
                     .colors(color_list[0]);
 
                 // Logarithmic scale
@@ -1626,48 +1636,55 @@ function generateDashboard(){
                             return d.value != 0;
                         });
                     });
-                
-                // Filter one by one
-                g.viz_definition[key1].chart
-                    .filterHandler(function (dimension, filters) {
-                        if (filters.length === 0) {
-                            dimension.filter(null);
-                            var out = filters;
-                        } else {
-                            dimension.filterFunction(function (d) {
-                                filters = [filters[filters.length-1]];
-                                for (var i = 0; i < filters.length; i++) {
-                                    var filter = filters[i];
-                                    if (filter.isFiltered && filter.isFiltered(d)) {
-                                        return true;
-                                    } else if (filter <= d && filter >= d) {
-                                        return true;
-                                    }
-                                }
-                                return false;
-                            });
-                            var out = [filters[filters.length-1]];
-                        }
 
-                         /**
-                         * 
-                         * @type {String} 
-                         * @alias module:g.medical_currentdisease
-                         */
-                        g.medical_currentdisease = out[0];
-                        dc.redrawAll();
-                        if (g.new_layout) {
-                            g.module_interface.current_filters[key1] = out[0];
-                            module_interface.updateFiltersInfo();
-                        }
-                        return out;
-                    });
-                
-                // Randomly select one disease at start
-                var rand = g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)];
-                
+
+                    // Filter one by one
+                    g.viz_definition[key1].chart
+                        .filterHandler(function (dimension, filters) {
+                            if (filters.length === 0) {
+                                dimension.filter(null);
+                                var out = filters;
+                            } else {
+                                dimension.filterFunction(function (d) {
+                                    filters = [filters[filters.length-1]];
+                                    for (var i = 0; i < filters.length; i++) {
+                                        var filter = filters[i];
+                                        if (filter.isFiltered && filter.isFiltered(d)) {
+                                            return true;
+                                        } else if (filter <= d && filter >= d) {
+                                            return true;
+                                        }
+                                    }
+                                    return false;
+                                });
+                                var out = [filters[filters.length-1]];
+                            }
+
+                            /**
+                            * 
+                            * @type {String} 
+                            * @alias module:g.medical_currentdisease
+                            */
+                            if (key1 == 'disease'){   //Note: 'disease' hard-coded here
+                                g.medical_currentdisease = out[0];
+                            }
+
+                            dc.redrawAll();
+                            if (g.new_layout) {
+                                g.module_interface.current_filters[key1] = out[0];
+                                module_interface.updateFiltersInfo();
+                            }
+                            return out;
+                        });
+
+
                 g.viz_definition[key1].chart.render();
-                g.viz_definition[key1].chart.filter(rand);
+
+                if (key1 == 'disease'){           //Note: 'disease' hard-coded here
+                    //Randomly select one disease at start
+                    var rand = g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)];   
+                    g.viz_definition[key1].chart.filter(rand);  
+                }
 
                 g.viz_definition[key1].chart
                     .on('renderlet', function(chart) {
@@ -2306,6 +2323,8 @@ function generateDashboard(){
         }
     });  
 
+
+
     // Sync maps movements
      /**
      * Sync maps movements.
@@ -2320,7 +2339,7 @@ function generateDashboard(){
     var sync_maps = function() {};                
     g.geometry_keylist.forEach(function(key1){
         g.geometry_keylist.forEach(function(key2){
-            if(!(key1 == key2)){
+            if (!(key1 == key2)) {
                 g.viz_definition.multiadm.maps[key1].sync(g.viz_definition.multiadm.maps[key2]);
             }
         }); 
@@ -2360,8 +2379,10 @@ function generateDashboard(){
     module_multiadm.interaction();
     module_intro.setup();
     module_interface.display();
-    module_chartwarper.display(g.module_chartwarper.container_btns_id,g.module_chartwarper.container_chartlist);
-    module_chartwarper.interaction(g.module_chartwarper.container_chartlist);
+    if (g.new_layout) {
+        module_chartwarper.display(g.module_chartwarper.container_btns_id,g.module_chartwarper.container_chartlist);
+        module_chartwarper.interaction(g.module_chartwarper.container_chartlist);
+    };
     
 
     // Key figures
