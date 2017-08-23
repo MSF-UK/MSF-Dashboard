@@ -104,7 +104,7 @@ g.new_layout = true;
 
 //Combinations of map unit/geometry buttons that are not compatible 
 // (i.e. one from g.module_colorscale.mapunitlist, one from g.geometry_keylist)
-//g.dev_defined.incompatible_buttons = [];
+g.dev_defined.incompatible_buttons = [];
 
 //OPTIONAL FOR IF WE WANT SOMETHING DIFFERENT TO DEFAULT DEFINED IN module-chartwarper.js - i.e. names of containers for swapping between them
 if(!g.module_chartwarper){
@@ -265,7 +265,7 @@ if(!g.module_datacheck){
 g.module_datacheck.definition_value = {
     epiwk:  {test_type: 'epiwk',        setup: 'none'},     // Epidemiological week: format YYYY-WW
     admN1:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level N1 
-    admN2:  {test_type: 'none',   setup: 'none'}, // No geom file yet 
+    admN2:  {test_type: 'none',   setup: 'none'},
     pop:    {test_type: 'integer',      setup: 'none'},     // Population of adm
     case: {test_type: 'integer',      setup: 'none'}, 
     death: {test_type: 'integer',      setup: 'none'},
@@ -297,6 +297,7 @@ g.module_datacheck.definition_record = [
     {key: g.medical_headerlist.epiwk, isnumber: false}, // 'true' key as in data file
     {key: g.medical_headerlist.disease, isnumber: false}, // 'true' key as in data file
     {key: g.medical_headerlist.admN1, isnumber: false}, // 'true' key as in data file
+    {key: g.medical_headerlist.admN2, isnumber: false}, // 'true' key as in data file
    
 ];
 
@@ -401,6 +402,31 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
                     buttons_list: ['reset','help','expand','lockcolor','parameters'],
                     
                 },
+
+        aires:  { domain_builder: 'none', 
+                    domain_parameter: 'none',
+
+                    instance_builder: 'row',
+
+                    dimension_builder: 'normalize',
+                    dimension_parameter: {column: 'admN2',
+                                          shared: false,
+                                          namespace: 'none'},    
+
+                    group_builder: 'count',
+                    group_parameter: {  column: 'none'},
+
+                    display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_aires_labelx,
+                                     y:g.module_lang.text[g.module_lang.current].chart_aires_labely},
+
+                    display_colors: [2],       
+
+                    display_intro_position: 'left',
+                    display_title: true,
+                    buttons_list: ['help'],
+                    
+                },
+
         disease:  { domain_builder: 'none', 
                     domain_parameter: 'none',
 
@@ -641,8 +667,7 @@ g.viz_locations = 'multiadm';
  * @type {String} 
  * @alias module:g.viz_parent_layer
  */
-g.viz_layer_pos = {admN1: '0',     // 0 = top layer
-                    };  
+g.viz_layer_pos = {admN1: '0'};       // 0 = top layer
 
 
 if(!g.module_intro){
@@ -651,7 +676,7 @@ if(!g.module_intro){
 //g.dev_defined.intro_order = [];
 //Define order of all intro topics, can either be charts (defined by name given above) or divs (defined in index.html)
 //For and div intros, need to also define intro_position
-g.module_intro.intro_order = ['intro', 'menu', 'multiadm', 'disease', 'container_ser_lin', 'case_ser', 'case_lin', 'ser_range', 'year', 'table'];
+g.module_intro.intro_order = ['intro', 'menu', 'multiadm', 'aires', 'disease', 'container_ser_lin', 'case_ser', 'case_lin', 'ser_range', 'year', 'table'];
 g.module_intro.intro_position = [{container: 'container_ser_lin',
                                  position: 'top'
                                 }];

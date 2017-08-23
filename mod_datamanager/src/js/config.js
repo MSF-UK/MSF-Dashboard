@@ -5,7 +5,7 @@ var DHIS2_format = true;
 
 // Sheet parameters
 var newFirstRow = 5;          // First row with data
-var newNumRows = 117;         // Number of rows with data (health facilities)
+var newNumRows = 150;         // Max number of rows with data (health facilities)
 var newFirstCol = 'B';        // First column with data
 var newColsPerDisease = 4;    // Number of columns containing each disease
 var newNumDiseases = 29;      // Number of diseases
