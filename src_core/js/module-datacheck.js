@@ -225,9 +225,10 @@ epiwk: function(rec,key,none){
 			var cond_1 = !(valuelist.indexOf(value) == -1);
 			return cond_1;
 		},
-		ingeometry: function(rec,key,option){			  
-			var keylist = g.geometry_keylist;			
-			var count = g.geometry_levellist[key];		
+		ingeometry: function(rec,key,option){		
+			//console.log("ingeometry: ", rec, key, option);	  
+			//var keylist = g.geometry_keylist;			
+			//var count = g.geometry_levellist[key];		
 
             if(option == 'normalize'){      
                 var loc_current = toTitleCase(rec[g.medical_headerlist[key]].trim().split('_').join(' '));
@@ -239,7 +240,7 @@ epiwk: function(rec,key,none){
 
                 var pos = g.viz_layer_pos[key];
                 var depth = g.viz_layer_pos[key].split('.').length-1;
-				while(depth > 0){			//add names of higher levels into full g.medical_loclists name
+				while (depth > 0){			//add names of higher levels into full g.medical_loclists name
                     depth--;
                     pos = pos.substring(0, pos.lastIndexOf("."));
                     var name = '';
@@ -254,7 +255,7 @@ epiwk: function(rec,key,none){
                         loc_current = rec[g.medical_headerlist[name]].trim().split('_').join(' ')+', '+loc_current;
                     }
                 }
-                
+
                 var cond_1 = !(g.geometry_loclists[key].indexOf(loc_current) == -1);  	//true = loc_current is in list of geojson adm names
 				if (!(cond_1)) {
 					var cond_1a = false;
@@ -278,6 +279,9 @@ epiwk: function(rec,key,none){
 				};
 
             } else {
+            	var keylist = g.geometry_keylist;			
+				var count = g.geometry_levellist[key];
+
             	while(count > 0){
                     count--;
                     if(option == 'normalize'){      
@@ -436,10 +440,12 @@ epiwk: function(rec,key,none){
 	});
 	g.module_datacheck.sum.all = 0;
 
+	
 	// Locations in dataset initiation
 	g.geometry_keylist.forEach(function(key) {
 		g.medical_loclists[key] = [];
 	});
+	
 	g.medical_loclists.all = [];
 
 	// Years in dataset initiation

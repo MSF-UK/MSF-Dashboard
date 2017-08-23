@@ -488,6 +488,7 @@ module_colorscale.lockcolor = function(source){
 
 	if(source == g.module_colorscale.modecurrent || source == 'Manual'){
 		var admlevel_current = g.module_multiadm.tabcurrent.split('-')[1];
+
 		if (g.module_colorscale.mapunitcurrent == 'Casses') {
 			if(g.medical_datatype == 'surveillance'){
 				var admobjects_current = g.viz_definition.multiadm.group[admlevel_current].top(Infinity);
