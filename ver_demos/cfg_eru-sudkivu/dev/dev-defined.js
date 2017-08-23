@@ -189,7 +189,7 @@ g.module_getdata = {
     medical:{
         medical: {
             method: 'medicald3noserver',
-            options: {  url: 'input/eru_surveillance-sudkivu_test-data_avec-aires.csv',
+            options: {  url: 'input/eru_surveillance-sudkivu_test-data_AdS.csv',
                         type: 'csv'}      
         }
     },
