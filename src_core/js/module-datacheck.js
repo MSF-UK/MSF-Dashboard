@@ -739,7 +739,7 @@ epiwk: function(rec,key,none){
 		// Surveillance
 		//------------------------------------------------------------------------------------
 		// If disease array is provided empty
-		if(!(module_datacheck.testvalue.empty(rec,'disease','none')) && (g.medical_diseaseslist.indexOf(rec[g.medical_headerlist.disease].trim()) == -1) && g.module_datacheck.diseasecheck ){
+		if(!(module_datacheck.testvalue.empty(rec,'disease','none')) && (g.medical_diseaseslist.indexOf(rec[g.medical_headerlist.disease].trim().split('_').join(' ')) == -1) && g.module_datacheck.diseasecheck ){
 			g.medical_diseaseslist.push(toTitleCase(rec[g.medical_headerlist.disease].trim().split('_').join(' ')));
 		}
 
