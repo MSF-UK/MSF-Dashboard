@@ -1694,7 +1694,8 @@ function generateDashboard(){
 
                 if (key1 == 'disease'){           //Note: 'disease' hard-coded here
                     //Randomly select one disease at start
-                    var rand = toTitleCase(g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)]);   
+                    //var rand = toTitleCase(g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)]); 
+                    var rand = g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)];   
                     g.viz_definition[key1].chart.filter(rand);  
                     console.log("Randomly selected disease: ", rand);
                 }
