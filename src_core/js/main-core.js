@@ -381,6 +381,7 @@ function generateDashboard(){
          */
         var dimensionBuilder = {
             multiadm: function(none){
+                console.log("g.medical_headerlist: ", g.medical_headerlist)
                 var mapDimension = {};
                 g.geometry_keylist.forEach(function(key2,key2num,key2list) {  
                     mapDimension[key2] = cf.dimension(function(rec){ 
@@ -432,6 +433,7 @@ function generateDashboard(){
                         return loc_current;
                     }); 
                 });
+
                 return mapDimension;                        //one for each adm level
             },
             integer: function(key){ 
@@ -450,7 +452,8 @@ function generateDashboard(){
                         if ((key=='admN2') && (rec[g.medical_headerlist[key]]=='_NA')) {   
                             return g.module_lang.text[g.module_lang.current].chart_nospec_label;
                         } else {
-                            return toTitleCase(rec[g.medical_headerlist[key]].trim().split('_').join(' '));
+                            //return toTitleCase(rec[g.medical_headerlist[key]].trim().split('_').join(' '));
+                            return rec[g.medical_headerlist[key]].trim().split('_').join(' ');
                         }
                     }else{
                         if ((key=='admN2') && (rec[g.medical_headerlist[key]]=='_NA')) {    
@@ -1232,7 +1235,6 @@ function generateDashboard(){
 
 
                 function valueAccessor(d){
-
                     if (g.new_layout) {
                         var depth = d.key.split(', ').length - 1;
 
@@ -2240,7 +2242,7 @@ function generateDashboard(){
                     g.viz_definition[key1].chart
                         .xAxis().tickFormat(function(d, i) {
                            j = parseInt(d.substring(5));
-                            //console.log(d, typeof(d), "  ", j, typeof(j), j%4, typeof(j%4));                       
+                            console.log(d, typeof(d), "  ", j, typeof(j), j%4, typeof(j%4));                       
                             if (!(isNaN(j)) && (!(j%4==0))) {       
                                 return "";
                             } else {
@@ -2253,7 +2255,7 @@ function generateDashboard(){
                                 .attr('dx', '-5')
                                 .attr('dy', '5')
                         }) 
-                } else if ((g.viz_definition[key1].domain_builder == 'date_extent') && (g.viz_definition[key1].domain[1].getTime()-g.viz_definition[key1].domain[0].getTime() >= 3.154e+10)) {   //1yr = 3.154e+10 
+                } else if ((g.viz_definition[key1].domain_builder == 'date_extent') && (g.viz_definition[key1].domain[1].getTime()-g.viz_definition[key1].domain[0].getTime() >= 3.154e+10/2)) {   //1yr = 3.154e+10 
                     g.viz_definition[key1].chart
                         .xAxis().tickFormat(function(d, i) {
                             var x_label = module_epitime.get_epi_id(d);    
@@ -2274,7 +2276,7 @@ function generateDashboard(){
                                         return x_label;
                                     }
 
-                                } else if ((g.viz_definition[g.viz_timeline].chart.filters()[0][1].getTime()-g.viz_definition[g.viz_timeline].chart.filters()[0][0].getTime() >= 3.154e+10) && (!(i%4==0))) {   //1yr = 3.154e+10            
+                                } else if ((g.viz_definition[g.viz_timeline].chart.filters()[0][1].getTime()-g.viz_definition[g.viz_timeline].chart.filters()[0][0].getTime() >= 3.154e+10/2) && (!(i%4==0))) {   //1yr = 3.154e+10            
                                     return "";
                                 } else {
                                     return x_label;
