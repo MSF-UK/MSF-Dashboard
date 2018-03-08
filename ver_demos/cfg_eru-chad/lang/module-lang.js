@@ -143,7 +143,7 @@ g.module_lang.text.fra = {
 	epiweek_all: 'Toutes',								
 	epiweek_none: 'Aucune',									
 	epiweek_playing: 'En cours de lecture: ',				
-	epiweek_selected: 'Semaine epi sélectionnée: ',			
+	epiweek_selected: 'Semaines sélectionnées: ',			
 
 	filtext: 'Filtre actuel:',
 	
@@ -179,14 +179,14 @@ g.module_lang.text.fra = {
 	chartwarper_btn_container_ser_outer:'continu',				
 	chartwarper_btn_container_lin_outer:'par année',	
 
-	qf_btns_last1epiweeks: 'Dernière semaine-epi complète',
-	qf_btns_last4epiweeks: '4 dernières semaines-epi',
-	qf_btns_last52epiweeks: '52 dernières semaines-epi',
-	qf_btns_last0epimonths: 'Mois-epi en cours',
-	qf_btns_last1epimonths: 'Dernier mois-epi complet',
-	qf_btns_last3epimonths: '3 derniers mois-epi',
-	qf_btns_last0epiyears: 'L\'année-epi en cours',
-	qf_btns_last1epiyears: 'Dernière année-epi complète',			
+	qf_btns_last1epiweeks: 'Dernière semaine complète',
+	qf_btns_last4epiweeks: '4 dernières semaines',
+	qf_btns_last52epiweeks: '52 dernières semaines',
+	qf_btns_last0epimonths: 'Mois en cours',
+	qf_btns_last1epimonths: 'Dernier mois complet',
+	qf_btns_last3epimonths: '3 derniers mois',
+	qf_btns_last0epiyears: 'L\'année en cours',
+	qf_btns_last1epiyears: 'Dernière année complète',			
 	
 	colorscale_title: 'PARAMETRES DE LA CARTE',
 	colorscale_unitintro: 'Unité de la carte : ',
@@ -251,7 +251,7 @@ g.module_lang.text.fra = {
     		pause: 'Pause'
 	},
 	interface_menucount: ['enregistrements sélectionés sur','','Chiffres clés:', 'Cas :','Décès :'],
-	interface_menuviewfilt: 'Voir Filtres Activé',					
+	interface_menuviewfilt: 'Voir Filtres Activés',					
 	interface_menufiltsum: 'Résumé des filtres activés',					
 	interface_menunofilt: 'Aucun filtre activé',				
 
@@ -314,7 +314,7 @@ g.module_lang.text.eng = {
 	epiweek_all: 'All',
 	epiweek_none: 'None',
 	epiweek_playing: 'Currently playing epiweek: ',
-	epiweek_selected: 'Epiweeks selected: ',
+	epiweek_selected: 'Weeks selected: ',
 	
 	filtext: 'Current filter:',
 	
@@ -350,14 +350,14 @@ g.module_lang.text.eng = {
 	chartwarper_btn_container_ser_outer:'continuous',				
 	chartwarper_btn_container_lin_outer:'by year',
 
-	qf_btns_last1epiweeks: 'Last full epiweek',
-	qf_btns_last4epiweeks: 'Last 4 epiweeks',
-	qf_btns_last52epiweeks: 'Last 52 epiweeks',
-	qf_btns_last0epimonths: 'Current epimonth',
-	qf_btns_last1epimonths: 'Last full epimonth',
-	qf_btns_last3epimonths: 'Last 3 epimonths',
-	qf_btns_last0epiyears: 'Current epiyear',
-	qf_btns_last1epiyears: 'Last full epiyear',
+	qf_btns_last1epiweeks: 'Last full week',
+	qf_btns_last4epiweeks: 'Last 4 weeks',
+	qf_btns_last52epiweeks: 'Last 52 weeks',
+	qf_btns_last0epimonths: 'Current month',
+	qf_btns_last1epimonths: 'Last full month',
+	qf_btns_last3epimonths: 'Last 3 months',
+	qf_btns_last0epiyears: 'Current year',
+	qf_btns_last1epiyears: 'Last full year',
 	
 	colorscale_title: 'MAP PARAMETERS',
 	colorscale_unitintro: 'Choose map unit: ',
