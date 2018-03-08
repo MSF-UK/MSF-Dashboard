@@ -1668,7 +1668,17 @@ function generateDashboard(){
                             * @alias module:g.medical_currentdisease
                             */
                             if (key1 == 'disease'){   //Note: 'disease' hard-coded here
+                                /*console.log("g.medical_currentdisease: ", g.medical_currentdisease, g.medical_diseaseslist)
+                                if (out[0]==undefined) {
+                                    g.medical_currentdisease = g.medical_diseaselist[0];
+                                } else {
+                                    g.medical_currentdisease = out[0];
+                                }
+                                console.log("g.medical_currentdisease: ", g.medical_currentdisease, g.medical_diseaseslist)
+                                */
                                 g.medical_currentdisease = out[0];
+
+                                
                             }
 
                             dc.redrawAll();
@@ -1684,9 +1694,9 @@ function generateDashboard(){
 
                 if (key1 == 'disease'){           //Note: 'disease' hard-coded here
                     //Randomly select one disease at start
-                    var rand = g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)];   
-                    g.viz_definition[key1].chart.filter(rand); 
-		    console.log("Randomly selected disease: ", rand);
+                    var rand = toTitleCase(g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)]);   
+                    g.viz_definition[key1].chart.filter(rand);  
+                    console.log("Randomly selected disease: ", rand);
                 }
 
                 g.viz_definition[key1].chart

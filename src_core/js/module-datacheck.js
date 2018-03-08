@@ -308,9 +308,11 @@ epiwk: function(rec,key,none){
 			
 		},
 		empty: function(rec,key,none){
+			//console.log(rec[g.medical_headerlist[key]], rec,key,none);
 			if(rec[g.medical_headerlist[key]] == undefined || rec[g.medical_headerlist[key]] == '_NA'){
 				var cond_1 = true;
-			}else{
+				
+			} else {
 				var cond_1 = rec[g.medical_headerlist[key]] == '';
 			}
 			return cond_1;
@@ -739,8 +741,9 @@ epiwk: function(rec,key,none){
 		// Surveillance
 		//------------------------------------------------------------------------------------
 		// If disease array is provided empty
-		if(!(module_datacheck.testvalue.empty(rec,'disease','none')) && (g.medical_diseaseslist.indexOf(rec[g.medical_headerlist.disease].trim().split('_').join(' ')) == -1) && g.module_datacheck.diseasecheck ){
+		if(!(module_datacheck.testvalue.empty(rec,'disease','none')) && (g.medical_diseaseslist.indexOf(toTitleCase(rec[g.medical_headerlist.disease].trim().split('_').join(' '))) == -1) && g.module_datacheck.diseasecheck ){
 			g.medical_diseaseslist.push(toTitleCase(rec[g.medical_headerlist.disease].trim().split('_').join(' ')));
+			//console.log("Add to diseaselist: ", rec[g.medical_headerlist.disease].trim().split('_').join(' '))
 		}
 
 		if(empty_temp){
