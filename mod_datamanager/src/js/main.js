@@ -1,10 +1,8 @@
 var X = XLSX;
 var fs = require('fs');
 var path = require('path');
-
-console.log(folderHISfiles);
-console.log(folderDatabases);
-console.log(folderDashboard);
+//var pathroot = path.dirname(process.execPath)
+//console.log(pathroot);
 
 // Default folders
 $( "#ds_add" ).attr( "nwworkingdir", folderHISfiles);
@@ -56,81 +54,297 @@ function epiwkToYrWk(epiweek) {
     return [epiweek.split('-')[0],epiweek.split('-')[1]];
 }
 
-function his_to_json(workbook,xlsname) {
 
+function getAltDiseaseNames() {
+    var diseases = [];
+    var fileContents = fs.readFileSync('/src/data/disease_names.csv'); //('../../data-folders/01-datamanager-IDS-excel/disease_names.csv');
+    var lines = fileContents.toString().split('\n');
+    var head1 = 'IDS_disease';
+    var head2 = 'dash_disease'; 
+    for (var i = 1; i < lines.length; i++) {   //first row (i=0) is header
+        var temp_disease = {};
+        temp_disease[head1] = lines[i].toString().split(',')[0].trim();
+        temp_disease[head2] = lines[i].toString().split(',')[1];
+        diseases.push(temp_disease);
+    }
+    //console.log("ALT DISEASE NAMES: ", diseases);
+    return diseases;
+}
+
+function checkAltDiseaseName(dis, alt_list) {
+    var alt_dis = dis.trim();
+    for (var i = 0; i <= alt_list.length-1; i++) {
+        if (alt_dis==alt_list[i].IDS_disease.trim()) {
+            alt_dis = alt_list[i].dash_disease;
+            break;
+        }
+    }
+    return alt_dis;
+}
+
+function his_to_json(workbook,xlsname) {
+    console.log(workbook, xlsname)
     usrYear = parseInt(current_row);
     usrWeek = parseInt(current_col);
+    //console.log(usrYear, usrWeek)
     var tempEpiweek;
     var old_recordnum = current_database.recordnum;
 
     var sheet_name_list = workbook.SheetNames;
-    var sheet_name_list_slice = sheet_name_list.slice(sheetListFirst - 1, sheetListFirst + sheetListNum - 1);                               
+    //var sheet_name_list_slice = sheet_name_list.slice(sheetListFirst - 1, sheetListFirst + sheetListNum - 1);  
+    console.log("Worksheet names: ", sheet_name_list);                             
 
+    //console.log(current_database)
     if(current_database){
 
         current_database.lastupdate = new Date();
 
-    	sheet_name_list_slice.forEach(function(sheetName) {
-            var firstRow = tableRowFirst;
-            var lastRow = tableRowFirst + tableRowNum - 1;
-            var firstCol = lettersToNumbers(tableColFirst) + tableColNum * (usrWeek - 1);
-            var lastCol = lettersToNumbers(tableColFirst) + tableColNum * (usrWeek) - 1;
+        if (data_format=='IDS') {
+            var altDiseaseNames = getAltDiseaseNames();
+            var altDistrictNames = [];
+            for (i=0; i<=districtSpellUpdates.length-1; i++) { 
+                altDistrictNames.push(districtSpellUpdates[i].data_name);
+            };
+            //console.log("District names to change: ", altDistrictNames);
+        }
 
-            var tempDisease = sheetName;
 
-            for (var r = firstRow; r <= lastRow;r++) {      //loop through each row
+    	//sheet_name_list_slice.forEach(function(sheetName) {
+        sheet_name_list.forEach(function(sheetName) {
+            //console.log('Working through sheet: ', sheetName);    
+            
+            if (data_format=='IDS') {
 
-                var tempChiefdom = workbook.Sheets[sheetName]['B' + r].v;
-                var tempPHU = workbook.Sheets[sheetName]['C' + r].v;
-                var tempAn = usrYear;
-                var tempPop = workbook.Sheets[sheetName]['E' + r].v;
+                //Check if non-standard worksheet format 
+                var non_std = false;
+                for (i=0; i<=non_std_sheets.length-1; i++) { 
+                    if ((non_std_sheets[i].year == usrYear) && (non_std_sheets[i].sheetName == sheetName)) {
+                        non_std = true;
+                        var non_std_param = non_std_sheets[i].param;
+                        console.log("Non-standard worksheet detected: ", usrYear, sheetName, non_std_param);
+                    }
+                };
 
-                tempRef = 0;
-                tempWeek = usrWeek;
+                if (non_std==false) {
+                    var firstRow = tableRowFirst;
+                    var lastRow = tableRowFirst + tableRowNum - 1;
+                    var firstCol = lettersToNumbers(tableColFirst) + tableColNum * (usrWeek - 1);
+                    var lastCol = lettersToNumbers(tableColFirst) + tableColNum * (usrWeek) - 1;
+                } else {
+                    var firstRow = non_std_stats[non_std_param].tableRowFirst;
+                    var lastRow = non_std_stats[non_std_param].tableRowFirst + non_std_stats[non_std_param].tableRowNum - 1;
+                    var firstCol = lettersToNumbers(non_std_stats[non_std_param].tableColFirst) + non_std_stats[non_std_param].tableColNum * (usrWeek - 1);
+                    var lastCol = lettersToNumbers(non_std_stats[non_std_param].tableColFirst) + non_std_stats[non_std_param].tableColNum * (usrWeek) - 1;
+                }
 
-                for (var c = firstCol; c <= lastCol+1; c++) {       //loop through each column
-                    tempRef++;
-                    if (tempRef > 8) {                              //only act from after 8th column
-                        if (tempWeek < 10) {                        //check epi-week
-                            tempEpiweek = tempAn + '-0' + tempWeek;
-                        }else{
-                            tempEpiweek = tempAn + '-' + tempWeek;
+
+                var tempDisease = checkAltDiseaseName(sheetName, altDiseaseNames);
+
+                for (var r = firstRow; r <= lastRow;r++) {      //loop through each row
+                //console.log('B', r, ': ', workbook.Sheets[sheetName]['B'+r]);
+             
+                    //get district name, if it has an alternative then change it
+                    if (workbook.Sheets[sheetName]['B' + r] != undefined) {
+                        var tempDistrict = workbook.Sheets[sheetName]['B' + r].v;
+                        if (altDistrictNames.indexOf(tempDistrict) != -1) {
+                            for (i=0; i<=districtSpellUpdates.length-1; i++) { 
+                                if (districtSpellUpdates[i].data_name==tempDistrict) {
+                                    tempDistrict = districtSpellUpdates[i].geo_name;
+                                    break;
+                                }
+                            }
+                        }
+
+                        //if Region is defined then set it, if not then assume the previous Region's name
+                        //i.e. hack to deal with merged cells
+                        if (workbook.Sheets[sheetName]['A' + r] != undefined) {
+                            var tempRegion = workbook.Sheets[sheetName]['A' + r].v;
+                        }
+                        //console.log("Row ", r, "   tempRegion: ", tempRegion)
+                        var tempAn = usrYear;
+                        //var tempPop = Math.round(workbook.Sheets[sheetName]['E' + r].v);
+
+                        tempRef = 0;
+                        tempWeek = usrWeek;
+
+                        for (var c = firstCol; c <= lastCol+1; c++) {       //loop through each column
+                            //console.log("column ", c);
+                            tempRef++;
+                            //if (tempRef > 4) {                              //only act after read from 4th column
+                            if (tempRef > lastCol-firstCol+1) {                              //only act after read from 4th column
+                                if (tempWeek < 10) {                        //check epi-week
+                                    tempEpiweek = tempAn + '-0' + tempWeek;
+                                }else{
+                                    tempEpiweek = tempAn + '-' + tempWeek;
+                                };
+                                //console.log(c, r, tempEpiweek)
+
+                                temp = [];
+
+                                //for (var i = 4; i >= 1; i--) {              //work backwards through columns e.g. from 4 to 1
+                                for (var i = lastCol-firstCol+1; i >= 1; i--) {              //work backwards through columns e.g. from 4 to 1
+                                     val = (typeof workbook.Sheets[sheetName][numbersToLetters(c-i) + r] !== 'undefined') ? workbook.Sheets[sheetName][numbersToLetters(c-i) + r]["v"] : undefined;
+                                     temp.push(val);
+                                };
+
+                                function checkIfEmpty(cellVal) {
+                                    var empty = false;
+                                    if (cellVal==undefined) {
+                                        empty = true;
+                                    } else if (cellVal.length==0) {
+                                        empty = true;
+                                    }
+                                    return empty;
+                                }
+                                //test_empty = temp[0] == 0 && temp[1] == 0 && temp[2] == 0 && temp[3] == "";
+                                //test_empty = checkIfEmpty(temp[0]) && checkIfEmpty(temp[1]) && checkIfEmpty(temp[2]) && checkIfEmpty(temp[3]);    //check if all values are empty
+                                var test_empty = false;
+                                var empt_cnt = 0;
+                                //for (var i = 0; i <= 4-1; i++) {  
+                                for (var i = 0; i <= lastCol-firstCol; i++) {              //check for empty for each cell in series
+                                    if (checkIfEmpty(temp[i])) {empt_cnt++}
+                                };
+                                if (empt_cnt==lastCol-firstCol) {test_empty = true};
+
+                                if (!(test_empty)) {
+                                    var temp_rec = {
+                                        disease: tempDisease,
+                                        district: tempDistrict,
+                                        region: tempRegion,
+                                        an: tempAn,
+                                        //pop: tempPop,
+                                        epiweek: tempEpiweek,
+                                        cas: temp[0], //Math.floor(Math.random() * Math.floor(Math.random() * Math.floor(Math.random() * Math.floor(Math.random() * Math.floor(100))))), //temp[0],
+                                        dec: temp[1], //Math.floor(Math.random() * Math.floor(Math.random() * Math.floor(4))), //temp[1],
+                                        //taux_att: temp[2],
+                                        //let: temp[3]
+                                    }; 
+                                    //Changes for non_std data
+                                    if (non_std==true) {
+                                        if (non_std_param=='dm2014') {
+                                            temp_rec.dec='';
+                                        } else if (non_std_param=='pc2014') {
+                                            temp_rec.dec='';
+                                        } else if (non_std_param=='mal2014') {
+                                            temp_rec.disease='Malnutrition Modérée';
+                                        } else if (non_std_param=='mal2015') {
+                                            temp_rec.disease='Malnutrition Sévère';
+                                            if (temp_rec.epiweek=='2015-53') {
+                                                temp_rec.cas = 0;
+                                                temp_rec.dec = 0;
+                                            }
+                                        }
+                                    }
+
+                                    current_database.recordnum++;
+                                    current_database.data.push(temp_rec); 
+                                    checkRecord(temp_rec, sheetName, c, r);
+                                    //if (non_std==true) {console.log(temp_rec)};
+
+                                    //For non_std malnutrition data, run through a 2nd time:
+                                    if (non_std==true) {
+                                        if (non_std_param=='mal2014') {
+                                            var temp_rec = {
+                                                disease: 'Malnutrition Sévère',
+                                                district: tempDistrict,
+                                                region: tempRegion,
+                                                an: tempAn,
+                                                epiweek: tempEpiweek,
+                                                cas: temp[2], 
+                                                dec: temp[3], 
+                                            }; 
+                                            current_database.recordnum++;
+                                            current_database.data.push(temp_rec); 
+                                            checkRecord(temp_rec, sheetName, c, r);
+                                            //if (non_std==true) {console.log(temp_rec)};
+                                        } else if (non_std_param=='mal2015') {
+                                            var temp_rec = {
+                                                disease: 'Malnutrition Modérée',
+                                                district: tempDistrict,
+                                                region: tempRegion,
+                                                an: tempAn,
+                                                epiweek: tempEpiweek,
+                                                cas: temp[2], 
+                                                dec: temp[3], 
+                                            }; 
+                                            if (temp_rec.epiweek=='2015-53') {
+                                                temp_rec.cas = 0;
+                                                temp_rec.dec = 0;
+                                            }
+                                            current_database.recordnum++;
+                                            current_database.data.push(temp_rec); 
+                                            checkRecord(temp_rec, sheetName, c, r);
+                                            //if (non_std==true) {console.log(temp_rec)};
+                                        }
+                                    }
+                                };
+                                tempWeek++;
+                                tempRef=1;
+                            };
+
                         };
-
-                        temp = [];
-
-                        for (var i = 8; i >= 1; i--) {              //work through 8 columns backwards from -8 to -1
-                             val = (typeof workbook.Sheets[sheetName][numbersToLetters(c-i) + r] !== 'undefined') ? workbook.Sheets[sheetName][numbersToLetters(c-i) + r]["v"] : undefined;
-                             temp.push(val);
-                        };
-
-                        test_empty = temp[0] == undefined && temp[1] == undefined && temp[2] == undefined && temp[3] == undefined && temp[4] == 0 && temp[5] == 0 && temp[6] == 0 && temp[7] == "";
-                        
-                        if (!(test_empty)) {
-                            var temp_rec = {
-                                disease: tempDisease,
-                                chiefdom: tempChiefdom,
-                                PHU: tempPHU,
-                                an: tempAn,
-                                pop: tempPop,
-                                epiweek: tempEpiweek,
-                                lesscas: temp[0],       //col c-8
-                                lessdth: temp[1],       //col c-7
-                                morecas: temp[2],       //col c-6
-                                moredth: temp[3],       //col c-5
-                                totalcas: temp[4],      //col c-4
-                                totaldth: temp[5],      //col c-3
-                                tax: temp[6],           //col c-2
-                                let: temp[7]            //col c-1
-                            }; 
-                            current_database.recordnum++;
-                            current_database.data.push(temp_rec); 
-                            checkRecord(temp_rec, sheetName, c, r);
-                        };
-                        tempWeek++;
-                        tempRef=1;
                     };
+                };
 
+            } else if (data_format=='IDSR') {
+                var tempDisease = sheetName;
+
+                for (var r = firstRow; r <= lastRow;r++) {      //loop through each row
+                //console.log('B', r, ': ', workbook.Sheets[sheetName]['B'+r]);
+
+                    var tempChiefdom = workbook.Sheets[sheetName]['B' + r].v;
+                    var tempPHU = workbook.Sheets[sheetName]['C' + r].v;
+                    var tempAn = usrYear;
+                    var tempPop = workbook.Sheets[sheetName]['E' + r].v;
+
+                    tempRef = 0;
+                    tempWeek = usrWeek;
+
+                    for (var c = firstCol; c <= lastCol+1; c++) {       //loop through each column
+                        tempRef++;
+                        if (tempRef > 8) {                              //only act from after 8th column
+                            if (tempWeek < 10) {                        //check epi-week
+                                tempEpiweek = tempAn + '-0' + tempWeek;
+                            }else{
+                                tempEpiweek = tempAn + '-' + tempWeek;
+                            };
+
+                            temp = [];
+
+                            for (var i = 8; i >= 1; i--) {              //work through 8 columns backwards from -8 to -1
+                                 val = (typeof workbook.Sheets[sheetName][numbersToLetters(c-i) + r] !== 'undefined') ? workbook.Sheets[sheetName][numbersToLetters(c-i) + r]["v"] : undefined;
+                                 temp.push(val);
+                            };
+
+                            test_empty = temp[0] == undefined && temp[1] == undefined && temp[2] == undefined && temp[3] == undefined && temp[4] == 0 && temp[5] == 0 && temp[6] == 0 && temp[7] == "";
+                            
+                            if (!(test_empty)) {
+                                var temp_rec = {
+                                    disease: tempDisease,
+                                    chiefdom: tempChiefdom,
+                                    PHU: tempPHU,
+                                    an: tempAn,
+                                    pop: tempPop,
+                                    epiweek: tempEpiweek,
+                                    lesscas: temp[0],       //col c-8
+                                    lessdth: temp[1],       //col c-7
+                                    morecas: temp[2],       //col c-6
+                                    moredth: temp[3],       //col c-5
+                                    totalcas: temp[4],      //col c-4
+                                    totaldth: temp[5],      //col c-3
+                                    tax: temp[6],           //col c-2
+                                    let: temp[7]            //col c-1
+                                }; 
+                                current_database.recordnum++;
+                                current_database.data.push(temp_rec); 
+                                checkRecord(temp_rec, sheetName, c, r);
+                            };
+                            tempWeek++;
+                            tempRef=1;
+                        };
+
+                    };
+                
                 };
             };
         });
@@ -163,7 +377,7 @@ function his_to_json(workbook,xlsname) {
 }
 
 
-function his_to_json_new_format(workbook,xlsname) {   
+function dhis2_to_json(workbook,xlsname) {   
     var sheetName = workbook.SheetNames[0];
     
     inputYear = parseInt(current_row);      //year from cell selected in table
@@ -369,7 +583,7 @@ function addDatasetPart2(e) {
                 console.log(err);
             } else {
 
-                if (DHIS2_format) {
+                if (data_format=='DHIS2') {
 
                     inputYear = parseInt(current_row);      //year from cell selected in table
                     inputWeek = parseInt(current_col);      //week from cell selected in table
@@ -394,13 +608,12 @@ function addDatasetPart2(e) {
                         cont = confirm("!WARNING:\n\nThe epiweek of this file does not match the epiweek of the selected cell in the table:\n\nTable cell selected: " + tempEpiweek + '\nFile selected: ' + fileEpiweek + '\n\nDo you wish to continue to upload data as epiweek ' + tempEpiweek + '?');
                     };
                     if (cont==true) {
-                        his_to_json_new_format(wb,name);
+                        dhis2_to_json(wb,name);
                     }
                 
                 } else {
                     his_to_json(wb,name);
                 }
-
 
                 if (cont==false) {
                     current_database = $.extend(true, {}, prev_database);  
@@ -409,6 +622,7 @@ function addDatasetPart2(e) {
                     saveCurrentDatabase(current_database.name,false,'');        //need to re-save here because previously deleted dataset
                     updatingCell("table",status);
                 } else if (error_id >= 1) {            //if any errors exist in file
+                    console.log("Errors written to file")
                     var error_log_name = writeErrorCSV(name, error_log);
                     /* PROMPT */ prompt_new('!Error: Add Dataset: ' + error_id + ' error(s) found in file '+ name + ' - Correct errors in order to Add or Update from file');
                     /* PROMPT */ prompt_new('Writing error log: ' + error_log_name);
@@ -420,7 +634,7 @@ function addDatasetPart2(e) {
                     saveCurrentDatabase(current_database.name,false,'');        //need to re-save here because previously deleted dataset
                     updatingCell("table",status);
                 } else {                        //if no errors exist then proceed
-                    //console.log("No errors in spreadsheet", error_log);
+                    console.log("No errors in spreadsheet", error_log);
                     /* PROMPT */ prompt_new('Add Dataset: all data entries checked, no errors found in file: '+ name);
                                      
                     //** Backup
@@ -563,7 +777,7 @@ function handleDbOldFile(e) {
     var name = f.name;
     var path = f.path;
 	folderDatabases_actual = path.split(name)[0];
-
+    //console.log(e, files, f)
 
     //** Read JSON
 
@@ -623,35 +837,56 @@ function handleDbExport2(e) {
     /* PROMPT */ prompt_new('Export2 Database: converting from .json to .csv database: ' + current_database.name);
     var json = current_database.data;
     var fields = Object.keys(json[0]);
-
-    console.log("json = ", json);
-    console.log("fields = ", fields);
+    //console.log("json = ", json);
+    //console.log("fields = ", fields);
 
     var temp = []; 
-    json.forEach(function(rec,recnum) {
-        var recO = {
-            disease: rec.disease,
-            chiefdom: rec.chiefdom,
-            PHU: rec.PHU,
-            pop: rec.pop,
-            epiweek: rec.epiweek,
-            fyo: 'o',
-            cas: rec.morecas,
-            dth: rec.moredth,
-        };
-        var recU = {
-            disease: rec.disease,
-            chiefdom: rec.chiefdom,
-            PHU: rec.PHU,
-            pop: rec.pop,
-            epiweek: rec.epiweek,
-            fyo: 'u',
-            cas: rec.lesscas,
-            dth: rec.lessdth,
-        };
-        temp.push(recO);
-        temp.push(recU);
-    });
+
+    if (data_format=='IDS') {
+        json.forEach(function(rec,recnum) {
+            var recA = {
+                disease: rec.disease,
+                district: rec.district,
+                region: rec.region,
+                //pop: rec.pop,
+                epiweek: rec.epiweek,
+                cas: rec.cas,
+                dec: rec.dec,
+            };
+            /*if (rec.cas==undefined) { //{console.log("UNDEFINED, ", rec)
+            } else if (rec.cas=='') { //console.log("EMPTY, ", rec.cas, recA.cas)
+            } else if (rec.cas==0) {console.log("ZERO, ", rec.cas, recA.cas)
+            //} else {console.log("ELSE ", rec)
+            }*/
+            temp.push(recA);
+        });
+    } else if ((data_format=='DHIS2') || (data_format=="IDSR")) {
+        json.forEach(function(rec,recnum) {
+            var recO = {
+                disease: rec.disease,
+                chiefdom: rec.chiefdom,
+                PHU: rec.PHU,
+                pop: rec.pop,
+                epiweek: rec.epiweek,
+                fyo: 'o',
+                cas: rec.morecas,
+                dth: rec.moredth,
+            };
+            var recU = {
+                disease: rec.disease,
+                chiefdom: rec.chiefdom,
+                PHU: rec.PHU,
+                pop: rec.pop,
+                epiweek: rec.epiweek,
+                fyo: 'u',
+                cas: rec.lesscas,
+                dth: rec.lessdth,
+            };
+            temp.push(recO);
+            temp.push(recU);
+        });
+    }
+    
 
     var json = temp;
     var fields = Object.keys(json[0]);
@@ -693,7 +928,12 @@ function writeErrorCSV(xls_name, errors_log) {
     if (xls_name.split(".").pop() == 'xlsx') {xls_name = xls_name.split(".")[0];};
     var name = "Error log " + xls_name + " " + getDateTime() + ".csv";
     var path = folderErrorLog + name;
-    var header = ['error_id', 'worksheet_name', 'column', 'row', 'error_value', 'type_required'];
+    if (data_format='IDS') {
+        var header = ['error_id', 'worksheet_name', 'epiweek', 'row', 'error_value', 'type_required'];
+    } else {
+        var header = ['error_id', 'worksheet_name', 'column', 'row', 'error_value', 'type_required'];
+    }
+    
     csv = header + errors_log;
 
     fs.writeFile(path, csv, 'utf8', function (err) {
@@ -704,7 +944,7 @@ function writeErrorCSV(xls_name, errors_log) {
         ///* PROMPT */ prompt_new('Writing error log: saving .csv file: ' + name);
       }
     });
-
+    console.log("writeErrorCSV: ", path)
     return name;
 }
 
