@@ -5,14 +5,14 @@
     Please refer to the LICENSE.md and LICENSES-DEP.md for complete licenses.
 ------------------------------------------------------------------------------------*/
 /**
- * This file loads synchronously all the librairies required.
+ * This file synchronously loads all the libraries required.
+ * @module main_getlibs 
  * @since 0.9
- * @module main_getlibs
  * @requires index.html
  **/
 
 var files = [
-    // Third-party opensource librairies
+    // Third-party opensource libraries
     ['js','jquery/jquery-2.2.0.min.js',lib_folder],
     ['js','jszip/jszip.js',lib_folder],
     ['js','sheetjs/xlsx.js',lib_folder],

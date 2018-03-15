@@ -80,6 +80,7 @@ module_getdata.load_propagate = function(){
       }
       console.log('main-getdata.js: Current: ' + current_datatype + ' - ' + current_dataname);
       var current_datasource = getdata[current_datatype][current_dataname];
+      //console.log("current_datasource: ", current_datasource);
       switch(current_datasource.method){
             case 'd3':
                 $(load_status).html('Getting Local files...');
@@ -342,11 +343,13 @@ module_getdata.process_population = function(){
             g.module_population.population_loclists[key] = [];
             g.module_population.population_databyloc[key] = {};
             g.population_data[key].forEach(function(f){
+                //console.log(f, f[g.module_population.pop_headerlist.admNx.trim()]);
                 g.module_population.population_loclists[key].push(f[g.module_population.pop_headerlist.admNx.trim()]);
                 temp={};
                 for (pop_yr in g.module_population.pop_headerlist.pop) {
                     temp[pop_yr] = parseInt(f[pop_yr]);
                 };
+                //console.log(temp);
                 g.module_population.population_databyloc[key][f[g.module_population.pop_headerlist.admNx.trim()]] = temp;
             });            
         });
@@ -513,7 +516,10 @@ module_getdata.reload_medical = function() {
     }else if(g.module_getdata.medical.medical.method == 'medicald3server'){
         module_getdata.load_filed3(g.medical_folder + g.medical_filecurrent, g.medical_filetypecurrent,'medical_data',module_getdata.afterload_medical_d3);
     }else if(g.module_getdata.medical.medical.method == 'medicalfs'){
+        //Windows:
         module_getdata.load_filefs('.' + g.medical_folder + g.medical_filecurrent, g.medical_filetypecurrent,'medical_data',module_getdata.afterload_medical_d3);
+        //MacOS:
+        //module_getdata.load_filefs('input/' + g.medical_filecurrent, g.medical_filetypecurrent,'medical_data',module_getdata.afterload_medical_d3);
     }else{
         console.log('main-getdata.js ~l475: The medical data parsing method does not currently allow selecting from folder.');;
     }
@@ -542,6 +548,8 @@ module_getdata.load_medical_fs = function(path, ftype) {
      * @alias module:g.medical_folder
      */
     g.medical_folder = path;
+    //var path = nw.require("path");
+    //console.log("./ = %s", path.resolve("./"));
 
     /**
      * Lists the medical data files in the {@link module:g.medical_folder} folder path (uses Node server-side capability).
@@ -549,8 +557,10 @@ module_getdata.load_medical_fs = function(path, ftype) {
      * @type {Array.<String>}
      * @alias module:g.medical_filelist_raw
      */
-    g.medical_filelist_raw = fs.readdirSync('.'+g.medical_folder);
-
+    //Windows ('../input/'):
+    g.medical_filelist_raw = fs.readdirSync('.'+g.medical_folder);   
+    //MAC OS ('input/'):
+    //g.medical_filelist_raw = fs.readdirSync('input/');  
     /**
      * Stores the name of the file currently being read. Starts with the first file in the {@link module:g.medical_filelist} and then {@link module:main_loadfiles~generate_display} gives the user the option to choose between all the available files.
      * @constant
@@ -591,9 +601,10 @@ module_getdata.load_medical_fs = function(path, ftype) {
      * @alias module:g.medical_filetypecurrent
      **/
     g.medical_filetypecurrent = g.medical_filecurrent.substr(g.medical_filecurrent.length - 3);
-
+    //Windows:
     module_getdata.load_filefs('.' + g.medical_folder + g.medical_filecurrent, ftype,'medical_data',module_getdata.afterload_medical_d3);
-
+    //MacOS:
+    //module_getdata.load_filefs('input/' + g.medical_filecurrent, g.medical_filetypecurrent,'medical_data',module_getdata.afterload_medical_d3);
 }
 
 module_getdata.load_medical_d3 = function(ftype) {

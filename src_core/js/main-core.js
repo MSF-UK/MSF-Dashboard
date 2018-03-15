@@ -381,7 +381,6 @@ function generateDashboard(){
          */
         var dimensionBuilder = {
             multiadm: function(none){
-                console.log("g.medical_headerlist: ", g.medical_headerlist)
                 var mapDimension = {};
                 g.geometry_keylist.forEach(function(key2,key2num,key2list) {  
                     mapDimension[key2] = cf.dimension(function(rec){ 
@@ -1100,6 +1099,7 @@ function generateDashboard(){
                 //added for multi-focus charts when using rangechart
                 if (g.viz_definition[key1].range_chart) {
                     function rangesEqual(range1, range2) {
+                        //console.log("range_chart", range1, range2)
                         if (!range1 && !range2) {
                             return true;
                         }
@@ -1117,17 +1117,21 @@ function generateDashboard(){
                     }
 
                     g.viz_definition[key1].chart.focusCharts = function (chartlist) {
+                        //console.log("clicked on focusCharts")
                         if (!arguments.length) {
+                            //console.log("clicked on NOTHING")
                             return this._focusCharts;
                         }
                         this._focusCharts = chartlist; 
                         this.on('filtered', function (range_chart) {
+                            //console.log("FILTERED")
                             if (!range_chart.filter()) {
                                 dc.events.trigger(function () {
                                     chartlist.forEach(function(focus_chart) {
                                         focus_chart.x().domain(focus_chart.xOriginalDomain());
                                     });
                                 });
+                                //!!HERE WE NEED TO RESET THE LEGEND SCALE - i.e. when user clicks off time range selector but within chart
                             } else {
                                 chartlist.forEach(function(focus_chart) {
                                     if (!rangesEqual(range_chart.filter(), focus_chart.filter())) {
@@ -1136,7 +1140,9 @@ function generateDashboard(){
                                                 focus_chart.focus(range_chart.filter());  
                                             } 
                                         });
-                                    } 
+                                    } else {
+                                        //console.log("RANGES NOT EQUAL")
+                                    }
                                 });
                             };
                             rangeFilterAdds(); 
@@ -2066,7 +2072,6 @@ function generateDashboard(){
                     }  
 
                     g.module_population.pop_age_groups = module_population.getPopAgeGroups();
-
                     var color_count=-1;
                     g.viz_definition[key1].chart
                         .margins({top: 10, right: 50, bottom: 60, left: 40})
@@ -2078,6 +2083,7 @@ function generateDashboard(){
                         .brushOn(false)    
                         .x(xScaleRange)
                         .xUnits(dc.units.ordinal)
+                        .yAxisPadding('15%')
                         .yAxisLabel(getYLabel)
                         .xAxisLabel(g.viz_definition[key1].display_axis.x)     
                         .mouseZoomable(false)     
@@ -2155,6 +2161,7 @@ function generateDashboard(){
                         .width(width)
                         .height(180)
                         .x(xScaleRange)
+                        .yAxisPadding('15%')
                         .yAxisLabel(getYLabel)
                         .dimension(g.viz_definition[dim_namespace].dimension)
                         .elasticY(true)
@@ -2204,12 +2211,13 @@ function generateDashboard(){
                         .elasticY(true)
                         .brushOn(false)   
                         .x(xScaleRange)
-                        .xUnits(dc.units.integers)   
+                        .xUnits(dc.units.integers) 
+                        .yAxisPadding('15%')  
                         .yAxisLabel(getYLabel)   
                         .xAxisLabel(g.viz_definition[key1].display_axis.x) 
                         .shareTitle(false)
                         ._rangeBandPadding(1)
-                        
+                       
                         //Note: /*.defined(function(d) {if (d.y !== null) {return d.y;}})*/ removes data entry of null but not of 0
                         .compose(
                             g.module_epitime.all_years.map(function(year) {         //composes line for each year for which we have data
@@ -2227,9 +2235,9 @@ function generateDashboard(){
                                     })
                                     .title(function(d) {
                                         if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
-                                            return "Week " + d.key+ ": " + d3.format(",.2f")(valueAccessor2(d, 'a', year));                                
+                                            return "Week " + d.key +'-'+ year + ": " + d3.format(",.2f")(valueAccessor2(d, 'a', year));                                
                                         } else {
-                                            return "Week " + d.key+ ": " +d.value;
+                                            return "Week " + d.key +'-'+ year + ": " +d.value;
                                         }
                                     })
                                     .colors(color_list[color_count])
