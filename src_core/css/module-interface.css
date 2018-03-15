@@ -164,6 +164,7 @@
     cursor: pointer;
     -webkit-transition-duration: 0.4s; /* Safari */
     transition-duration: 0.4s;
+    overflow:hidden;
 }
 
 .button_menu:hover {

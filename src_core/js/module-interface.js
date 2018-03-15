@@ -231,7 +231,6 @@ module_interface.display = function(){
             switch(button){
                 case 'reset': 
                     $('#'+button+'-'+key1).click(function(){
-                        console.log("in reset button");
                         if(key1 ==  g.viz_timeline){module_interface.menu_pausePlay();}
                         if(key1 == 'multiadm'){
                             if ($('#select-'+g.geometry_keylist[0]).val() == 'NA') {

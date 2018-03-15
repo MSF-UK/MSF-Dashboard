@@ -95,6 +95,7 @@ function checkRecord(rec, sheetName, col, row) {
 	for (var key in rec) {
 
 		if (!(testvalue.empty(rec, key, ''))) {
+			//console.log(rec, sheetName, col, row, key);
 			var type_req = '';
 			var result = testvalue[testType[key]](rec, key, '');
 
@@ -109,8 +110,10 @@ function checkRecord(rec, sheetName, col, row) {
 			if (result==false) {									
 				console.log("***** ERROR HERE: ", key, rec);
 				error_id++
-				if (DHIS2_format) {
+				if (data_format=='DHIS2') {
 					error_log_temp = [error_id, sheetName, numbersToLetters(col-7+new_col_fix), row, rec[key], type_req];	//col-4 is first column in the record
+				} else if (data_format=='IDS') {
+					error_log_temp = [error_id, sheetName, rec.epiweek, row, rec[key], type_req];	
 				} else {
 					error_log_temp = [error_id, sheetName, numbersToLetters(col-8+col_fix), row, rec[key], type_req];	//col-8 is first column in the record
 				}
@@ -120,7 +123,7 @@ function checkRecord(rec, sheetName, col, row) {
 
 		};
 
-		if (DHIS2_format) {
+		if (data_format=='DHIS2') {
 			new_col_fix++;
 		} else {
 			col_fix++;  	//NOTE: IF PROGRAM FAILS HERE THEN YOU LOSE THE DATA FOR THIS WEEK

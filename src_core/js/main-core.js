@@ -432,6 +432,7 @@ function generateDashboard(){
                         return loc_current;
                     }); 
                 });
+
                 return mapDimension;                        //one for each adm level
             },
             integer: function(key){ 
@@ -450,7 +451,8 @@ function generateDashboard(){
                         if ((key=='admN2') && (rec[g.medical_headerlist[key]]=='_NA')) {   
                             return g.module_lang.text[g.module_lang.current].chart_nospec_label;
                         } else {
-                            return toTitleCase(rec[g.medical_headerlist[key]].trim().split('_').join(' '));
+                            //return toTitleCase(rec[g.medical_headerlist[key]].trim().split('_').join(' '));
+                            return rec[g.medical_headerlist[key]].trim().split('_').join(' ');
                         }
                     }else{
                         if ((key=='admN2') && (rec[g.medical_headerlist[key]]=='_NA')) {    
@@ -1097,6 +1099,7 @@ function generateDashboard(){
                 //added for multi-focus charts when using rangechart
                 if (g.viz_definition[key1].range_chart) {
                     function rangesEqual(range1, range2) {
+                        //console.log("range_chart", range1, range2)
                         if (!range1 && !range2) {
                             return true;
                         }
@@ -1114,17 +1117,21 @@ function generateDashboard(){
                     }
 
                     g.viz_definition[key1].chart.focusCharts = function (chartlist) {
+                        //console.log("clicked on focusCharts")
                         if (!arguments.length) {
+                            //console.log("clicked on NOTHING")
                             return this._focusCharts;
                         }
                         this._focusCharts = chartlist; 
                         this.on('filtered', function (range_chart) {
+                            //console.log("FILTERED")
                             if (!range_chart.filter()) {
                                 dc.events.trigger(function () {
                                     chartlist.forEach(function(focus_chart) {
                                         focus_chart.x().domain(focus_chart.xOriginalDomain());
                                     });
                                 });
+                                //!!HERE WE NEED TO RESET THE LEGEND SCALE - i.e. when user clicks off time range selector but within chart
                             } else {
                                 chartlist.forEach(function(focus_chart) {
                                     if (!rangesEqual(range_chart.filter(), focus_chart.filter())) {
@@ -1133,7 +1140,9 @@ function generateDashboard(){
                                                 focus_chart.focus(range_chart.filter());  
                                             } 
                                         });
-                                    } 
+                                    } else {
+                                        //console.log("RANGES NOT EQUAL")
+                                    }
                                 });
                             };
                             rangeFilterAdds(); 
@@ -1232,7 +1241,6 @@ function generateDashboard(){
 
 
                 function valueAccessor(d){
-
                     if (g.new_layout) {
                         var depth = d.key.split(', ').length - 1;
 
@@ -1666,7 +1674,17 @@ function generateDashboard(){
                             * @alias module:g.medical_currentdisease
                             */
                             if (key1 == 'disease'){   //Note: 'disease' hard-coded here
+                                /*console.log("g.medical_currentdisease: ", g.medical_currentdisease, g.medical_diseaseslist)
+                                if (out[0]==undefined) {
+                                    g.medical_currentdisease = g.medical_diseaselist[0];
+                                } else {
+                                    g.medical_currentdisease = out[0];
+                                }
+                                console.log("g.medical_currentdisease: ", g.medical_currentdisease, g.medical_diseaseslist)
+                                */
                                 g.medical_currentdisease = out[0];
+
+                                
                             }
 
                             dc.redrawAll();
@@ -1682,8 +1700,10 @@ function generateDashboard(){
 
                 if (key1 == 'disease'){           //Note: 'disease' hard-coded here
                     //Randomly select one disease at start
+                    //var rand = toTitleCase(g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)]); 
                     var rand = g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)];   
                     g.viz_definition[key1].chart.filter(rand);  
+                    console.log("Randomly selected disease: ", rand);
                 }
 
                 g.viz_definition[key1].chart
@@ -2052,7 +2072,6 @@ function generateDashboard(){
                     }  
 
                     g.module_population.pop_age_groups = module_population.getPopAgeGroups();
-
                     var color_count=-1;
                     g.viz_definition[key1].chart
                         .margins({top: 10, right: 50, bottom: 60, left: 40})
@@ -2064,6 +2083,7 @@ function generateDashboard(){
                         .brushOn(false)    
                         .x(xScaleRange)
                         .xUnits(dc.units.ordinal)
+                        .yAxisPadding('15%')
                         .yAxisLabel(getYLabel)
                         .xAxisLabel(g.viz_definition[key1].display_axis.x)     
                         .mouseZoomable(false)     
@@ -2141,6 +2161,7 @@ function generateDashboard(){
                         .width(width)
                         .height(180)
                         .x(xScaleRange)
+                        .yAxisPadding('15%')
                         .yAxisLabel(getYLabel)
                         .dimension(g.viz_definition[dim_namespace].dimension)
                         .elasticY(true)
@@ -2190,12 +2211,13 @@ function generateDashboard(){
                         .elasticY(true)
                         .brushOn(false)   
                         .x(xScaleRange)
-                        .xUnits(dc.units.integers)   
+                        .xUnits(dc.units.integers) 
+                        .yAxisPadding('15%')  
                         .yAxisLabel(getYLabel)   
                         .xAxisLabel(g.viz_definition[key1].display_axis.x) 
                         .shareTitle(false)
                         ._rangeBandPadding(1)
-                        
+                       
                         //Note: /*.defined(function(d) {if (d.y !== null) {return d.y;}})*/ removes data entry of null but not of 0
                         .compose(
                             g.module_epitime.all_years.map(function(year) {         //composes line for each year for which we have data
@@ -2213,9 +2235,9 @@ function generateDashboard(){
                                     })
                                     .title(function(d) {
                                         if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
-                                            return "Week " + d.key+ ": " + d3.format(",.2f")(valueAccessor2(d, 'a', year));                                
+                                            return "Week " + d.key +'-'+ year + ": " + d3.format(",.2f")(valueAccessor2(d, 'a', year));                                
                                         } else {
-                                            return "Week " + d.key+ ": " +d.value;
+                                            return "Week " + d.key +'-'+ year + ": " +d.value;
                                         }
                                     })
                                     .colors(color_list[color_count])
@@ -2240,7 +2262,7 @@ function generateDashboard(){
                     g.viz_definition[key1].chart
                         .xAxis().tickFormat(function(d, i) {
                            j = parseInt(d.substring(5));
-                            //console.log(d, typeof(d), "  ", j, typeof(j), j%4, typeof(j%4));                       
+                            console.log(d, typeof(d), "  ", j, typeof(j), j%4, typeof(j%4));                       
                             if (!(isNaN(j)) && (!(j%4==0))) {       
                                 return "";
                             } else {
@@ -2253,7 +2275,7 @@ function generateDashboard(){
                                 .attr('dx', '-5')
                                 .attr('dy', '5')
                         }) 
-                } else if ((g.viz_definition[key1].domain_builder == 'date_extent') && (g.viz_definition[key1].domain[1].getTime()-g.viz_definition[key1].domain[0].getTime() >= 3.154e+10)) {   //1yr = 3.154e+10 
+                } else if ((g.viz_definition[key1].domain_builder == 'date_extent') && (g.viz_definition[key1].domain[1].getTime()-g.viz_definition[key1].domain[0].getTime() >= 3.154e+10/2)) {   //1yr = 3.154e+10 
                     g.viz_definition[key1].chart
                         .xAxis().tickFormat(function(d, i) {
                             var x_label = module_epitime.get_epi_id(d);    
@@ -2274,7 +2296,7 @@ function generateDashboard(){
                                         return x_label;
                                     }
 
-                                } else if ((g.viz_definition[g.viz_timeline].chart.filters()[0][1].getTime()-g.viz_definition[g.viz_timeline].chart.filters()[0][0].getTime() >= 3.154e+10) && (!(i%4==0))) {   //1yr = 3.154e+10            
+                                } else if ((g.viz_definition[g.viz_timeline].chart.filters()[0][1].getTime()-g.viz_definition[g.viz_timeline].chart.filters()[0][0].getTime() >= 3.154e+10/2) && (!(i%4==0))) {   //1yr = 3.154e+10            
                                     return "";
                                 } else {
                                     return x_label;
