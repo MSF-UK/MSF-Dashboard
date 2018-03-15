@@ -1,0 +1,10 @@
+{
+	"name": "MSF Dashboard",
+	"main": "src/cfg_eru-chad/index.html",
+	"window": {
+		"toolbar": true,
+		"height": 6000,
+		"width": 8000,
+		"icon": "src/src_core/images/msf_logo.png"
+	}
+}
