@@ -261,8 +261,10 @@ g.module_population.pop_new_format = true;
  */ 
 g.module_population.pop_headerlist = {
     admNx: 'name',
-    pop: {yr_2016: 2016}    
-          //yr_2017: 2017} 
+    pop: {yr_2014: 2014, 
+          yr_2015: 2015, 
+          yr_2016: 2016,  
+          yr_2018: 2018} 
 };
 
 /**
@@ -329,14 +331,9 @@ g.module_getdata = {
         },
     },
     medical:{
-        /*medical: {
-            method: 'medicalfs',
-            options: {  url: './input/',
-                        type: 'csv'}      
-        }*/
-        medical: {
+	medical: {
             method: 'medicald3noserver',
-            options: {  url: 'input/chad_fictive.csv',
+            options: {  url: 'input/chad_data_fictive.csv',
                         type: 'csv'}      
         }
     },
