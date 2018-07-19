@@ -52,6 +52,8 @@ g.dev_defined = {};
  * @alias module:g.new_layout
  */
 g.new_layout = true;
+g.new_layout_params = {filterWindowAlwaysOn: true,
+                       noDeathData: true};
 
 /**
  * Stores the id of the div (as specified in index.html) that contains the buttons to toggle between charts (e.g. between Age Group and Year charts).
@@ -83,11 +85,11 @@ g.module_chartwarper.container_allcharts_id = 'container_ser_lin';
  */
 g.module_chartwarper.container_chartlist = [{
                                         container: 'container_ser_outer',
-                                        height: '600px'
+                                        height: '400px'
                                       },
                                       {
                                         container: 'container_lin_outer',
-                                        height: '400px'
+                                        height: '200px'
                                       }];  
 
 /**
@@ -212,7 +214,8 @@ g.dev_defined.ignore_empty = true;
 if(!g.module_colorscale){
     g.module_colorscale = {}; 
 }
-g.module_colorscale.mapunitlist = ['Cases', 'Deaths','IncidenceProp','MortalityProp','Completeness'];
+//g.module_colorscale.mapunitlist = ['Cases', 'Deaths','IncidenceProp','MortalityProp','Completeness'];
+g.module_colorscale.mapunitlist = ['Cases','IncidenceProp','Completeness'];
 
 /**
  Defines a list of qualitative colors to be optionally used in charts.
@@ -220,8 +223,8 @@ g.module_colorscale.mapunitlist = ['Cases', 'Deaths','IncidenceProp','MortalityP
  * @type {Array.<String>}
  * @alias module:module_colorscale.userdefined_colors
  */
-g.module_colorscale.userdefined_colors = ['#333333', '#17becf', '#bcbd22', '#428bca', '#f69318','#9467bd', '#1b9e77', '#bd1d02', '#66a61e'];
-//grey, turquoise, lime green, blue, orange, purple, green, red, green
+g.module_colorscale.userdefined_colors = ['#333333', '#17becf', '#bcbd22', '#428bca', '#f69318','#9467bd', '#1b9e77', '#bd1d02', '#66a61e', '#fb9a99', '#b15928', '#707982'];
+//grey, turquoise, lime green, blue, orange, purple, green, red, green, pink, brown, light grey
 
 
 /**
@@ -236,7 +239,7 @@ g.module_colorscale.userdefined_colors = ['#333333', '#17becf', '#bcbd22', '#428
                                       {unit: 'MortalityProp',
                                        geo: 'hosp'
                                       }]*/
-g.dev_defined.incompatible_buttons = [];                                      
+//g.dev_defined.incompatible_buttons = [];                                      
 
 
 /**
@@ -261,10 +264,7 @@ g.module_population.pop_new_format = true;
  */ 
 g.module_population.pop_headerlist = {
     admNx: 'name',
-    pop: {yr_2014: 2014, 
-          yr_2015: 2015, 
-          yr_2016: 2016,  
-          yr_2018: 2018} 
+    pop: {yr_2011: 2011} 
 };
 
 /**
@@ -309,38 +309,38 @@ g.module_getdata = {
     geometry: {         //these layers are displayed explicitly in the map
         admN1: {
             method:  'geometryd3',
-            options: {  url: './data/geo_tcd_adm1.geojson',
+            options: {  url: './data/geo_neru_adm1.geojson',
                         type: 'json'}
             },
         admN2: {
             method:  'geometryd3',
-            options: {  url: './data/geo_tcd_dsr.geojson',
+            options: {  url: './data/geo_neru_adm2.geojson',
                         type: 'json'}
             }
     },
     extralay:{      //these layer don't contain data so are only implicitly used for other purposes, e.g. masks, backgrounds, drawing
         mask:{
             method: 'd3',
-            options: {  url: './data/geo_tcd_adm0.geojson',
+            options: {  url: './data/geo_neru_adm1.geojson',
                         type: 'json'}
         },
         admN1:{
             method: 'd3',
-            options: {  url: './data/geo_tcd_adm1.geojson',
+            options: {  url: './data/geo_neru_adm1.geojson',
                         type: 'json'}
         },
     },
     medical:{
         medical: {
-            method: 'medicalfs',
-            options: {  url: './input/',
+            method: 'medicald3noserver',
+            options: {  url: 'input/chad_data_fictive.csv',
                         type: 'csv'}      
         }
     },
     population:{
         pop: {
             method: 'populationd3',
-            options: {  url: './data/chad_population.csv',
+            options: {  url: './data/ngr_population.csv',
                         type: 'csv'}   
         }
     }
@@ -361,12 +361,12 @@ g.module_getdata = {
 
 g.medical_headerlist = {
     epiwk: 'epiweek',     // Epidemiological week: format YYYY-WW
-    admN1: 'region',    // Name of administrative/health division level N1 
-    admN2: 'district',
+    admN1: 'state',      // Name of administrative/health division level N1 
+    admN2: 'lga',
     disease: 'disease',
     //fyo: 'fyo',
     case: 'cas', 
-    death: 'dec', 
+    //death: 'dec', 
 };
 
 /**
@@ -454,10 +454,11 @@ g.module_datacheck.definition_value = {
     epiwk:  {test_type: 'epiwk',        setup: 'none'}, // Epidemiological week: format YYYY-WW
     admN1:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level N1 
     admN2:  {test_type: 'ingeometry',   setup: 'none'}, // Name of division level 
+    //admN2:  {test_type: 'ingeometry',   setup: 'underscore_ok'}, // Name of division level 
     //hosp:  {test_type: 'ingeometry',   setup: 'none'},  // Name of division level
     //fyo:{test_type: 'inlist',       setup: ["u","o"]},  // Depends on data source
     case: {test_type: 'integer',      setup: 'none'}, 
-    death:{test_type: 'integer',      setup: 'none'}, 
+    //death:{test_type: 'integer',      setup: 'none'}, 
 };
 
 /**
@@ -467,7 +468,6 @@ g.module_datacheck.definition_value = {
  * @alias module:g.medical_diseaseslist
  */
  g.medical_diseaseslist = []; // Complete list of disease surveilled or left empty to build the list from data
-
 
 
 // Define here the list of fields that are expected to constitute a unique identifier of a record
@@ -486,6 +486,21 @@ g.module_datacheck.definition_record = [
     {key: g.medical_headerlist.admN2, isnumber: false}, // 'true' key as in data file
     //{key: g.medical_headerlist.fyo, isnumber: false}, // 'true' key as in data file
 ];
+
+
+//Define here list of adm name differences to be displayed on dashboard (e.g. if a district name has changed can keep a ref to old name)
+/*g.geometry_altnames = [
+  {
+    data_name: 'Ennedi Ouest, Mourtcha',
+    display_name: 'Ennedi Ouest, Mourtcha (Kalaït)'
+
+  }, {
+    data_name: 'Logone Oriental, Baibokoum',
+    display_name: 'Logone Oriental, Baibokoum (Béssao)'
+  }
+];*/
+
+
 
 // 3) Chart parameters
 //------------------------------------------------------------------------------------
@@ -607,7 +622,8 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
                                             namespace: 'none'},
 
                     group_builder: 'multiadm',
-                    group_parameter: {  column: ['case','death']},
+                    //group_parameter: {  column: ['case','death']},
+                    group_parameter: {  column: ['case']},
                     
                     display_title: true,
                     display_colors: [0,1,2,3,4,5],  
@@ -632,7 +648,9 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
                     display_title: true,
                     display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_disease_labelx,
                                      y:g.module_lang.text[g.module_lang.current].chart_disease_labely},
-                    display_colors: [2],            
+                    display_colors: [2],     
+                    //display_focusrows: ['Suspect Choléra', 'Suspect Fièvre Jaune', 'Suspect Meningite', 'Suspect Rougeole'],  //these appear at top of row chart
+                       
                     display_intro_position: 'left',
                     
                     buttons_list: ['help'],
@@ -669,7 +687,7 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
                     buttons_list: ['help'],               
                 },
 
-        death_ser: {domain_builder: 'date_extent',                 
+        /*death_ser: {domain_builder: 'date_extent',                 
                     domain_parameter: 'custom_epitime_range',         
 
                     instance_builder: 'composite',
@@ -679,8 +697,6 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
                                             shared: true,     
                                             namespace: 'epirange'},
 
-                    /*group_builder: 'series_age',
-                    group_parameter: {  column: ['death','fyo']},   */
                     group_builder: 'series_all',
                     group_parameter: {column: ['death']},
 
@@ -696,7 +712,7 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
                     display_intro_position: 'none',  
                             
                     buttons_list: ['help'],               
-                },   
+                },   */
 
         ser_range: {domain_builder: 'date_extent',          
                     domain_parameter: 'custom_epitime_all',      
@@ -749,19 +765,19 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
                     group_parameter: {  column: ['case','epiwk']},
 
                     display_title: false,
-                    display_axis:   {x:'',
+                    display_axis:   {x: g.module_lang.text[g.module_lang.current].chart_case_labelx,
                                      y: g.module_lang.text[g.module_lang.current].chart_case_labely,
                                      y_imr: g.module_lang.text[g.module_lang.current].chart_ir_labely,
                                      y_comp: g.module_lang.text[g.module_lang.current].chart_comp_labely},       
                     
                     userdefined_colors: true,
-                    display_colors: [3,4,5,6,7],          
+                    display_colors: [3,4,5,6,7,11,2,1,9],        
                     display_intro_position: 'top',                  
                     display_intro_container: 'container_lin',
                     buttons_list: ['help'],
                 },
 
-        death_lin: {domain_builder: 'week',
+      /*  death_lin: {domain_builder: 'week',
                     domain_parameter: 'custom_epitime_annual',  
 
                     instance_builder: 'composite',
@@ -785,7 +801,7 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
 
                     display_intro_position: 'none',
                     buttons_list: ['help'],
-                },    
+                },    */
 
         /*fyo: {  domain_builder: 'none',
                     domain_parameter: 'none',  
@@ -823,7 +839,7 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
 
                     display_title: true,
                     userdefined_colors: true,
-                    display_colors: [3,4,5,6,7],
+                    display_colors: [3,4,5,6,7,11,2,1,9],
 
                     display_intro_position: 'left',     
                     
@@ -842,6 +858,9 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
 
                     group_builder: 'none',
                     group_parameter: {  column: 'none'},
+
+                    //sums_in_footer: ['case','death'], //column names from g.medical_headerlist
+                    sums_in_footer: ['case'], //column names from g.medical_headerlist
 
                     display_intro_position: 'top',
                     display_intro_container: 'container_table',
@@ -882,7 +901,8 @@ g.viz_timeline = 'ser_range';
  * @alias module:g.viz_timeshare
  * @todo Automate
  */
-g.viz_timeshare = ['case_ser', 'death_ser'];
+//g.viz_timeshare = ['case_ser', 'death_ser'];
+g.viz_timeshare = ['case_ser'];
 
 /**
  Defines the chart used as a reference for location-related interactions (e.g. incidence rates).
