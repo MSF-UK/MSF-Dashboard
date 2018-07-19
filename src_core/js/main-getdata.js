@@ -150,7 +150,7 @@ module_getdata.load_filed3 = function(file,filetype,save,exit_fun) {
 };
 
 module_getdata.load_filefs = function(file,filetype,save,exit_fun) {
-
+    //console.log('in load_filefs: ', file)
     var fs = nw.require('fs');
 
     fs.readFile(file, 'utf-8', function (error, data) {
@@ -165,6 +165,18 @@ module_getdata.load_filefs = function(file,filetype,save,exit_fun) {
         }
         exit_fun();
     });
+
+    fs.stat(file, function(err, stat1){
+        var new_atime = new Date();
+        
+        fs.utimes(file, new_atime, stat1.mtime, function(err) {
+            if (err) throw err;
+            //console.log('New access time set: ', new_atime)
+        })
+        //console.log('updated: ', stat1);
+    })
+
+
 };
 
 
@@ -409,6 +421,7 @@ module_getdata.load_medical_xlsfolders = function(path) {
 
     // Check file format (currently only .text / tabulation separated values - tsv)
     g.medical_filelist_raw.forEach(function(f){
+        console.log(f);
         var cond = f.substr(f.length - 5)=='.xlsx' || f.substr(f.length - 5)=='.XLSX';
         if(cond){
             g.medical_filelist.push(f);
@@ -577,8 +590,15 @@ module_getdata.load_medical_fs = function(path, ftype) {
      **/
     g.medical_filelist = [];
 
+    /*fs.stat('.'+g.medical_folder+'/'+g.medical_filelist_raw[0], function(err, stat1){
+        //stat1.atime = new Date();
+        console.log(stat1);
+    })*/
+
     // Check file format (currently only .text / tabulation separated values - tsv)
     g.medical_filelist_raw.forEach(function(f){
+        //console.log(f);
+
         if(ftype == 'csv'){
             var cond = f.substr(f.length - 4)=='.csv' || f.substr(f.length - 4)=='.CSV';
         }else if(ftype == 'tsv'){
@@ -590,6 +610,20 @@ module_getdata.load_medical_fs = function(path, ftype) {
             g.medical_filelist.push(f);
         }
     });
+
+    //Re-order g.medical_filelist by most recent access time
+    //console.log('Before re-order: ', g.medical_filelist);
+    dir = '.'+g.medical_folder+'/';
+    g.medical_filelist = g.medical_filelist.map (function(fileName) {
+        return {
+            name: fileName,
+            time: fs.statSync(dir + fileName).atime.getTime()
+        };
+    }).sort(function(a,b) {
+        return b.time - a.time;
+    }).map(function(v) {return v.name;});
+    //console.log('After re-order: ', g.medical_filelist);
+
 
     // Initialise with first medical file in the list
     g.medical_filecurrent = g.medical_filelist[0];
@@ -656,6 +690,7 @@ module_getdata.afterload_medical_d3 = function(data) {
   g.medical_keylist = Object.keys(g.medical_headerlist);
 
   console.log('main-getdata.js ~l630: Medical file selected: ' + g.medical_filecurrent);
+  $('#src_file').html('<b>'+g.medical_filecurrent+'</b>');
 
 
   // Load Optional Module: module-datacheck.js

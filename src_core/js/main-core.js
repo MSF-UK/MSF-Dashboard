@@ -1118,20 +1118,21 @@ function generateDashboard(){
 
                     g.viz_definition[key1].chart.focusCharts = function (chartlist) {
                         //console.log("clicked on focusCharts")
-                        if (!arguments.length) {
-                            //console.log("clicked on NOTHING")
+                        if (!arguments.length) {            //clicked on nothing
                             return this._focusCharts;
                         }
                         this._focusCharts = chartlist; 
                         this.on('filtered', function (range_chart) {
-                            //console.log("FILTERED")
-                            if (!range_chart.filter()) {
+                            if (!range_chart.filter()) {            //clicked to unfilter range chart
                                 dc.events.trigger(function () {
                                     chartlist.forEach(function(focus_chart) {
-                                        focus_chart.x().domain(focus_chart.xOriginalDomain());
+                                        //focus_chart.x().domain(focus_chart.xOriginalDomain());
+                                        if (!g.module_interface.autoplayon) {                                      
+                                            focus_chart.focus(range_chart.filter());  
+                                        }  
                                     });
                                 });
-                                //!!HERE WE NEED TO RESET THE LEGEND SCALE - i.e. when user clicks off time range selector but within chart
+                                
                             } else {
                                 chartlist.forEach(function(focus_chart) {
                                     if (!rangesEqual(range_chart.filter(), focus_chart.filter())) {
@@ -1459,12 +1460,14 @@ function generateDashboard(){
                             'weight': 1
                         })
                         .on("renderlet.key",function(e){
+
                             var html = "";
                             e.filters().forEach(function(l){
                                 html += l.split(',')[l.split(',').length-1]+", ";		//text for filter list
                             });
                             if (html.length>0) {html = html.slice(0,-2)};  
                             $(filter_id).html(html);
+                            //console.log('Current locations selected: ', html)
                             if (g.new_layout) {
                                 g.module_interface.current_filters['map_'+key2] = html;
                                 module_interface.updateFiltersInfo();
@@ -1508,7 +1511,7 @@ function generateDashboard(){
                         }
                         if(!(g.module_colorscale.mapunitcurrent == 'Completeness')){
                             html += '<tr><td><i style="background:' + g.module_colorscale.colors[g.module_colorscale.colorscurrent][0] + '"></i></td>';
-                            html += '<td></td><td align="right">'+ g.module_lang.text[g.module_lang.current].map_legendNA + '</td></tr>';
+                            html += '<td></td><td>'+ g.module_lang.text[g.module_lang.current].map_legendNA + '</td></tr>';
                         }
                         html += '</table>';
                         div.innerHTML = html;
@@ -1610,6 +1613,12 @@ function generateDashboard(){
             //------------------------------------------------------------------------------------        
                 var div_id = '#chart-'+key1;
                 var width = $(div_id).parent().width();
+
+                if (g.viz_definition[key1].display_focusrows) {
+                    var focusRowList = g.viz_definition[key1].display_focusrows;
+                } else {
+                    var focusRowList = [];
+                }
                 
                 g.viz_definition[key1].chart
                     .width(width)
@@ -1617,9 +1626,20 @@ function generateDashboard(){
                     .dimension(g.viz_definition[key1].dimension)
                     .group(g.viz_definition[key1].group)
                     .label(function (d) {
-                        return d.key;
+                        if (focusRowList.indexOf(d.key)!=-1) {
+                            return '* ' + d.key;
+                        } else {
+                            return d.key;
+                        }
                     })
-                    .colors(color_list[0]);
+                    .colors(color_list[0])
+                    .ordering(function(d) {
+                        if (focusRowList.indexOf(d.key)!=-1) {
+                            return focusRowList.indexOf(d.key);
+                        } else {
+                            return focusRowList.length;
+                        };
+                    });
 
                 // Logarithmic scale
                 if (g.viz_definition[key1].domain_parameter == 'custom_log') {
@@ -1639,12 +1659,12 @@ function generateDashboard(){
 
                 g.viz_definition[key1].chart
                     .margins({top: 10, right: 3, bottom: 50, left: 3})
-                    .data(function(group) {
+                    /*.data(function(group) {                     
                         return group.top(Infinity).filter(function(d) {
+                            console.log(d);
                             return d.value != 0;
                         });
-                    });
-
+                    })*/
 
                     // Filter one by one
                     g.viz_definition[key1].chart
@@ -1699,11 +1719,15 @@ function generateDashboard(){
                 g.viz_definition[key1].chart.render();
 
                 if (key1 == 'disease'){           //Note: 'disease' hard-coded here
-                    //Randomly select one disease at start
+                    //Randomly select one disease at start 
                     //var rand = toTitleCase(g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)]); 
-                    var rand = g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)];   
+                    if (g.viz_definition[key1].display_focusrows) {  //if _focusrows defined then select it from those
+                        var rand = g.viz_definition[key1].display_focusrows[Math.floor(Math.random() * g.viz_definition[key1].display_focusrows.length)];
+                    } else {
+                        var rand = g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)];   
+                    };
                     g.viz_definition[key1].chart.filter(rand);  
-                    console.log("Randomly selected disease: ", rand);
+                    //console.log("Randomly selected disease: ", rand);
                 }
 
                 g.viz_definition[key1].chart
@@ -2044,13 +2068,13 @@ function generateDashboard(){
                                 case 'u5': if (g.module_population.pop_perc_u5) {
                                                var t = d.key+ ": " + d3.format(",.2f")(valueAccessor2(d, 'u')); 
                                             } else {
-                                               var t = "Data not available";
+                                               var t = (g.module_lang.text[g.module_lang.current].chart_popup_label_na || "Data not available");
                                             };
                                             break;
                                 case 'o5': if (g.module_population.pop_perc_u5) {
                                                var t = d.key+ ": " + d3.format(",.2f")(valueAccessor2(d, 'o')); 
                                             } else {
-                                               var t = "Data not available";
+                                               var t = (g.module_lang.text[g.module_lang.current].chart_popup_label_na || "Data not available");
                                             };
                                             break;
                                 default:  var t = d.key+ ": " + d3.format(",.2f")(valueAccessor2(d, 'a')); 
@@ -2121,25 +2145,25 @@ function generateDashboard(){
                     function getTitle(d, group) {
                         if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {          
                             switch (group) {
-                                case 'all': var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor2(d, 'a'));
+                                case 'all': var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\n" + (g.module_lang.text[g.module_lang.current].chart_popup_label_rate || "Rate") + ": " + d3.format(",.3f")(valueAccessor2(d, 'a'));
                                             break;
                                 case 'u5': if (g.module_population.pop_perc_u5) {
-                                               var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor2(d, 'u'));
+                                               var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\n" + (g.module_lang.text[g.module_lang.current].chart_popup_label_rate || "Rate") + ": " + d3.format(",.3f")(valueAccessor2(d, 'u'));
                                             } else {
-                                               var t = "Data not available";
+                                               var t = (g.module_lang.text[g.module_lang.current].chart_popup_label_na || "Data not available");; 
                                             };
                                             break;
                                 case 'o5': if (g.module_population.pop_perc_u5) {
-                                            var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor2(d, 'o'));
+                                            var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\n" + (g.module_lang.text[g.module_lang.current].chart_popup_label_rate || "Rate") + ": " + d3.format(",.3f")(valueAccessor2(d, 'o'));
                                             } else {
-                                               var t = "Data not available";
+                                               var t = (g.module_lang.text[g.module_lang.current].chart_popup_label_na || "Data not available");
                                             };
                                             break;
-                                default:  var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nRate: " + d3.format(",.2f")(valueAccessor2(d, 'a'));
+                                default:  var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\n" + (g.module_lang.text[g.module_lang.current].chart_popup_label_rate || "Rate") + ": " + d3.format(",.3f")(valueAccessor2(d, 'a'));
                                             
                             }                                                
                         } else {
-                            var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\nValue: " + d.value;
+                            var t = "\n" + module_epitime.get_epi_id(d.key) + " (" + d3.time.format("%a %d %b %Y")(d.key) + ")\n" + (g.module_lang.text[g.module_lang.current].chart_popup_label_value || "Value") + ": " + d.value;
                         };
                         return t;       
                     };
@@ -2235,9 +2259,9 @@ function generateDashboard(){
                                     })
                                     .title(function(d) {
                                         if ((g.module_colorscale.mapunitcurrent=='IncidenceProp') || (g.module_colorscale.mapunitcurrent=='MortalityProp')) {
-                                            return "Week " + d.key +'-'+ year + ": " + d3.format(",.2f")(valueAccessor2(d, 'a', year));                                
+                                            return (g.module_lang.text[g.module_lang.current].chart_popup_label_week || "Week") + " " + d.key +'-'+ year + ": " + d3.format(",.2f")(valueAccessor2(d, 'a', year));                                
                                         } else {
-                                            return "Week " + d.key +'-'+ year + ": " +d.value;
+                                            return (g.module_lang.text[g.module_lang.current].chart_popup_label_week || "Week") + " " + d.key +'-'+ year + ": " +d.value;
                                         }
                                     })
                                     .colors(color_list[color_count])
@@ -2510,6 +2534,14 @@ function generateDashboard(){
     module_colorscale.lockcolor(g.module_colorscale.modecurrent);
 
     $('#modal').modal('hide');
+
+    var table = $('#chart-table').DataTable();
+    $('#search_table').on('keyup', function() {
+        console.log('in search_table ')
+        table.search(this.value).draw();
+        module_datatable.recalculateTableColumnSums();
+    });
+
 }
 
 

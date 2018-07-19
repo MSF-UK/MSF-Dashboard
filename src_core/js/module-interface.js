@@ -94,7 +94,7 @@ module_interface.display = function(){
 
     $('#main_title').html(g.module_lang.text[g.module_lang.current].main_title);
     if (g.new_layout) {
-        $('#main_description_new').html(g.module_lang.text[g.module_lang.current].main_description);
+        $('#main_description_new').html('<p style="margin-top: 25px;" >' + g.module_lang.text[g.module_lang.current].main_description[0] + '</p><p>' + g.module_lang.text[g.module_lang.current].main_description[1] + '</p><p>' + g.module_lang.text[g.module_lang.current].src_txt + ': <i>' + g.medical_filecurrent + '</i></p>');
     } else {
         $('#main_description').html(g.module_lang.text[g.module_lang.current].main_description);
     }
@@ -457,9 +457,14 @@ module_interface.display = function(){
 
         if (g.new_layout) {
             // Menu title
+            var html = '';
+            if ((g.new_layout_params) && (g.new_layout_params['filterWindowAlwaysOn'])) {
+                html += '<div id="filters_info" class="on"></div>';
+            } else {
+                html = '<a id="menu_viewFilters" class="button_menu filters_btn btn btn-primary btn-sm" href="javascript:module_interface.viewFilters();">'+g.module_lang.text[g.module_lang.current].interface_menuviewfilt+'</a>';
+                html += '<div id="filters_info"></div>';
+            }
             
-            var html = '<a id="menu_viewFilters" class="button_menu filters_btn btn btn-primary btn-sm" href="javascript:module_interface.viewFilters();">'+g.module_lang.text[g.module_lang.current].interface_menuviewfilt+'</a>';
-            html += '<div id="filters_info"></div>';
 
             // Record count
             if (g.medical_datatype == 'outbreak') {
@@ -659,7 +664,9 @@ module_interface.display = function(){
 
 
 module_interface.updateFiltersInfo = function() {
-    if ($(".filters_btn").hasClass("on")) {
+
+    if (((g.new_layout_params) && (g.new_layout_params['filterWindowAlwaysOn'])) || ($(".filters_btn").hasClass("on"))) {
+    
         filters_html = '<b>'+g.module_lang.text[g.module_lang.current].interface_menufiltsum+': </b><br/>';
         no_filts = true;
 
@@ -749,11 +756,10 @@ module_interface.menu_reset = function() {
     var temp_disease = g.medical_currentdisease;
     g.module_colorscale.modecurrent = 'Manual';
     module_interface.menu_pausePlay();
-    if ($('#select-'+g.geometry_keylist[0]).val() == 'NA') {
-        zoomToGeom(g.geometry_data[g.geometry_keylist[0]],g.viz_definition.multiadm.maps[g.geometry_keylist[0]]);
-    }else{
-        $('#select-'+g.geometry_keylist[0]).val('NA').change();
-    }
+    g.geometry_keylist.forEach(function(key2, key2num){
+        $('#select-'+g.geometry_keylist[key2num]).val('NA');
+    });
+    zoomToGeom(g.geometry_data[g.geometry_keylist[0]],g.viz_definition.multiadm.maps[g.geometry_keylist[0]]);
     dc.filterAll();
     g.module_colorscale.modecurrent = temp_mode;
     if (g.medical_datatype == 'surveillance' && temp_disease && g.module_colorscale.mapunitcurrent !== 'Completeness') {

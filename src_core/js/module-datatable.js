@@ -143,6 +143,8 @@ module_datatable.setup =function(){
 }
 
 
+
+
 // 2) Display
 //------------------------------------------------------------------------------------
 /**
@@ -165,18 +167,28 @@ module_datatable.setup =function(){
  * @alias module:module_datatable.display
  */
 module_datatable.display = function(){
-
-   var html = '<table style="font-size: 0.9em;" class="table table-condensed table-hover table-striped order-column viz" id="chart-table">';
+    var html = '';
+        html += '<div id="search_div"><label>'+ g.module_lang.text[g.module_lang.current].datatable_text.language.sSearch + ' ' + '</label><input id="search_table" type="text"><span class="infotext">(' + g.module_lang.text[g.module_lang.current].datatable_text.search_note + ')</span></div>';
+        html += '<table style="font-size: 0.9em;" class="table table-condensed table-hover table-striped order-column viz" id="chart-table">';
         html += '<span id=buttons-table></span>';
         html += '<thead class="text-capitalize"><tr>';
             g.medical_keylist.forEach(function(key){
-                html += '<th>'+key+'</th>';
+                //console.log(key)
+                var hdr_name = (g.module_lang.text[g.module_lang.current].datatable_text.header[key] || key);
+                var title_text = (g.module_lang.text[g.module_lang.current].datatable_text.header_popup[0] || '') + hdr_name + (g.module_lang.text[g.module_lang.current].datatable_text.header_popup[1] || '');
+                html += '<th title="' + title_text + '">'+ hdr_name +'</th>';
             });
         html += '</tr></thead>';
         html += '<tbody></tbody>';
         html += '<tfoot><tr>';
             g.medical_keylist.forEach(function(key){
-                html += '<th></th>';
+                //console.log(g.module_datatable.columns[4].data());
+                var hdr_name = (g.module_lang.text[g.module_lang.current].datatable_text.header[key] || key);
+                /*if ((key=='case')||(key=='death')) {
+                    html += '<th><b>' + hdr_name + ' Total: ' + '</b></th>';
+                } else {*/
+                    html += '<th></th>';
+                //}  
             });
         html += '</tr></tfoot>';
     html += '</table>'
@@ -185,6 +197,9 @@ module_datatable.display = function(){
     html += '<p><small><br>'+g.module_lang.text[g.module_lang.current].datatable_legend+'</small></p>';
 
     $('#container-table').html(html);
+
+
+
 
     /** 
      * Contains the actual datatable object (definition parsed in layout).
@@ -202,10 +217,22 @@ module_datatable.display = function(){
 
     g.module_datatable.datatable = $('#chart-table').dataTable(g.datatable_definition);
 
+
     $('#chart-table')
+        .on( 'page.dt', function() {  //on table page change        
+            if (g.viz_definition.table.sums_in_footer) {
+                module_datatable.recalculateTableColumnSums();
+            }
+        })
+        .on( 'length.dt', function() {  //on table page change        
+            if (g.viz_definition.table.sums_in_footer) {
+                module_datatable.recalculateTableColumnSums();
+            }    
+        })
         .on( 'error.dt', function ( e, settings, techNote, message ) {
             console.log( 'An error has been reported by DataTables: ', message );
         });
+
 }
 
 // 3) Interactions
@@ -244,6 +271,37 @@ module_datatable.interaction = function(){
     module_datatable.refreshTable();
 }
 
+
+module_datatable.recalculateTableColumnSums = function(){
+    var table = $('#chart-table').DataTable();
+    //var info = table.page.info();
+    //console.log('Showing page: ', info.page + ' of ' + info.pages)
+    var intVal = function(i) {
+        return typeof i==='string'? i.replace(/[\$,]/g, '')*1 : typeof i==='number'? i : 0;
+    };
+
+    g.medical_keylist.forEach(function(key, i) {
+        if (g.viz_definition.table.sums_in_footer.indexOf(key)!=-1) {
+            var colname = (g.module_lang.text[g.module_lang.current].datatable_text.header[key] || key);
+            var colnum = g.medical_keylist.indexOf(key);
+
+            var column = table.column(colnum);
+            var total = column.data().reduce(function(a,b) {
+                    return intVal(a)+intVal(b);
+                }, 0)
+
+            var pagecolumn = table.column(colnum, {page: 'current'});
+            var pagetotal = pagecolumn.data().reduce(function(a,b) {
+                    return intVal(a)+intVal(b);
+                }, 0)
+
+            $(column.footer()).html(
+                colname + ' '+ (g.module_lang.text[g.module_lang.current].datatable_text.footer_text[0] || 'Total') +': ' + d3.format(",")(pagetotal) + '  (' + (g.module_lang.text[g.module_lang.current].datatable_text.footer_text[1] || 'Total table') + ': '  + d3.format(",")(total) + ')'
+            );
+        };
+    });
+}
+
 /**
  * Actualises the datatable when not hidden (saves resources to hide it).
  * <br>
@@ -270,4 +328,11 @@ module_datatable.refreshTable = function() {
         $.fn.dataTable.ext.errMode = 'none';
 
     }
+
+    if (g.viz_definition.table.sums_in_footer) {
+        module_datatable.recalculateTableColumnSums();       //deals with column summations on table refresh
+    };
+
+
 }
+
