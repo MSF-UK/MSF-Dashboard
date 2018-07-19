@@ -52,6 +52,7 @@ g.dev_defined = {};
  * @alias module:g.new_layout
  */
 g.new_layout = true;
+g.new_layout_params = {filterWindowAlwaysOn: true};
 
 /**
  * Stores the id of the div (as specified in index.html) that contains the buttons to toggle between charts (e.g. between Age Group and Year charts).
@@ -236,7 +237,7 @@ g.module_colorscale.userdefined_colors = ['#333333', '#17becf', '#bcbd22', '#428
                                       {unit: 'MortalityProp',
                                        geo: 'hosp'
                                       }]*/
-g.dev_defined.incompatible_buttons = [];                                      
+//g.dev_defined.incompatible_buttons = [];                                      
 
 
 /**
@@ -331,7 +332,7 @@ g.module_getdata = {
         },
     },
     medical:{
-	medical: {
+		medical: {
             method: 'medicald3noserver',
             options: {  url: 'input/chad_data_fictive.csv',
                         type: 'csv'}      
@@ -361,7 +362,7 @@ g.module_getdata = {
 
 g.medical_headerlist = {
     epiwk: 'epiweek',     // Epidemiological week: format YYYY-WW
-    admN1: 'region',    // Name of administrative/health division level N1 
+    admN1: 'region',      // Name of administrative/health division level N1 
     admN2: 'district',
     disease: 'disease',
     //fyo: 'fyo',
@@ -467,6 +468,10 @@ g.module_datacheck.definition_value = {
  * @alias module:g.medical_diseaseslist
  */
  g.medical_diseaseslist = []; // Complete list of disease surveilled or left empty to build the list from data
+ g.medical_diseaselist_trans = {"Morsure de Serpent": 'Snake Bite', "Piqure de Scorpion": 'Scorpion Bite', "Suspicion de Paludisme": 'Suspected Malaria', "Paludisme Testes": 'Tested Malaria', "Paludisme Confirmé":'Confirmed Malaria', "PFA": 'Acute Flaccid Paralysis',
+"Meningite": 'Meningitis', "TNN": 'Neonatal Tetanus', "Décès Maternels": 'Maternal Death', "Rougeole": 'Measles', "Fièvre Jaune": 'Yellow Fever',
+"Malnutrition Sévère": 'Severe Malnutrition', "Malnutrition Modérée": 'Moderate Malnutrition', "Suspicions Hepatite E": 'Suspected Hepatitis E',
+"Ver de Guinée": 'Guinea Worm', "Choléra": 'Cholera'};
 
 
 
@@ -486,6 +491,21 @@ g.module_datacheck.definition_record = [
     {key: g.medical_headerlist.admN2, isnumber: false}, // 'true' key as in data file
     //{key: g.medical_headerlist.fyo, isnumber: false}, // 'true' key as in data file
 ];
+
+
+//Define here list of adm name differences to be displayed on dashboard (e.g. if a district name has changed can keep a ref to old name)
+/*g.geometry_altnames = [
+  {
+    data_name: 'Ennedi Ouest, Mourtcha',
+    display_name: 'Ennedi Ouest, Mourtcha (Kalaït)'
+
+  }, {
+    data_name: 'Logone Oriental, Baibokoum',
+    display_name: 'Logone Oriental, Baibokoum (Béssao)'
+  }
+];*/
+
+
 
 // 3) Chart parameters
 //------------------------------------------------------------------------------------
@@ -632,7 +652,9 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
                     display_title: true,
                     display_axis:   {x:g.module_lang.text[g.module_lang.current].chart_disease_labelx,
                                      y:g.module_lang.text[g.module_lang.current].chart_disease_labely},
-                    display_colors: [2],            
+                    display_colors: [2],     
+                    display_focusrows: ['Suspect Choléra', 'Suspect Fièvre Jaune', 'Suspect Meningite', 'Suspect Rougeole'],  //these appear at top of row chart
+                       
                     display_intro_position: 'left',
                     
                     buttons_list: ['help'],
@@ -842,6 +864,8 @@ function main_loadfiles_readcharts(){     //re-loads variables that may require 
 
                     group_builder: 'none',
                     group_parameter: {  column: 'none'},
+
+                    sums_in_footer: ['case','death'], //column names from g.medical_headerlist
 
                     display_intro_position: 'top',
                     display_intro_container: 'container_table',
