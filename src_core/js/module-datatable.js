@@ -166,7 +166,32 @@ module_datatable.setup =function(){
  * @method
  * @alias module:module_datatable.display
  */
+
+
+
+        
 module_datatable.display = function(){
+
+    //defaults for older version dashboards (pre-v1.3) - from v1.3 these are defined in module_lang.js
+    if (!(g.module_lang.text[g.module_lang.current].datatable_text.header)) {
+        g.module_lang.text[g.module_lang.current].datatable_text['header'] = g.medical_headerlist;
+    };
+    if (!(g.module_lang.text[g.module_lang.current].datatable_text.header_popup)) {
+        if (g.module_lang.current == 'eng') {
+            g.module_lang.text[g.module_lang.current].datatable_text['header_popup'] = ['Click here to sort by ',' (when sorted the arrow on the right is red)'];
+        } else if (g.module_lang.current == 'fra') {
+            g.module_lang.text[g.module_lang.current].datatable_text['header_popup'] = ['Cliquez içi pour trier par ',' (lorsque vous cliquez dessus, la flèche sur la drote est rouge'];
+        }
+    };
+    if (!(g.module_lang.text[g.module_lang.current].datatable_text.search_note)) {
+        if (g.module_lang.current == 'eng') {
+            g.module_lang.text[g.module_lang.current].datatable_text['search_note'] = 'Note: Searching the table does not filter the data in the rest of the dashboard';
+        } else if (g.module_lang.current == 'fra') {
+            g.module_lang.text[g.module_lang.current].datatable_text['search_note'] = 'Note: La recherche dans la table ne filtre pas les données dans le reste du dashboard';
+        }
+    };
+
+ 
     var html = '';
         html += '<div id="search_div"><label>'+ g.module_lang.text[g.module_lang.current].datatable_text.language.sSearch + ' ' + '</label><input id="search_table" type="text"><span class="infotext">(' + g.module_lang.text[g.module_lang.current].datatable_text.search_note + ')</span></div>';
         html += '<table style="font-size: 0.9em;" class="table table-condensed table-hover table-striped order-column viz" id="chart-table">';
@@ -184,11 +209,7 @@ module_datatable.display = function(){
             g.medical_keylist.forEach(function(key){
                 //console.log(g.module_datatable.columns[4].data());
                 var hdr_name = (g.module_lang.text[g.module_lang.current].datatable_text.header[key] || key);
-                /*if ((key=='case')||(key=='death')) {
-                    html += '<th><b>' + hdr_name + ' Total: ' + '</b></th>';
-                } else {*/
-                    html += '<th></th>';
-                //}  
+                html += '<th></th>';
             });
         html += '</tr></tfoot>';
     html += '</table>'
@@ -197,7 +218,6 @@ module_datatable.display = function(){
     html += '<p><small><br>'+g.module_lang.text[g.module_lang.current].datatable_legend+'</small></p>';
 
     $('#container-table').html(html);
-
 
 
 
@@ -278,6 +298,15 @@ module_datatable.recalculateTableColumnSums = function(){
     //console.log('Showing page: ', info.page + ' of ' + info.pages)
     var intVal = function(i) {
         return typeof i==='string'? i.replace(/[\$,]/g, '')*1 : typeof i==='number'? i : 0;
+    };
+
+    //defaults for older version dashboards (pre-v1.3) - from v1.3 these are defined in module_lang.js
+    if (!(g.module_lang.text[g.module_lang.current].datatable_text.footer_text)) {
+        if (g.module_lang.current == 'eng') {
+            g.module_lang.text[g.module_lang.current].datatable_text['footer_text'] = ['Total', 'Table Total'];
+        } else if (g.module_lang.current == 'fra') {
+            g.module_lang.text[g.module_lang.current].datatable_text['footer_text'] = ['Total', 'Total de table'];
+        }
     };
 
     g.medical_keylist.forEach(function(key, i) {
