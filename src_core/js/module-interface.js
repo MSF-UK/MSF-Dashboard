@@ -94,7 +94,11 @@ module_interface.display = function(){
 
     $('#main_title').html(g.module_lang.text[g.module_lang.current].main_title);
     if (g.new_layout) {
-        $('#main_description_new').html('<p style="margin-top: 25px;" >' + g.module_lang.text[g.module_lang.current].main_description[0] + '</p><p>' + g.module_lang.text[g.module_lang.current].main_description[1] + '</p><p>' + g.module_lang.text[g.module_lang.current].src_txt + ': <i>' + g.medical_filecurrent + '</i></p>');
+        if (typeof g.module_lang.text[g.module_lang.current].main_description == 'object') {
+            $('#main_description_new').html('<p style="margin-top: 25px;" >' + g.module_lang.text[g.module_lang.current].main_description[0] + '</p><p>' + g.module_lang.text[g.module_lang.current].main_description[1] + '</p><p>' + g.module_lang.text[g.module_lang.current].src_txt + ': <i>' + g.medical_filecurrent + '</i></p>');
+        } else if (typeof g.module_lang.text[g.module_lang.current].main_description == 'string') {
+            $('#main_description_new').html('<p style="margin-top: 25px;" >' + g.module_lang.text[g.module_lang.current].main_description + '</p><p>Source: <i>' + g.medical_filecurrent + '</i></p>');
+        }
     } else {
         $('#main_description').html(g.module_lang.text[g.module_lang.current].main_description);
     }
