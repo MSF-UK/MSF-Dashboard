@@ -333,7 +333,7 @@ g.module_getdata = {
     medical:{
         medical: {
             method: 'medicald3noserver',
-            options: {  url: 'input/chad_data_fictive.csv',
+            options: {  url: 'input/neru_data_fictive.csv',
                         type: 'csv'}      
         }
     },
