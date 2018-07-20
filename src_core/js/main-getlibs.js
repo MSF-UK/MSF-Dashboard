@@ -28,6 +28,7 @@ var files = [
     ['css','leaflet/leaflet.css',lib_folder],
     ['js','leaflet/leaflet.js',lib_folder],
     ['js','leaflet.sync/L.Map.Sync.js',lib_folder],
+    //['js','leaflet-easyPrint.js',lib_folder],
     ['css','datatables/jquery.dataTables.min.css',lib_folder],
     ['js','datatables/jquery.dataTables.min.js',lib_folder],
     ['css','datatables/buttons.dataTables.min.css',lib_folder],

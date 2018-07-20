@@ -8,9 +8,31 @@
 #copyBtn{
     position: absolute;
     right: 40px !important;
-    top: -10px;
+    top: -5px;
+}
+
+#search_div{
+    margin-top: 10px;
+    display: block;
+    margin-bottom: 5px;
+}
+label {
+	font-weight: bold;
+	float: left;
+	display: block;
+	padding-right: 5px;
+}
+.infotext {
+	font-style: italic;
+	display: inline-block;
+	padding-left: 10px;
+	width: 20%;
+}
+input {
+	vertical-align: top;
 }
 
 #more-table{
 	cursor:pointer;
+	top: 50px;
 }
