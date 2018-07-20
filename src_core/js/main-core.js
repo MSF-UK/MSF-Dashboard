@@ -1151,8 +1151,10 @@ function generateDashboard(){
                         return this;
                     };
 
-                    if (g.viz_rangechart) {    
+		    if ((g.viz_rangechart) && (g.viz_definition['case_ser']) && (g.viz_definition['death_ser'])) {    
                         g.viz_definition[key1].chart.focusCharts([g.viz_definition['case_ser'].chart, g.viz_definition['death_ser'].chart]); 
+                    } else if ((g.viz_rangechart) && (g.viz_definition['case_ser'])) {    
+                        g.viz_definition[key1].chart.focusCharts([g.viz_definition['case_ser'].chart]); 
                     };
                 };
 
