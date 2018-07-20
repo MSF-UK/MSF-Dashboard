@@ -331,10 +331,10 @@ g.module_getdata = {
         },
     },
     medical:{
-		medical: {
+        medical: {
             method: 'medicalfs',
-            options: {  url: './../data-folders/04-dashboard-input/',
-                        type: 'csv'}
+            options: {  url: './input/',
+                        type: 'csv'}      
         }
     },
     population:{
