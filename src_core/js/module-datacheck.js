@@ -86,7 +86,9 @@ g.module_datacheck.diseasecheck = g.medical_diseaseslist.length == 0;
  * @alias module:module_datacheck~toTitleCase
  */
 function toTitleCase(str){
-    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    //return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    return str.toLowerCase().replace(/(?:^|[\s-/])\w/g, function(match) {return match.toUpperCase()});
+
 }
 
 /**
@@ -178,6 +180,15 @@ epiwk: function(rec,key,none){
 	return cond_1 && cond_2 && cond_3;
 },
 	 */
+
+	if (g.geometry_altnames_data) {
+		var geonamesWithAlt = [];
+		for (var a in g.geometry_altnames_data.alt) {
+			geonamesWithAlt.push(g.geometry_altnames_data.alt[a]['data_province'] + ', ' +  g.geometry_altnames_data.alt[a]['data_zone']);
+		}
+		console.log('geonamesWithAlt: ', geonamesWithAlt);
+	}
+
 	module_datacheck.testvalue = {
 		integer: function(rec,key,none){
 			var value = rec[g.medical_headerlist[key]];
@@ -226,7 +237,7 @@ epiwk: function(rec,key,none){
 			return cond_1;
 		},
 		ingeometry: function(rec,key,option){		
-			//console.log("ingeometry: ", rec, key, option);	  
+			//console.log("ingeometry: ", rec[key], key, option);	  
 			//var keylist = g.geometry_keylist;			
 			//var count = g.geometry_levellist[key];		
 
@@ -255,6 +266,17 @@ epiwk: function(rec,key,none){
                         loc_current = rec[g.medical_headerlist[name]].trim().split('_').join(' ')+', '+loc_current;
                     }
                 }
+
+                if (g.geometry_altnames_data) {
+	                if (geonamesWithAlt.indexOf(loc_current) != -1) {
+	                	for (var a in g.geometry_altnames_data.alt) {
+	                		if (g.geometry_altnames_data.alt[a]['data_province'] + ', ' +  g.geometry_altnames_data.alt[a]['data_zone'] == loc_current) {
+	                			loc_current = g.geometry_altnames_data.alt[a]['geo_province'] + ', ' +  g.geometry_altnames_data.alt[a]['geo_zone']
+	                			rec[g.medical_headerlist[key]] = g.geometry_altnames_data.alt[a]['geo_'+[g.medical_headerlist[key]]];
+	                		}
+	                	}
+	                }
+	            }
 
                 var cond_1 = !(g.geometry_loclists[key].indexOf(loc_current) == -1);  	//true = loc_current is in list of geojson adm names
 				if (!(cond_1)) {
@@ -313,7 +335,7 @@ epiwk: function(rec,key,none){
 				var cond_1 = true;
 				
 			} else {
-				var cond_1 = rec[g.medical_headerlist[key]] == '';
+				var cond_1 = rec[g.medical_headerlist[key]] === '';
 			}
 			return cond_1;
 		},

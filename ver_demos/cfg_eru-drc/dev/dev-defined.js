@@ -337,11 +337,6 @@ g.module_getdata = {
         }
     },
     medical:{
-		/*medical: {
-            method: 'medicalfs',
-            options: {  url: './../data-folders/04-dashboard-input/',
-                        type: 'csv'}
-        } */
       /*medical: {
             method: 'medicalxlsx',
             options: { url: './input/', 
@@ -350,7 +345,7 @@ g.module_getdata = {
       }*/
       medical: {
             method: 'medicald3noserver',
-            options: { url: 'input/kere_fake_data.csv', 
+            options: { url: 'input/kere_demo_data.csv', 
                        type: 'csv'
                       }
       }

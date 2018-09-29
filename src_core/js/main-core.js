@@ -1616,8 +1616,8 @@ function generateDashboard(){
                 var div_id = '#chart-'+key1;
                 var width = $(div_id).parent().width();
 
-                if (g.viz_definition[key1].display_focusrows) {
-                    var focusRowList = g.viz_definition[key1].display_focusrows;
+                if (g.viz_definition[key1].display_focusrows) {             
+                    var focusRowList = g.viz_definition[key1].display_focusrows.map(a => a.toUpperCase());  
                 } else {
                     var focusRowList = [];
                 }
@@ -1628,7 +1628,7 @@ function generateDashboard(){
                     .dimension(g.viz_definition[key1].dimension)
                     .group(g.viz_definition[key1].group)
                     .label(function (d) {
-                        if (focusRowList.indexOf(d.key)!=-1) {
+                        if (focusRowList.indexOf(d.key.toUpperCase())!=-1) {
                             return '* ' + d.key;
                         } else {
                             return d.key;
@@ -1636,8 +1636,8 @@ function generateDashboard(){
                     })
                     .colors(color_list[0])
                     .ordering(function(d) {
-                        if (focusRowList.indexOf(d.key)!=-1) {
-                            return focusRowList.indexOf(d.key);
+                        if (focusRowList.indexOf(d.key.toUpperCase())!=-1) {
+                            return focusRowList.indexOf(d.key.toUpperCase());
                         } else {
                             return focusRowList.length;
                         };
@@ -1720,13 +1720,26 @@ function generateDashboard(){
 
                 g.viz_definition[key1].chart.render();
 
+                var findOne = function(haystack, arr) {
+                    return arr.some(function(v) {
+                        return haystack.indexOf(v) >=0;
+                    });
+                };
+
                 if (key1 == 'disease'){           //Note: 'disease' hard-coded here
                     //Randomly select one disease at start 
+                    var rand = '';
                     //var rand = toTitleCase(g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)]); 
-                    if (g.viz_definition[key1].display_focusrows) {  //if _focusrows defined then select it from those
-                        var rand = g.viz_definition[key1].display_focusrows[Math.floor(Math.random() * g.viz_definition[key1].display_focusrows.length)];
+                    if (g.viz_definition[key1].display_focusrows) {  //if display_focusrows defined
+                        if (findOne(g.medical_diseaseslist, g.viz_definition[key1].display_focusrows)) {   //if at least one focus disease is in the medical_diseaseslist, then select it from those
+                            while (g.medical_diseaseslist.indexOf(rand) == -1) {                            //until you get one that is in both lists
+                                rand = g.viz_definition[key1].display_focusrows[Math.floor(Math.random() * g.viz_definition[key1].display_focusrows.length)];
+                            }
+                        } else {
+                            rand = g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)]; 
+                        }
                     } else {
-                        var rand = g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)];   
+                        rand = g.medical_diseaseslist[Math.floor(Math.random() * g.medical_diseaseslist.length)];   
                     };
                     g.viz_definition[key1].chart.filter(rand);  
                     //console.log("Randomly selected disease: ", rand);
