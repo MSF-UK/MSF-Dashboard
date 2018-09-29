@@ -349,9 +349,9 @@ g.module_getdata = {
                       }
       }*/
       medical: {
-            method: 'medicalxlsx',
-            options: { url: 'input/kere_fake_data.xlsx', 
-                       type: 'xlsx'
+            method: 'medicald3noserver',
+            options: { url: 'input/kere_fake_data.csv', 
+                       type: 'csv'
                       }
       }
     },
