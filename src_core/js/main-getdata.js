@@ -106,6 +106,12 @@ module_getdata.load_propagate = function(){
                 if(!g[name]){g[name] = {};}
                 module_getdata.load_filed3(current_datasource.options.url,current_datasource.options.type,[name,current_dataname],module_getdata.afterload_geometry_d3);
                 break;
+            case 'geonamescsv':
+                $(load_status).html('Getting local .csv files...');
+                var name = '' + current_datatype + '_data';
+                if(!g[name]){g[name] = {};}
+                module_getdata.load_filed3(current_datasource.options.url,current_datasource.options.type,[name,current_dataname],module_getdata.afterload_geo_altnames);
+                break;
             case 'populationd3':
                 $(load_status).html('Getting Local Population files...');
                 var name = '' + current_datatype + '_data';
@@ -311,6 +317,14 @@ module_getdata.process_geometry = function(){
 };
 
 /*--------------------------------------------------------------------
+    Data load options: Alternative geometry names
+--------------------------------------------------------------------*/
+
+module_getdata.afterload_geo_altnames = function(data) {
+    module_getdata.load_propagate();
+};
+
+/*--------------------------------------------------------------------
     Data load options: Population
 --------------------------------------------------------------------*/
 
@@ -421,7 +435,7 @@ module_getdata.load_medical_xlsfolders = function(path) {
 
     // Check file format (currently only .text / tabulation separated values - tsv)
     g.medical_filelist_raw.forEach(function(f){
-        console.log(f);
+        console.log(path,f);
         var cond = f.substr(f.length - 5)=='.xlsx' || f.substr(f.length - 5)=='.XLSX';
         if(cond){
             g.medical_filelist.push(f);
@@ -460,28 +474,58 @@ module_getdata.load_medical_xls = function() {
     var lastRow = input['!ref'].split(':')[1].replace( /^\D+/g, '');
 
     var firstCol = lettersToNumbers('A');
-    var lastCol = lettersToNumbers('J');
+    var lastCol = lettersToNumbers('L');
 
-    for (var r = firstRow; r <= lastRow;r++) {
-
+      for (var r = firstRow; r <= lastRow;r++) {
         var test_empty = true;
         var temp_array = [];
 
-
-
         for (var c = firstCol; c <= lastCol+1; c++) {
-
             val = (typeof input[numbersToLetters(c) + r] !== 'undefined') ? input[numbersToLetters(c) + r].v : undefined;
-
             if(val !== undefined){
                 test_empty = false;
             }
-
             temp_array.push(val);
+        }   
+            
+        function getCellValue(cell) {
+            if (typeof cell !== 'undefined') {
+                return cell.v;
+            } else {
+                return '';// undefined;
+            }
         }
 
-        if(!test_empty){       //TODO: Order of xlsx headings is significant here; need to get correctly named column heading instead of it being sequential
+        temp_data = {};
+            
+        if (g.medical_headers_xlsx) {       
+            temp_data[g.medical_headerlist['admN1']] = getCellValue(input[g.medical_headers_xlsx['admN1'][0] + r]);
+            temp_data[g.medical_headerlist['admN2']] = getCellValue(input[g.medical_headers_xlsx['admN2'][0] + r]);
+            temp_data[g.medical_headerlist['epiwk']] = getCellValue(input[g.medical_headers_xlsx['epiwk'][0] + r]);
+            temp_data[g.medical_headerlist['disease']] = getCellValue(input[g.medical_headers_xlsx['disease'][0] + r]);
+            temp_data[g.medical_headerlist['fyo']] = 'u';
+            temp_data[g.medical_headerlist['case']] = getCellValue(input[g.medical_headers_xlsx['case_u5'][0] + r]);
+            temp_data[g.medical_headerlist['death']] = getCellValue(input[g.medical_headers_xlsx['death_u5'][0] + r]);
+            medical_data.push(     
+                temp_data
+            ); 
+
             temp_data = {};
+
+            temp_data[g.medical_headerlist['admN1']] = getCellValue(input[g.medical_headers_xlsx['admN1'][0] + r]);
+            temp_data[g.medical_headerlist['admN2']] = getCellValue(input[g.medical_headers_xlsx['admN2'][0] + r]);
+            temp_data[g.medical_headerlist['epiwk']] = getCellValue(input[g.medical_headers_xlsx['epiwk'][0] + r]);
+            temp_data[g.medical_headerlist['disease']] = getCellValue(input[g.medical_headers_xlsx['disease'][0] + r]);
+            temp_data[g.medical_headerlist['fyo']] = 'o';
+            temp_data[g.medical_headerlist['case']] = getCellValue(input[g.medical_headers_xlsx['case_o5'][0] + r]);
+            temp_data[g.medical_headerlist['death']] = getCellValue(input[g.medical_headers_xlsx['death_o5'][0] + r]);
+
+            medical_data.push(     
+                temp_data
+            ); 
+
+        } else if(!test_empty) {    //TODO: Order of xlsx headings is significant here; need to get correctly named column heading instead of it being sequential
+
             temp_data['Region'] = temp_array[0];
             temp_data[g.medical_headerlist['admN1']] = temp_array[1];
             temp_data[g.medical_headerlist['admN2']] = temp_array[2];
@@ -492,11 +536,10 @@ module_getdata.load_medical_xls = function() {
             temp_data[g.medical_headerlist['date']] = temp_array[7];
             temp_data[g.medical_headerlist['source']] = temp_array[8];
             temp_data[g.medical_headerlist['comment']] = temp_array[9];
-
             medical_data.push(     
                 temp_data
-            );
-        }
+            ); 
+        };
 
     };
 
@@ -736,5 +779,7 @@ module_getdata.load_initiate();
  * @alias module:module_datacheck~toTitleCase
  */
 function toTitleCase(str){
-    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    //return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    return str.toLowerCase().replace(/(?:^|[\s-/])\w/g, function(match) {return match.toUpperCase()});
+
 }
