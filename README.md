@@ -14,6 +14,7 @@ Here are some example use cases of the MSF-Dashboard, including online demo vers
 
 |Description                                           |Links                                                 |
 |------------------------------------------------------|------------------------------------------------------|
+|**Surveillance: MSF DRC KERE** (Oct 2018) - offline, data parsed via excel spreadsheets|[online-demo](http://MSF-UK.github.io/MSF-Dashboard/ver_demos/cfg_eru-drc/) / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/download/v1.3.1/drc_kere_dashboard_v1.3_demo_data.zip)|
 |**Surveillance: MSF Nigeria NERU** (Jul 2018) - offline, data parsed via dedicated datamanager|[online-demo](http://MSF-UK.github.io/MSF-Dashboard/ver_demos/cfg_eru-nigeria/) / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/download/v1.3/neru_dashboard_datamanager_v1.3_fake_data.zip)|
 |**Surveillance: MSF Chad CERU** (updated Jul 2018) - offline, data parsed via dedicated datamanager|[online-demo](http://MSF-UK.github.io/MSF-Dashboard/ver_demos/cfg_eru-chad/) / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/download/v1.3/ceru_dashboard_datamanager_v1.3_fake_data.zip)|
 |**Outbreak: MSF Lubumbashi Mission** (December 2015) - offline, data parsed via tsv|[online-demo](http://MSF-UK.github.io/MSF-Dashboard/ver_demos/cfg_msf-lubumbashi) / [download](https://github.com/MSF-UK/MSF-Dashboard/releases/tag/v1.0.0_msf-lubumbashi)|
