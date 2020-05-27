@@ -1,3 +1,8 @@
+MSF-Dashboard v2.2
+====================
+
+Latest released version. New config menu function! Fully customizable by the user. 
+
 MSF-Dashboard v1.3
 ====================
 
