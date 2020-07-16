@@ -5,10 +5,10 @@ The latest released version of MSF's Surveillance Dashboard with data management
 
 |Description                                           |Links                                                 |
 |------------------------------------------------------|------------------------------------------------------|
-|Blank template of the dashboard that you can fully configure yourself | [download](https://github.com/MSF-UK/MSF-Dashboard/releases/download/2.3/MSF_Surveillance_Dashboard_v2.3_blank.7z)|
-|NERU configuration with demo data | [download](https://github.com/MSF-UK/MSF-Dashboard/releases/download/2.3/MSF_Surveillance_Dashboard_v2.3_NERU.7z)|
-|CERU configuration with demo data | [download](https://github.com/MSF-UK/MSF-Dashboard/releases/download/2.3/MSF_Surveillance_Dashboard_v2.3_CERU.7z)|
-|User Manual v2.3| [download](https://github.com/MSF-UK/MSF-Dashboard/releases/download/2.3/User_Manual_v2.3.pdf) (English)|
+|Blank template of the dashboard that can be fully configured | [download](https://github.com/MSF-UK/MSF-Dashboard/releases/download/2.3/MSF_Surveillance_Dashboard_v2.3_blank.7z)|
+|NERU configuration (with demo data) | [download](https://github.com/MSF-UK/MSF-Dashboard/releases/download/2.3/MSF_Surveillance_Dashboard_v2.3_NERU.7z)|
+|CERU configuration (with demo data) | [download](https://github.com/MSF-UK/MSF-Dashboard/releases/download/2.3/MSF_Surveillance_Dashboard_v2.3_CERU.7z)|
+|User Manual v2.3 (English)| [download](https://github.com/MSF-UK/MSF-Dashboard/releases/download/2.3/MSF_Surveillance_Dashboard_v2.3_User_Manual_EN.pdf)|
 
 
 MSF-Dashboard v1.3
